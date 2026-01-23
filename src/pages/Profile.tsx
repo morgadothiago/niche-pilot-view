@@ -77,7 +77,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     await signOut();
     toast.success('Logout realizado com sucesso');
-    navigate('/');
+    navigate('/login');
   };
 
   const handleSaveProfile = async () => {
