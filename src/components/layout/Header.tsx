@@ -28,9 +28,9 @@ export function Header() {
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               Como funciona
             </a>
-            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Preços
-            </Link>
+            </a>
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -64,7 +64,7 @@ export function Header() {
               <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Como funciona
               </a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors py-2">
+              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
                 Preços
               </a>
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
