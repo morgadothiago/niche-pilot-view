@@ -5,23 +5,23 @@ import {
   Bot, 
   User,
   LogOut,
-  Sparkles
+  Sparkles,
+  CreditCard,
+  Coins
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/useSubscription';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Chat', href: '/chat/new', icon: MessageSquare },
   { label: 'Agentes', href: '/agents', icon: Bot },
+  { label: 'Mudar Plano', href: '/change-plan', icon: CreditCard },
+  { label: 'Comprar Créditos', href: '/buy-credits', icon: Coins },
   { label: 'Perfil', href: '/profile', icon: User },
 ];
-
-const userPlan = {
-  name: 'Pro',
-  color: 'bg-primary'
-};
 
 interface DashboardSidebarProps {
   onNavigate?: () => void;
@@ -32,6 +32,15 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { subscription } = useSubscription();
+
+  const planConfig = {
+    free: { name: 'Free', color: 'bg-muted text-muted-foreground' },
+    pro: { name: 'Pro', color: 'bg-primary text-primary-foreground' },
+    custom: { name: 'Enterprise', color: 'bg-amber-500 text-white' },
+  };
+
+  const currentPlan = planConfig[subscription?.plan || 'free'];
 
   const handleNavClick = () => {
     onNavigate?.();
@@ -106,25 +115,42 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
           ))}
         </nav>
 
-        {/* User Plan Display */}
+        {/* User Plan & Credits Display */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70">
+                <Link 
+                  to="/change-plan"
+                  className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent"
+                >
                   <Sparkles className="w-5 h-5 flex-shrink-0" />
-                </div>
+                </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Plano {userPlan.name}</TooltipContent>
+              <TooltipContent side="right">
+                Plano {currentPlan.name} • {subscription?.credits || 0} créditos
+              </TooltipContent>
             </Tooltip>
           ) : (
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70">
-              <Sparkles className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">Plano</span>
-              <span className={cn("ml-auto px-2 py-0.5 rounded text-xs font-medium text-primary-foreground", userPlan.color)}>
-                {userPlan.name}
-              </span>
-            </div>
+            <Link 
+              to="/change-plan"
+              className="flex flex-col gap-2 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <Sparkles className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium">Plano</span>
+                <span className={cn("ml-auto px-2 py-0.5 rounded text-xs font-medium", currentPlan.color)}>
+                  {currentPlan.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Coins className="w-5 h-5 flex-shrink-0" />
+                <span className="font-medium">Créditos</span>
+                <span className="ml-auto text-sm font-semibold text-foreground">
+                  {subscription?.credits?.toLocaleString() || 0}
+                </span>
+              </div>
+            </Link>
           )}
         </div>
 

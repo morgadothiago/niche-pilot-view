@@ -74,6 +74,7 @@ export type Database = {
       subscriptions: {
         Row: {
           created_at: string
+          credits: number
           id: string
           plan: Database["public"]["Enums"]["plan_type"]
           status: string
@@ -82,6 +83,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          credits?: number
           id?: string
           plan?: Database["public"]["Enums"]["plan_type"]
           status?: string
@@ -90,6 +92,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          credits?: number
           id?: string
           plan?: Database["public"]["Enums"]["plan_type"]
           status?: string
