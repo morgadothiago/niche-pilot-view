@@ -1,28 +1,28 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Bot, MessageSquare, Users, PlusCircle, User, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  MessageSquare, 
+  Bot, 
+  Users, 
+  Settings,
+  LogOut
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const navItems = [
-  { icon: MessageSquare, label: 'Chats', href: '/dashboard' },
-  { icon: Users, label: 'Agentes', href: '/agents' },
-  { icon: PlusCircle, label: 'Criar Agente', href: '/agents/create' },
-  { icon: User, label: 'Perfil', href: '/profile' },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Novo Chat', href: '/chat/new', icon: MessageSquare },
+  { label: 'Agentes', href: '/agents', icon: Bot },
+  { label: 'Perfil', href: '/profile', icon: Users },
 ];
 
 interface DashboardSidebarProps {
   onNavigate?: () => void;
   collapsed?: boolean;
-  onCollapsedChange?: (collapsed: boolean) => void;
 }
 
-export function DashboardSidebar({ onNavigate, collapsed = false, onCollapsedChange }: DashboardSidebarProps) {
+export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSidebarProps) {
   const location = useLocation();
 
   const handleNavClick = () => {
@@ -67,11 +67,11 @@ export function DashboardSidebar({ onNavigate, collapsed = false, onCollapsedCha
   return (
     <TooltipProvider delayDuration={0}>
       <aside className={cn(
-        "h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
+        "h-full bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
         collapsed ? "w-16" : "w-64"
       )}>
-        {/* Logo */}
-        <div className={cn("p-4 border-b border-sidebar-border", collapsed && "p-3")}>
+        {/* Logo - Desktop only */}
+        <div className={cn("p-4 border-b border-sidebar-border hidden lg:block", collapsed && "p-3")}>
           <Link to="/dashboard" className="flex items-center gap-2" onClick={handleNavClick}>
             <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
               <Bot className="w-5 h-5 text-primary-foreground" />
@@ -88,19 +88,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false, onCollapsedCha
         </nav>
 
         {/* Bottom section */}
-        <div className={cn("p-3 border-t border-sidebar-border space-y-2", collapsed && "p-2")}>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onCollapsedChange?.(!collapsed)}
-            className={cn(
-              "w-full justify-center text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent hidden lg:flex",
-              collapsed && "px-2"
-            )}
-          >
-            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-          </Button>
-          
+        <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
