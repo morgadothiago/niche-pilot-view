@@ -180,7 +180,7 @@ export default function Landing() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {steps.map((step, index) => (
               <div key={step.number} className="relative">
-                <div className="text-7xl font-bold text-primary/10 mb-4">
+                <div className="text-7xl font-bold text-primary/20 dark:text-primary/30 mb-4">
                   {step.number}
                 </div>
                 <h3 className="font-semibold text-xl mb-2">{step.title}</h3>
@@ -188,7 +188,7 @@ export default function Landing() {
                 
                 {index < steps.length - 1 && (
                   <div className="hidden md:block absolute top-12 right-0 translate-x-1/2">
-                    <ArrowRight className="w-6 h-6 text-primary/30" />
+                    <ArrowRight className="w-6 h-6 text-primary/40" />
                   </div>
                 )}
               </div>

@@ -152,8 +152,16 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px -5px hsl(243 75% 59% / 0.4); }
-  50% { box-shadow: 0 0 30px -5px hsl(243 75% 59% / 0.6); }
+  0%, 100% { 
+    filter: drop-shadow(0 0 20px hsl(var(--primary) / 0.4)) drop-shadow(0 0 40px hsl(var(--accent) / 0.3)); 
+  }
+  50% { 
+    filter: drop-shadow(0 0 30px hsl(var(--primary) / 0.6)) drop-shadow(0 0 60px hsl(var(--accent) / 0.5)); 
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes slide-up {
