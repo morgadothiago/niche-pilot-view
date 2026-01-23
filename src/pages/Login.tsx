@@ -1,11 +1,93 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bot } from 'lucide-react';
+import { Bot, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+});
 
 export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  
+  const { signIn, user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if user is already logged in and redirect based on role
+  useEffect(() => {
+    async function checkUserAndRedirect() {
+      if (authLoading) return;
+      
+      if (user) {
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (roleData?.role === 'admin') {
+          navigate('/admin', { replace: true });
+        } else {
+          navigate('/dashboard', { replace: true });
+        }
+      }
+    }
+    checkUserAndRedirect();
+  }, [user, authLoading, navigate]);
+
+  const validateForm = () => {
+    try {
+      loginSchema.parse({ email, password });
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: { email?: string; password?: string } = {};
+        error.errors.forEach((err) => {
+          if (err.path[0] === 'email') fieldErrors.email = err.message;
+          if (err.path[0] === 'password') fieldErrors.password = err.message;
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Email ou senha incorretos');
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.success('Login realizado com sucesso!');
+        // O useEffect vai lidar com o redirecionamento quando o user state mudar
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen flex">
@@ -27,15 +109,21 @@ export default function Login() {
             </div>
 
             {/* Form */}
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="h-12"
+                  disabled={loading}
                 />
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -49,12 +137,31 @@ export default function Login() {
                   id="password"
                   type="password"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="h-12"
+                  disabled={loading}
                 />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password}</p>
+                )}
               </div>
 
-              <Button variant="hero" size="lg" className="w-full" asChild>
-                <Link to="/dashboard">Entrar</Link>
+              <Button 
+                variant="hero" 
+                size="lg" 
+                className="w-full" 
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Entrando...
+                  </>
+                ) : (
+                  'Entrar'
+                )}
               </Button>
             </form>
 
@@ -108,37 +215,6 @@ export default function Login() {
                 Criar conta
               </Link>
             </p>
-          </div>
-        </div>
-
-        {/* Right side - Visual */}
-        <div className="hidden lg:flex flex-1 bg-sidebar items-center justify-center p-12">
-          <div className="max-w-lg space-y-8">
-            <div className="bg-sidebar-accent rounded-2xl p-8 animate-float">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full gradient-primary flex items-center justify-center text-2xl">
-                  📈
-                </div>
-                <div>
-                  <div className="font-semibold text-sidebar-foreground">Marketing Pro</div>
-                  <div className="text-sm text-sidebar-foreground/60">Online agora</div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="bg-sidebar rounded-xl px-4 py-3 text-sidebar-foreground text-sm">
-                  Como posso ajudar com sua estratégia hoje?
-                </div>
-              </div>
-            </div>
-
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-sidebar-foreground mb-2">
-                Agentes prontos para ajudar
-              </h2>
-              <p className="text-sidebar-foreground/70">
-                Acesse especialistas em diferentes áreas do seu negócio, 24 horas por dia.
-              </p>
-            </div>
           </div>
         </div>
       </div>
