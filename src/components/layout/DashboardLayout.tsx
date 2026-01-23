@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DashboardSidebar } from './DashboardSidebar';
+import { ContentHeader } from './ContentHeader';
 import { Button } from '@/components/ui/button';
 import { Menu, X, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -66,8 +67,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14">
-        {children}
+      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14 flex flex-col">
+        <ContentHeader />
+        <div className="flex-1">
+          {children}
+        </div>
       </main>
     </div>
   );
