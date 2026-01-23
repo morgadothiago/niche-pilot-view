@@ -127,15 +127,8 @@ export function LandingTutorial() {
               <div className="bg-card rounded-2xl shadow-2xl border border-border overflow-hidden">
                 {/* Header */}
                 <div className="relative gradient-primary p-6 pb-12">
-                  <button
-                    onClick={handleClose}
-                    className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                  
                   {/* Step indicator */}
-                  <div className="flex gap-1.5 mb-4">
+                  <div className="flex gap-1.5 mb-4 pr-10">
                     {tutorialSteps.map((_, index) => (
                       <div
                         key={index}
@@ -145,6 +138,13 @@ export function LandingTutorial() {
                       />
                     ))}
                   </div>
+
+                  <button
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
 
                   <div className="text-white/80 text-sm">
                     Passo {currentStep + 1} de {tutorialSteps.length}
