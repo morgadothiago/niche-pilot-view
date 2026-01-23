@@ -9,9 +9,10 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex h-screen w-full overflow-hidden">
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-sidebar border-b border-sidebar-border px-4 py-3 flex items-center justify-between">
         <span className="font-bold text-lg text-sidebar-foreground">AgentChat</span>
@@ -35,15 +36,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Sidebar - Desktop: always visible, Mobile: overlay drawer */}
       <div className={`
-        fixed lg:relative z-50 lg:z-auto
+        fixed lg:static z-50 lg:z-auto h-full
         transition-transform duration-300 ease-in-out
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <DashboardSidebar onNavigate={() => setMobileMenuOpen(false)} />
+        <DashboardSidebar 
+          onNavigate={() => setMobileMenuOpen(false)} 
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+        />
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 bg-background overflow-auto w-full pt-14 lg:pt-0">
+      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14 lg:pt-0">
         {children}
       </main>
     </div>

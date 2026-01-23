@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, MessageSquare, Bot, Brain, Shield, Zap, Check } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
@@ -7,6 +8,8 @@ import { HeroOrbs } from '@/components/HeroOrbs';
 import { AnimatedNicheText } from '@/components/AnimatedNicheText';
 import { PageTransition } from '@/components/PageTransition';
 import { Testimonials } from '@/components/Testimonials';
+import { PricingToggle } from '@/components/PricingToggle';
+import { PricingCards } from '@/components/PricingCards';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -70,9 +73,11 @@ const benefits = [
 ];
 
 export default function Landing() {
+  const [isAnnual, setIsAnnual] = useState(false);
+
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background overflow-hidden">
+      <div className="min-h-screen bg-background overflow-x-hidden">
         <Header />
 
         {/* Hero Section */}
@@ -222,8 +227,49 @@ export default function Landing() {
         {/* Testimonials Section */}
         <Testimonials />
 
-        {/* Benefits Section */}
+        {/* Pricing Section */}
         <section className="py-16 sm:py-24 px-4">
+          <div className="container mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="text-center mb-10 sm:mb-12"
+            >
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
+                Planos que{' '}
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  cabem no seu bolso
+                </span>
+              </h2>
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8">
+                Escolha o plano ideal para o seu negócio
+              </p>
+              
+              <PricingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
+            </motion.div>
+
+            <div className="max-w-5xl mx-auto">
+              <PricingCards isAnnual={isAnnual} compact />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="text-center mt-8"
+            >
+              <Button variant="link" asChild>
+                <Link to="/pricing">Ver todos os detalhes dos planos →</Link>
+              </Button>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-16 sm:py-24 px-4 bg-secondary/30">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
               <motion.div
