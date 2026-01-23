@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  hideContentHeader?: boolean;
 }
 
-export function DashboardLayout({ children }: DashboardLayoutProps) {
+export function DashboardLayout({ children, hideContentHeader = false }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -58,7 +59,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Main Content */}
       <main className="flex-1 bg-background overflow-hidden pt-14 lg:pt-0 flex flex-col">
-        <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
+        {!hideContentHeader && (
+          <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
+        )}
         <div className="flex-1 overflow-hidden">
           {children}
         </div>
