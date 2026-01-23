@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Users, 
@@ -27,6 +27,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { signOut } = useAuth();
 
   const handleNavClick = () => {
@@ -35,6 +36,7 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
 
   const handleSignOut = async () => {
     await signOut();
+    navigate('/login');
   };
 
   const NavItem = ({ item }: { item: typeof navItems[0] }) => {
