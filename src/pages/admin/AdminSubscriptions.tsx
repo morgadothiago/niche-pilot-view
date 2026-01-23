@@ -29,6 +29,7 @@ interface Subscription {
   status: string;
   credits: number;
   created_at: string;
+  owner_email?: string;
   updated_at: string;
   owner_name?: string;
 }
@@ -36,6 +37,7 @@ interface Subscription {
 interface UserProfile {
   user_id: string;
   full_name: string | null;
+  email: string | null;
 }
 
 const planConfig: Record<string, { name: string; icon: React.ElementType; color: string }> = {
@@ -76,19 +78,20 @@ export default function AdminSubscriptions() {
     try {
       const [subsResult, profilesResult] = await Promise.all([
         supabase.from('subscriptions').select('*').order('created_at', { ascending: false }),
-        supabase.from('profiles').select('user_id, full_name').order('full_name'),
+        supabase.from('profiles').select('user_id, full_name, email').order('full_name'),
       ]);
 
       if (subsResult.error) throw subsResult.error;
       if (profilesResult.error) throw profilesResult.error;
 
       const profileMap = new Map(
-        (profilesResult.data || []).map(p => [p.user_id, p.full_name])
+        (profilesResult.data || []).map(p => [p.user_id, { name: p.full_name, email: p.email }])
       );
 
       const subsWithOwners = (subsResult.data || []).map(sub => ({
         ...sub,
-        owner_name: profileMap.get(sub.user_id) || null,
+        owner_name: profileMap.get(sub.user_id)?.name || null,
+        owner_email: profileMap.get(sub.user_id)?.email || null,
       }));
 
       // Find users without subscriptions
@@ -356,10 +359,10 @@ export default function AdminSubscriptions() {
                           <TableRow key={sub.id}>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <User className="w-4 h-4 text-muted-foreground" />
-                                <div>
-                                  <p className="font-medium">{sub.owner_name || 'Sem nome'}</p>
-                                  <p className="text-xs text-muted-foreground font-mono">{sub.user_id.slice(0, 8)}...</p>
+                                <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                <div className="min-w-0">
+                                  <p className="font-medium truncate">{sub.owner_name || 'Sem nome'}</p>
+                                  <p className="text-xs text-muted-foreground truncate">{sub.owner_email || 'Sem email'}</p>
                                 </div>
                               </div>
                             </TableCell>
