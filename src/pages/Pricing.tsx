@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles, Zap, Building2 } from 'lucide-react';
+import { Check, Sparkles, Zap, Building2, X } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { HeroOrbs } from '@/components/HeroOrbs';
+import { PricingToggle } from '@/components/PricingToggle';
+import { motion } from 'framer-motion';
 
 interface PlanFeature {
   text: string;
@@ -14,20 +17,21 @@ interface PlanFeature {
 interface Plan {
   name: string;
   description: string;
-  price: string;
-  period: string;
+  monthlyPrice: number;
+  annualPrice: number;
   icon: React.ElementType;
   features: PlanFeature[];
   cta: string;
   popular?: boolean;
+  isCustom?: boolean;
 }
 
 const plans: Plan[] = [
   {
     name: 'Free',
     description: 'Perfeito para começar e explorar a plataforma',
-    price: 'R$ 0',
-    period: '/mês',
+    monthlyPrice: 0,
+    annualPrice: 0,
     icon: Sparkles,
     features: [
       { text: '3 agentes ativos', included: true },
@@ -44,8 +48,8 @@ const plans: Plan[] = [
   {
     name: 'Pro',
     description: 'Para profissionais e equipes em crescimento',
-    price: 'R$ 49',
-    period: '/mês',
+    monthlyPrice: 49,
+    annualPrice: 39,
     icon: Zap,
     popular: true,
     features: [
@@ -63,8 +67,9 @@ const plans: Plan[] = [
   {
     name: 'Enterprise',
     description: 'Para grandes empresas com necessidades específicas',
-    price: 'Personalizado',
-    period: '',
+    monthlyPrice: 0,
+    annualPrice: 0,
+    isCustom: true,
     icon: Building2,
     features: [
       { text: 'Tudo do Pro', included: true },
@@ -100,6 +105,19 @@ const faqs = [
 ];
 
 export default function Pricing() {
+  const [isAnnual, setIsAnnual] = useState(false);
+
+  const formatPrice = (plan: Plan) => {
+    if (plan.isCustom) return 'Personalizado';
+    const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
+    return `R$ ${price}`;
+  };
+
+  const getPeriod = (plan: Plan) => {
+    if (plan.isCustom) return '';
+    return isAnnual ? '/mês (cobrado anualmente)' : '/mês';
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
@@ -122,42 +140,43 @@ export default function Pricing() {
               </span>
             </h1>
 
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Comece gratuitamente e escale conforme sua necessidade. Sem surpresas, sem taxas escondidas.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+              Comece gratuitamente e escale conforme sua necessidade. Sem surpresas, sem taxas ocultas.
             </p>
+
+            <PricingToggle isAnnual={isAnnual} onToggle={setIsAnnual} />
           </div>
         </section>
 
         {/* Pricing Cards */}
-        <section className="py-12 px-4">
+        <section className="pb-24 px-4">
           <div className="container mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {plans.map((plan) => (
-                <div
-                  key={plan.name}
-                  className={`relative bg-card rounded-2xl shadow-soft border transition-all duration-300 hover:shadow-medium hover:-translate-y-1 ${
-                    plan.popular
-                      ? 'border-primary ring-2 ring-primary/20'
-                      : 'border-border'
-                  }`}
-                >
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                      <span className="gradient-primary text-primary-foreground text-sm font-semibold px-4 py-1.5 rounded-full">
+              {plans.map((plan, index) => {
+                const Icon = plan.icon;
+                return (
+                  <motion.div
+                    key={plan.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className={`relative bg-card rounded-2xl p-8 shadow-soft border transition-all duration-300 hover:shadow-medium hover:-translate-y-1 ${
+                      plan.popular
+                        ? 'border-primary ring-2 ring-primary/20'
+                        : 'border-border'
+                    }`}
+                  >
+                    {plan.popular && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-full">
                         Mais popular
-                      </span>
-                    </div>
-                  )}
+                      </div>
+                    )}
 
-                  <div className="p-8">
-                    {/* Plan Header */}
                     <div className="flex items-center gap-3 mb-4">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        plan.popular ? 'gradient-primary' : 'bg-primary/10'
+                        plan.popular ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'
                       }`}>
-                        <plan.icon className={`w-6 h-6 ${
-                          plan.popular ? 'text-primary-foreground' : 'text-primary'
-                        }`} />
+                        <Icon className="w-6 h-6" />
                       </div>
                       <div>
                         <h3 className="text-xl font-bold">{plan.name}</h3>
@@ -168,90 +187,107 @@ export default function Pricing() {
                       {plan.description}
                     </p>
 
-                    {/* Price */}
                     <div className="mb-6">
-                      <span className="text-4xl font-bold">{plan.price}</span>
-                      <span className="text-muted-foreground">{plan.period}</span>
+                      <motion.span
+                        key={isAnnual ? 'annual' : 'monthly'}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-4xl font-bold"
+                      >
+                        {formatPrice(plan)}
+                      </motion.span>
+                      <span className="text-muted-foreground text-sm">
+                        {getPeriod(plan)}
+                      </span>
+                      {isAnnual && !plan.isCustom && plan.monthlyPrice > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="mt-1"
+                        >
+                          <span className="text-sm text-muted-foreground line-through">
+                            R$ {plan.monthlyPrice}/mês
+                          </span>
+                          <span className="text-sm text-accent ml-2 font-medium">
+                            Economize R$ {(plan.monthlyPrice - plan.annualPrice) * 12}/ano
+                          </span>
+                        </motion.div>
+                      )}
                     </div>
 
-                    {/* CTA Button */}
                     <Button
                       variant={plan.popular ? 'hero' : 'outline'}
-                      size="lg"
-                      className="w-full mb-8"
+                      className="w-full mb-6"
                       asChild
                     >
                       <Link to="/signup">{plan.cta}</Link>
                     </Button>
 
-                    {/* Features */}
                     <ul className="space-y-3">
-                      {plan.features.map((feature, index) => (
+                      {plan.features.map((feature, featureIndex) => (
                         <li
-                          key={index}
-                          className={`flex items-center gap-3 text-sm ${
-                            feature.included ? '' : 'text-muted-foreground/50'
-                          }`}
+                          key={featureIndex}
+                          className="flex items-center gap-3 text-sm"
                         >
-                          <Check
-                            className={`w-4 h-4 flex-shrink-0 ${
-                              feature.included ? 'text-primary' : 'text-muted-foreground/30'
-                            }`}
-                          />
-                          <span className={feature.included ? '' : 'line-through'}>
+                          {feature.included ? (
+                            <Check className="w-5 h-5 text-accent flex-shrink-0" />
+                          ) : (
+                            <X className="w-5 h-5 text-muted-foreground/40 flex-shrink-0" />
+                          )}
+                          <span className={feature.included ? 'text-foreground' : 'text-muted-foreground/60'}>
                             {feature.text}
                           </span>
                         </li>
                       ))}
                     </ul>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 px-4 bg-secondary/30">
+        <section className="py-24 px-4 bg-secondary/30">
           <div className="container mx-auto max-w-4xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            <h2 className="text-3xl font-bold text-center mb-12">
               Perguntas frequentes
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {faqs.map((faq, index) => (
-                <div
+                <motion.div
                   key={index}
-                  className="bg-card rounded-xl p-6 shadow-soft border border-border"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-card p-6 rounded-xl shadow-soft border border-border"
                 >
                   <h3 className="font-semibold mb-2">{faq.question}</h3>
-                  <p className="text-muted-foreground text-sm">{faq.answer}</p>
-                </div>
+                  <p className="text-sm text-muted-foreground">{faq.answer}</p>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 px-4">
+        <section className="py-24 px-4">
           <div className="container mx-auto text-center">
-            <div className="bg-sidebar text-sidebar-foreground rounded-3xl p-12 max-w-4xl mx-auto">
+            <div className="max-w-3xl mx-auto bg-gradient-to-r from-primary to-accent p-12 rounded-3xl text-white shadow-glow">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Ainda tem dúvidas?
+                Pronto para transformar seu negócio?
               </h2>
-              <p className="text-xl text-sidebar-foreground/70 mb-8 max-w-xl mx-auto">
-                Nossa equipe está pronta para ajudar você a escolher o melhor plano.
+              <p className="text-lg opacity-90 mb-8">
+                Comece gratuitamente hoje e descubra o poder dos agentes de IA personalizados.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="hero" size="xl" asChild>
+                <Button size="lg" variant="secondary" asChild>
                   <Link to="/signup">Começar grátis</Link>
                 </Button>
-                <Button
-                  variant="outline"
-                  size="xl"
-                  className="border-sidebar-foreground/30 text-sidebar-foreground hover:bg-sidebar-accent"
-                >
-                  Falar com especialista
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+                  <Link to="/agents">Ver demonstração</Link>
                 </Button>
               </div>
             </div>
