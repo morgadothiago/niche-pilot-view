@@ -10,6 +10,7 @@ import { PageTransition } from '@/components/PageTransition';
 import { Testimonials } from '@/components/Testimonials';
 import { PricingToggle } from '@/components/PricingToggle';
 import { PricingCards } from '@/components/PricingCards';
+import { LandingTutorial } from '@/components/LandingTutorial';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -337,6 +338,7 @@ export default function Landing() {
         </section>
 
         <Footer />
+        <LandingTutorial />
       </div>
     </PageTransition>
   );

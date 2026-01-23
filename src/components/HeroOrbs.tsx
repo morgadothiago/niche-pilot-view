@@ -13,15 +13,19 @@ interface FloatingBallProps {
 function FloatingBall({ size, isPrimary, delay, x, y, blur = false, opacity = 0.6 }: FloatingBallProps) {
   return (
     <motion.div
-      className={`absolute pointer-events-none rounded-full transition-colors duration-500 ${
+      className={`absolute pointer-events-none rounded-full ${
         blur ? 'blur-2xl' : ''
-      } ${isPrimary ? 'bg-primary' : 'bg-accent'}`}
+      }`}
       style={{
         width: size,
         height: size,
         left: x,
         top: y,
         opacity: opacity,
+        background: isPrimary 
+          ? 'hsl(var(--primary))' 
+          : 'hsl(var(--accent))',
+        transition: 'background 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
       initial={{ opacity: 0, scale: 0 }}
       animate={{ 
