@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Bot, Sparkles, Zap, Shield, MessageSquare, Users, ArrowRight, CheckCircle } from 'lucide-react';
+import { HeroOrbs } from '@/components/HeroOrbs';
 
 const features = [
   {
@@ -60,14 +61,11 @@ export default function Landing() {
       <Header />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 overflow-hidden">
-        <div className="container mx-auto text-center relative">
-          {/* Background gradient */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-3xl" />
-            <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-accent/10 rounded-full blur-3xl" />
-          </div>
-
+      <section className="pt-32 pb-20 px-4 overflow-hidden relative">
+        {/* Animated background orbs */}
+        <HeroOrbs />
+        
+        <div className="container mx-auto text-center relative z-10">
           <div className="animate-slide-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
               <Sparkles className="w-4 h-4" />
@@ -241,14 +239,12 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto text-center">
-          <div className="bg-card rounded-3xl shadow-medium border border-border p-12 max-w-4xl mx-auto relative overflow-hidden">
-            <div className="absolute inset-0 -z-10">
-              <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-primary/5 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-accent/5 rounded-full blur-3xl" />
-            </div>
-
+      <section className="py-20 px-4 relative overflow-hidden">
+        {/* Background orbs for CTA */}
+        <HeroOrbs />
+        
+        <div className="container mx-auto text-center relative z-10">
+          <div className="bg-card rounded-3xl shadow-medium border border-border p-12 max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Pronto para começar?
             </h2>
