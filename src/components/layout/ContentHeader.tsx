@@ -1,6 +1,7 @@
 import { useLocation, Link } from 'react-router-dom';
-import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare } from 'lucide-react';
+import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Breadcrumb,
@@ -10,6 +11,11 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+
+// Mock user plan - in production this would come from database/Stripe
+const userPlan = {
+  name: 'Pro',
+};
 
 const routeNames: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -115,7 +121,20 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
             </Breadcrumb>
 
             {/* Right side actions */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              {/* User Plan Badge */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link to="/pricing">
+                    <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-secondary/80">
+                      <Crown className="w-3 h-3" />
+                      <span className="hidden sm:inline">{userPlan.name}</span>
+                    </Badge>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>Plano {userPlan.name}</TooltipContent>
+              </Tooltip>
+
               {/* Contextual Actions */}
               {actions.map((action) => (
                 <Tooltip key={action.href}>
