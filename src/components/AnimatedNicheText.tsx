@@ -3,17 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface NicheWord {
   text: string;
-  color: string;
+  colorVar: string;
 }
 
 const niches: NicheWord[] = [
-  { text: 'Marketing', color: 'hsl(243, 75%, 59%)' },      // Índigo
-  { text: 'Vendas', color: 'hsl(187, 92%, 45%)' },         // Cyan
-  { text: 'Jurídico', color: 'hsl(270, 70%, 60%)' },       // Violeta
-  { text: 'Finanças', color: 'hsl(160, 84%, 39%)' },       // Esmeralda
-  { text: 'Suporte', color: 'hsl(25, 95%, 53%)' },         // Laranja
-  { text: 'RH', color: 'hsl(340, 82%, 52%)' },             // Rosa
-  { text: 'Tech', color: 'hsl(217, 91%, 60%)' },           // Azul
+  { text: 'Marketing', colorVar: 'hsl(var(--primary))' },
+  { text: 'Vendas', colorVar: 'hsl(var(--accent))' },
+  { text: 'Jurídico', colorVar: 'hsl(var(--primary) / 0.85)' },
+  { text: 'Finanças', colorVar: 'hsl(var(--accent) / 0.9)' },
+  { text: 'Suporte', colorVar: 'hsl(var(--primary))' },
+  { text: 'RH', colorVar: 'hsl(var(--accent))' },
+  { text: 'Tech', colorVar: 'hsl(var(--primary) / 0.9)' },
 ];
 
 export function AnimatedNicheText() {
@@ -28,6 +28,7 @@ export function AnimatedNicheText() {
   }, []);
 
   const currentNiche = niches[currentIndex];
+  const isPrimary = currentIndex % 2 === 0;
 
   return (
     <span className="relative inline-block min-w-[200px] md:min-w-[280px]">
@@ -38,10 +39,11 @@ export function AnimatedNicheText() {
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="inline-block font-bold"
+          className={`inline-block font-bold ${isPrimary ? 'text-primary' : 'text-accent'}`}
           style={{ 
-            color: currentNiche.color,
-            textShadow: `0 0 40px ${currentNiche.color}40`,
+            textShadow: isPrimary 
+              ? '0 0 40px hsl(var(--primary) / 0.4)' 
+              : '0 0 40px hsl(var(--accent) / 0.4)',
           }}
         >
           {currentNiche.text}
