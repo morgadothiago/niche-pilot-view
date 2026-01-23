@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare, Crown } from 'lucide-react';
+import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare, Crown, Sparkles, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -11,10 +11,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { useSubscription } from '@/hooks/useSubscription';
 
-// Mock user plan - in production this would come from database/Stripe
-const userPlan = {
-  name: 'Pro',
+const planConfig: Record<string, { name: string; icon: React.ElementType }> = {
+  free: { name: 'Free', icon: Sparkles },
+  pro: { name: 'Pro', icon: Zap },
+  custom: { name: 'Enterprise', icon: Crown },
 };
 
 const routeNames: Record<string, string> = {
@@ -50,6 +52,10 @@ interface ContentHeaderProps {
 
 export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderProps) {
   const location = useLocation();
+  const { subscription } = useSubscription();
+  
+  const currentPlan = planConfig[subscription?.plan || 'free'];
+  const PlanIcon = currentPlan.icon;
   const pathSegments = location.pathname.split('/').filter(Boolean);
   
   // Build breadcrumb items
@@ -129,14 +135,14 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
               {/* User Plan Badge */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link to="/pricing">
+                  <Link to="/change-plan">
                     <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-secondary/80">
-                      <Crown className="w-3 h-3" />
-                      <span className="hidden sm:inline">{userPlan.name}</span>
+                      <PlanIcon className="w-3 h-3" />
+                      <span className="hidden sm:inline">{currentPlan.name}</span>
                     </Badge>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent>Plano {userPlan.name}</TooltipContent>
+                <TooltipContent>Plano {currentPlan.name}</TooltipContent>
               </Tooltip>
 
               {/* Contextual Actions */}
