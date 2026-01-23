@@ -1,11 +1,32 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Bot, Clock } from 'lucide-react';
+import { Plus, MessageSquare, Bot, Clock, Loader2 } from 'lucide-react';
 import { chats, agents } from '@/data/mockData';
 import { PageTransition } from '@/components/PageTransition';
 
 export default function Dashboard() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário';
+
   return (
     <PageTransition>
       <DashboardLayout>
@@ -13,9 +34,9 @@ export default function Dashboard() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 lg:mb-8">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">Olá, Maria! 👋</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold">Olá, {userName}! 👋</h1>
               <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                Bem-vinda ao seu painel de controle
+                Bem-vindo ao seu painel de controle
               </p>
             </div>
             <Button variant="hero" asChild className="w-full sm:w-auto">

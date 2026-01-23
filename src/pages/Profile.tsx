@@ -1,18 +1,45 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { User, Bell, CreditCard, Trash2 } from 'lucide-react';
+import { User, Bell, CreditCard, Trash2, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function Profile() {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+  
   const [notifications, setNotifications] = useState({
     email: true,
     product: true,
     tips: false,
   });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Logout realizado com sucesso');
+    navigate('/');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <PageTransition>
@@ -42,16 +69,16 @@ export default function Profile() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome completo</Label>
-                    <Input id="name" defaultValue="Maria Silva" />
+                    <Input id="name" defaultValue={user?.user_metadata?.full_name || ''} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue="maria@exemplo.com" />
+                    <Input id="email" type="email" defaultValue={user?.email || ''} disabled />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="company">Empresa</Label>
-                  <Input id="company" defaultValue="TechStart Brasil" />
+                  <Input id="company" placeholder="Nome da sua empresa" />
                 </div>
                 <Button variant="hero" className="w-full sm:w-auto">Salvar alterações</Button>
               </div>
@@ -131,6 +158,19 @@ export default function Profile() {
                     <Button variant="outline" className="flex-1">Histórico de pagamentos</Button>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Logout */}
+            <div className="bg-card rounded-xl shadow-soft border border-border overflow-hidden">
+              <div className="p-4 sm:p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold">Sessão</h2>
+                  <p className="text-sm text-muted-foreground">Gerenciar sua sessão</p>
+                </div>
+                <Button variant="outline" onClick={handleSignOut}>
+                  Sair da conta
+                </Button>
               </div>
             </div>
 
