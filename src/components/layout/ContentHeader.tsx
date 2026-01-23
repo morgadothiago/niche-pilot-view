@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Home, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bot, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
@@ -18,6 +18,18 @@ const routeNames: Record<string, string> = {
   '/agents/create': 'Criar Agente',
   '/profile': 'Perfil',
   '/pricing': 'Preços',
+};
+
+// Ações contextuais por rota
+const routeActions: Record<string, { label: string; href: string; icon: React.ElementType }[]> = {
+  '/dashboard': [
+    { label: 'Novo Chat', href: '/chat/new', icon: MessageSquare },
+  ],
+  '/agents': [
+    { label: 'Criar Agente', href: '/agents/create', icon: Plus },
+  ],
+  '/chat/new': [],
+  '/profile': [],
 };
 
 interface ContentHeaderProps {
@@ -43,6 +55,9 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
     pathSegments[pathSegments.length - 1]?.charAt(0).toUpperCase() + 
     pathSegments[pathSegments.length - 1]?.slice(1) || 
     'Dashboard';
+
+  // Get actions for current route
+  const actions = routeActions[location.pathname] || [];
 
   return (
     <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -88,10 +103,26 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
           </Breadcrumb>
         </div>
 
-        {/* Page Title */}
-        <h1 className="text-xl md:text-2xl font-bold text-foreground">
-          {currentPageName}
-        </h1>
+        {/* Page Title and Actions */}
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">
+            {currentPageName}
+          </h1>
+
+          {/* Contextual Actions */}
+          {actions.length > 0 && (
+            <div className="flex items-center gap-2">
+              {actions.map((action) => (
+                <Button key={action.href} asChild size="sm" className="gap-2">
+                  <Link to={action.href}>
+                    <action.icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{action.label}</span>
+                  </Link>
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
