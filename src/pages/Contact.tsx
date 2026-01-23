@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
+import { supabase } from '@/integrations/supabase/client';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(100),
@@ -65,9 +66,22 @@ export default function Contact() {
       setErrors({});
       setLoading(true);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: form.name,
+          email: form.email,
+          company: form.company || undefined,
+          subject: form.subject,
+          message: form.message,
+        },
+      });
+
+      if (error) {
+        console.error('Error sending contact email:', error);
+        toast.error('Erro ao enviar mensagem. Tente novamente.');
+        return;
+      }
+
       toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
       setForm({ name: '', email: '', company: '', subject: '', message: '' });
     } catch (error) {
@@ -78,6 +92,9 @@ export default function Contact() {
           fieldErrors[field] = err.message;
         });
         setErrors(fieldErrors);
+      } else {
+        console.error('Unexpected error:', error);
+        toast.error('Erro inesperado. Tente novamente.');
       }
     } finally {
       setLoading(false);
