@@ -138,7 +138,7 @@ export default function Landing() {
         </section>
 
         {/* Features Section */}
-        <section className="py-16 sm:py-24 px-4 bg-secondary/30">
+        <section id="features" className="py-16 sm:py-24 px-4 bg-secondary/30">
           <div className="container mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -183,7 +183,7 @@ export default function Landing() {
         </section>
 
         {/* How it Works Section */}
-        <section className="py-16 sm:py-24 px-4">
+        <section id="how-it-works" className="py-16 sm:py-24 px-4">
           <div className="container mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
