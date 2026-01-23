@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { PaletteSelector } from '@/components/PaletteSelector';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,7 +34,8 @@ export function Header() {
           </nav>
 
           {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            <PaletteSelector />
             <ThemeToggle />
             <Button variant="ghost" asChild>
               <Link to="/login">Entrar</Link>
