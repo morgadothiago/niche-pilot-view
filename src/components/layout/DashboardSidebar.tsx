@@ -4,8 +4,8 @@ import {
   MessageSquare, 
   Bot, 
   Users, 
-  Settings,
-  LogOut
+  LogOut,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -21,6 +21,12 @@ interface DashboardSidebarProps {
   onNavigate?: () => void;
   collapsed?: boolean;
 }
+
+// Mock user plan - in production this would come from database/Stripe
+const userPlan = {
+  name: 'Pro',
+  color: 'bg-primary',
+};
 
 export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSidebarProps) {
   const location = useLocation();
@@ -86,6 +92,31 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
             <NavItem key={item.href} item={item} />
           ))}
         </nav>
+
+        {/* User Plan */}
+        <div className={cn("px-3 pb-2", collapsed && "px-2")}>
+          {collapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center justify-center p-2 rounded-lg bg-sidebar-accent">
+                  <Crown className="w-5 h-5 text-primary" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">Plano {userPlan.name}</TooltipContent>
+            </Tooltip>
+          ) : (
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent">
+              <Crown className="w-5 h-5 text-primary flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-sidebar-foreground/70">Seu plano</p>
+                <p className="font-semibold text-sm">{userPlan.name}</p>
+              </div>
+              <span className={cn("px-2 py-0.5 rounded text-xs font-medium", userPlan.color, "text-primary-foreground")}>
+                Ativo
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Bottom section */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
