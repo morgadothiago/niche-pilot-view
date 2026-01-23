@@ -11,6 +11,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { PricingToggle } from '@/components/PricingToggle';
 import { PricingCards } from '@/components/PricingCards';
 import { LandingTutorial } from '@/components/LandingTutorial';
+import { AnimatedBubbles } from '@/components/AnimatedBubbles';
 import { motion } from 'framer-motion';
 
 const features = [
@@ -339,6 +340,7 @@ export default function Landing() {
 
         <Footer />
         <LandingTutorial />
+        <AnimatedBubbles />
       </div>
     </PageTransition>
   );
