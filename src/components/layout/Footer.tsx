@@ -34,8 +34,8 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Produto</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Recursos</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Preços</a></li>
+              <li><a href="#features" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Recursos</a></li>
+              <li><Link to="/pricing" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Preços</Link></li>
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Integrações</a></li>
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Changelog</a></li>
             </ul>
@@ -56,8 +56,8 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Privacidade</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Termos</a></li>
+              <li><Link to="/privacy" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Privacidade</Link></li>
+              <li><Link to="/terms" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Termos</Link></li>
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Cookies</a></li>
             </ul>
           </div>

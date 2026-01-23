@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, MessageSquare, Bot, Clock, Loader2 } from 'lucide-react';
 import { chats, agents } from '@/data/mockData';
 import { PageTransition } from '@/components/PageTransition';
+import { UsageLimits } from '@/components/UsageLimits';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -83,6 +84,9 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* Usage Limits */}
+          <UsageLimits className="mb-6 lg:mb-8" />
 
           {/* Recent Chats */}
           <div className="bg-card rounded-xl shadow-soft border border-border">

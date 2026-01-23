@@ -12,6 +12,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Auth from "./pages/Auth";
 import Pricing from "./pages/Pricing";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import Dashboard from "./pages/Dashboard";
 import Chat from "./pages/Chat";
 import Agents from "./pages/Agents";
@@ -39,6 +41,8 @@ function AnimatedRoutes() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/pricing" element={<Pricing />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chat/:chatId" element={<Chat />} />
         <Route path="/chat/new" element={<Chat />} />
