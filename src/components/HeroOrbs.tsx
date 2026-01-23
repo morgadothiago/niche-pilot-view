@@ -2,14 +2,14 @@ import { motion } from 'framer-motion';
 
 interface FloatingBallProps {
   size: number;
-  color: string;
+  colorClass: string;
   delay: number;
   x: string;
   y: string;
   blur?: boolean;
 }
 
-function FloatingBall({ size, color, delay, x, y, blur = false }: FloatingBallProps) {
+function FloatingBall({ size, colorClass, delay, x, y, blur = false }: FloatingBallProps) {
   return (
     <motion.div
       className="absolute pointer-events-none"
@@ -34,11 +34,7 @@ function FloatingBall({ size, color, delay, x, y, blur = false }: FloatingBallPr
       }}
     >
       <div 
-        className={`w-full h-full rounded-full ${blur ? 'blur-xl opacity-60' : 'opacity-80'}`}
-        style={{
-          background: color,
-          boxShadow: blur ? 'none' : `0 0 40px ${color}`,
-        }}
+        className={`w-full h-full rounded-full transition-colors duration-500 ${colorClass} ${blur ? 'blur-xl' : ''}`}
       />
     </motion.div>
   );
@@ -47,17 +43,18 @@ function FloatingBall({ size, color, delay, x, y, blur = false }: FloatingBallPr
 export function HeroOrbs() {
   const balls = [
     // Large blurred background orbs
-    { size: 300, color: 'hsl(var(--primary) / 0.3)', delay: 0, x: '5%', y: '10%', blur: true },
-    { size: 250, color: 'hsl(var(--accent) / 0.25)', delay: 0.3, x: '75%', y: '5%', blur: true },
-    { size: 200, color: 'hsl(var(--primary) / 0.2)', delay: 0.6, x: '85%', y: '50%', blur: true },
+    { size: 300, colorClass: 'bg-primary/30', delay: 0, x: '5%', y: '10%', blur: true },
+    { size: 250, colorClass: 'bg-accent/25', delay: 0.3, x: '75%', y: '5%', blur: true },
+    { size: 200, colorClass: 'bg-primary/20', delay: 0.6, x: '85%', y: '50%', blur: true },
+    { size: 280, colorClass: 'bg-accent/20', delay: 0.4, x: '0%', y: '60%', blur: true },
     
     // Smaller solid balls with glow
-    { size: 60, color: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.6) 100%)', delay: 0.2, x: '15%', y: '25%', blur: false },
-    { size: 40, color: 'linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--accent) / 0.6) 100%)', delay: 0.4, x: '85%', y: '20%', blur: false },
-    { size: 50, color: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)', delay: 0.5, x: '75%', y: '65%', blur: false },
-    { size: 35, color: 'linear-gradient(135deg, hsl(var(--accent)) 0%, hsl(var(--primary)) 100%)', delay: 0.7, x: '10%', y: '70%', blur: false },
-    { size: 25, color: 'hsl(var(--primary))', delay: 0.8, x: '45%', y: '15%', blur: false },
-    { size: 30, color: 'hsl(var(--accent))', delay: 0.9, x: '55%', y: '75%', blur: false },
+    { size: 60, colorClass: 'bg-primary opacity-70 shadow-[0_0_40px_hsl(var(--primary)/0.6)]', delay: 0.2, x: '15%', y: '25%', blur: false },
+    { size: 40, colorClass: 'bg-accent opacity-70 shadow-[0_0_30px_hsl(var(--accent)/0.6)]', delay: 0.4, x: '85%', y: '20%', blur: false },
+    { size: 50, colorClass: 'bg-gradient-to-br from-primary to-accent opacity-80 shadow-[0_0_35px_hsl(var(--primary)/0.5)]', delay: 0.5, x: '75%', y: '65%', blur: false },
+    { size: 35, colorClass: 'bg-gradient-to-br from-accent to-primary opacity-70 shadow-[0_0_25px_hsl(var(--accent)/0.5)]', delay: 0.7, x: '10%', y: '70%', blur: false },
+    { size: 25, colorClass: 'bg-primary opacity-60 shadow-[0_0_20px_hsl(var(--primary)/0.5)]', delay: 0.8, x: '45%', y: '15%', blur: false },
+    { size: 30, colorClass: 'bg-accent opacity-60 shadow-[0_0_20px_hsl(var(--accent)/0.5)]', delay: 0.9, x: '55%', y: '75%', blur: false },
   ];
 
   return (
