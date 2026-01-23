@@ -57,9 +57,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14 lg:pt-0 flex flex-col">
+      <main className="flex-1 bg-background overflow-hidden pt-14 lg:pt-0 flex flex-col">
         <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
-        <div className="flex-1">
+        <div className="flex-1 overflow-hidden">
           {children}
         </div>
       </main>
