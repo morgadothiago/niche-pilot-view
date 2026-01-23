@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ChevronDown, Plus, MoreVertical, Trash2, Edit, Share, Pin, Archive, Bot, Loader2 } from 'lucide-react';
+import { Send, ChevronDown, Plus, MoreVertical, Bot, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/components/PageTransition';
 import {
@@ -168,37 +168,48 @@ export default function Chat() {
                     </div>
                   </div>
 
-                  {/* Options Dropdown */}
+                  {/* Agents Dropdown */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
                         <MoreVertical className="w-5 h-5" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 bg-popover">
-                      <DropdownMenuItem onClick={() => handleOptionClick('Fixar conversa')} className="gap-2">
-                        <Pin className="w-4 h-4" />
-                        Fixar conversa
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleOptionClick('Renomear')} className="gap-2">
-                        <Edit className="w-4 h-4" />
-                        Renomear
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleOptionClick('Compartilhar')} className="gap-2">
-                        <Share className="w-4 h-4" />
-                        Compartilhar
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleOptionClick('Arquivar')} className="gap-2">
-                        <Archive className="w-4 h-4" />
-                        Arquivar
-                      </DropdownMenuItem>
+                    <DropdownMenuContent align="end" className="w-64 bg-popover">
+                      <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                        Trocar agente
+                      </div>
+                      {agents.map((agent) => (
+                        <DropdownMenuItem
+                          key={agent.id}
+                          onClick={() => handleSelectAgent(agent)}
+                          className={cn(
+                            "flex items-center gap-3 p-3",
+                            selectedAgent?.id === agent.id && "bg-secondary"
+                          )}
+                        >
+                          <span className="text-xl">{agent.avatar}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate">{agent.name}</div>
+                            {agent.description && (
+                              <div className="text-xs text-muted-foreground truncate">
+                                {agent.description}
+                              </div>
+                            )}
+                          </div>
+                        </DropdownMenuItem>
+                      ))}
+                      {agents.length === 0 && (
+                        <div className="px-3 py-2 text-sm text-muted-foreground text-center">
+                          Nenhum agente cadastrado
+                        </div>
+                      )}
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
-                        onClick={() => handleOptionClick('Excluir conversa')} 
-                        className="gap-2 text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Excluir conversa
+                      <DropdownMenuItem asChild className="gap-2">
+                        <Link to="/agents/create">
+                          <Plus className="w-4 h-4" />
+                          Criar novo agente
+                        </Link>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
