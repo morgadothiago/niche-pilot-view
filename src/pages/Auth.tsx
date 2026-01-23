@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PageTransition } from '@/components/PageTransition';
 import { Bot, Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { PageTransition } from '@/components/PageTransition';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { supabase } from '@/integrations/supabase/client';
 
 const authSchema = z.object({
   email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
 });
 
 export default function Auth() {
@@ -25,10 +26,25 @@ export default function Auth() {
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
+  // Check if user is already logged in and redirect based on role
   useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
+    async function checkUserAndRedirect() {
+      if (user) {
+        // Check if user is admin
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (roleData?.role === 'admin') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
+      }
     }
+    checkUserAndRedirect();
   }, [user, navigate]);
 
   const validateForm = () => {
@@ -67,7 +83,26 @@ export default function Auth() {
           }
         } else {
           toast.success('Login realizado com sucesso!');
-          navigate('/dashboard');
+          
+          // Get the user after login to check role
+          const { data: { user: loggedUser } } = await supabase.auth.getUser();
+          
+          if (loggedUser) {
+            // Check if user is admin
+            const { data: roleData } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', loggedUser.id)
+              .maybeSingle();
+
+            if (roleData?.role === 'admin') {
+              navigate('/admin');
+            } else {
+              navigate('/dashboard');
+            }
+          } else {
+            navigate('/dashboard');
+          }
         }
       } else {
         const { error } = await signUp(email, password);
@@ -140,7 +175,7 @@ export default function Auth() {
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-xs text-destructive">{errors.email}</p>
+                    <p className="text-sm text-destructive">{errors.email}</p>
                   )}
                 </div>
 
@@ -159,14 +194,15 @@ export default function Auth() {
                     />
                   </div>
                   {errors.password && (
-                    <p className="text-xs text-destructive">{errors.password}</p>
+                    <p className="text-sm text-destructive">{errors.password}</p>
                   )}
                 </div>
 
                 <Button 
-                  type="submit" 
                   variant="hero" 
+                  size="lg" 
                   className="w-full" 
+                  type="submit"
                   disabled={loading}
                 >
                   {loading ? (
@@ -182,19 +218,26 @@ export default function Auth() {
 
               {/* Toggle */}
               <div className="mt-6 text-center">
-                <p className="text-sm text-muted-foreground">
-                  {isLogin ? 'Não tem uma conta?' : 'Já tem uma conta?'}{' '}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLogin(!isLogin);
-                      setErrors({});
-                    }}
-                    className="text-primary font-medium hover:underline"
-                  >
-                    {isLogin ? 'Criar conta' : 'Fazer login'}
-                  </button>
-                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setErrors({});
+                  }}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {isLogin ? (
+                    <>
+                      Não tem uma conta?{' '}
+                      <span className="text-primary font-medium">Criar conta</span>
+                    </>
+                  ) : (
+                    <>
+                      Já tem uma conta?{' '}
+                      <span className="text-primary font-medium">Entrar</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </motion.div>
