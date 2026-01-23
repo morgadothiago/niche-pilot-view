@@ -45,7 +45,7 @@ function AnimatedRoutes() {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="agentchat-theme">
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
