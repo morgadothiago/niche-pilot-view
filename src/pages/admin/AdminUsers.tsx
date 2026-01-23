@@ -150,8 +150,9 @@ export default function AdminUsers() {
     );
   };
 
-  const getStatusBadge = (status: string | null) => {
-    if (status === 'active') {
+  const getStatusBadge = (status: string | null, role: string | null) => {
+    // Admins are always considered active
+    if (role === 'admin' || status === 'active') {
       return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">Ativo</Badge>;
     }
     if (status === 'inactive') {
@@ -217,7 +218,7 @@ export default function AdminUsers() {
                             </TableCell>
                             <TableCell>{getRoleBadge(user.role)}</TableCell>
                             <TableCell>{getPlanBadge(user.plan)}</TableCell>
-                            <TableCell>{getStatusBadge(user.status)}</TableCell>
+                            <TableCell>{getStatusBadge(user.status, user.role)}</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1.5">
                                 <Coins className="w-4 h-4 text-amber-500" />
