@@ -32,16 +32,22 @@ export default function Auth() {
       if (authLoading) return; // Aguarda o auth carregar
       
       if (user) {
+        console.log('User logged in:', user.id, user.email);
+        
         // Check if user is admin
-        const { data: roleData } = await supabase
+        const { data: roleData, error } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
           .maybeSingle();
 
+        console.log('Role data:', roleData, 'Error:', error);
+
         if (roleData?.role === 'admin') {
+          console.log('Redirecting to admin...');
           navigate('/admin', { replace: true });
         } else {
+          console.log('Redirecting to dashboard...');
           navigate('/dashboard', { replace: true });
         }
       }
