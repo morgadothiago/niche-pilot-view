@@ -289,7 +289,7 @@ export default function Landing() {
         </section>
 
         {/* CTA with Pricing Section */}
-        <section className="py-16 sm:py-24 px-4 bg-secondary/30">
+        <section id="pricing" className="py-16 sm:py-24 px-4 bg-secondary/30">
           <div className="container mx-auto">
             {/* CTA Box */}
             <motion.div
