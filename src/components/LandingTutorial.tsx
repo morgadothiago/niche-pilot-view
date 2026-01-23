@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight, ChevronLeft, Sparkles, Palette, MessageSquare, CreditCard, Zap, Pause, Play } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Sparkles, Palette, MessageSquare, CreditCard, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TutorialStep {
@@ -216,23 +216,8 @@ export function LandingTutorial() {
                     ))}
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div className="text-white/80 text-sm">
-                      Passo {currentStep + 1} de {tutorialSteps.length}
-                    </div>
-                    
-                    {/* Autoplay toggle */}
-                    <button
-                      onClick={toggleAutoplay}
-                      className="text-white/80 hover:text-white transition-colors p-1"
-                      title={isAutoPlaying ? 'Pausar' : 'Reproduzir'}
-                    >
-                      {isAutoPlaying ? (
-                        <Pause className="w-4 h-4" />
-                      ) : (
-                        <Play className="w-4 h-4" />
-                      )}
-                    </button>
+                  <div className="text-white/80 text-sm">
+                    Passo {currentStep + 1} de {tutorialSteps.length}
                   </div>
 
                   <button
