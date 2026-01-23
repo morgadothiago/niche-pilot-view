@@ -17,6 +17,8 @@ import Chat from "./pages/Chat";
 import Agents from "./pages/Agents";
 import CreateAgent from "./pages/CreateAgent";
 import Profile from "./pages/Profile";
+import ChangePlan from "./pages/ChangePlan";
+import BuyCredits from "./pages/BuyCredits";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -43,6 +45,8 @@ function AnimatedRoutes() {
         <Route path="/agents" element={<Agents />} />
         <Route path="/agents/create" element={<CreateAgent />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/change-plan" element={<ChangePlan />} />
+        <Route path="/buy-credits" element={<BuyCredits />} />
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} />

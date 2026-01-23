@@ -25,6 +25,8 @@ const routeNames: Record<string, string> = {
   '/agents/create': 'Criar Agente',
   '/profile': 'Perfil',
   '/pricing': 'Preços',
+  '/change-plan': 'Mudar Plano',
+  '/buy-credits': 'Comprar Créditos',
 };
 
 // Ações contextuais por rota
@@ -37,6 +39,8 @@ const routeActions: Record<string, { label: string; href: string; icon: React.El
   ],
   '/chat/new': [],
   '/profile': [],
+  '/change-plan': [],
+  '/buy-credits': [],
 };
 
 interface ContentHeaderProps {
