@@ -133,6 +133,15 @@ export default function BuyCredits() {
             Créditos são usados para interações com os agentes de IA
           </p>
 
+          {/* Payment Disabled Notice */}
+          <Card className="mb-6 border-amber-500/50 bg-amber-500/10">
+            <CardContent className="py-4">
+              <p className="text-sm text-amber-600 dark:text-amber-400 text-center font-medium">
+                🚧 Sistema de pagamento em manutenção. Em breve você poderá comprar créditos!
+              </p>
+            </CardContent>
+          </Card>
+
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {creditPackages.map((pkg) => {
               const Icon = pkg.icon;
@@ -141,7 +150,7 @@ export default function BuyCredits() {
                 <Card
                   key={pkg.id}
                   className={cn(
-                    "relative transition-all duration-200 hover:shadow-lg hover:-translate-y-1",
+                    "relative transition-all duration-200 opacity-60",
                     pkg.popular && "border-primary shadow-md"
                   )}
                 >
@@ -180,9 +189,9 @@ export default function BuyCredits() {
                     <Button
                       className="w-full"
                       variant={pkg.popular ? "default" : "outline"}
-                      onClick={() => handleSelectPackage(pkg)}
+                      disabled
                     >
-                      Comprar
+                      Em breve
                     </Button>
                   </CardContent>
                 </Card>

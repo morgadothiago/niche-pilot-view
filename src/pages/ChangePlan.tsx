@@ -184,7 +184,16 @@ export default function ChangePlan() {
             </CardContent>
           </Card>
 
-          <h2 className="text-2xl font-bold mb-6">Escolha seu plano</h2>
+          <h2 className="text-2xl font-bold mb-2">Escolha seu plano</h2>
+
+          {/* Payment Disabled Notice */}
+          <Card className="mb-6 border-amber-500/50 bg-amber-500/10">
+            <CardContent className="py-4">
+              <p className="text-sm text-amber-600 dark:text-amber-400 text-center font-medium">
+                🚧 Sistema de pagamento em manutenção. Em breve você poderá alterar seu plano!
+              </p>
+            </CardContent>
+          </Card>
 
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => {
@@ -195,9 +204,10 @@ export default function ChangePlan() {
                 <Card
                   key={plan.id}
                   className={cn(
-                    "relative transition-all duration-200 hover:shadow-lg hover:-translate-y-1",
+                    "relative transition-all duration-200",
                     plan.popular && "border-primary shadow-md",
-                    isCurrentPlan && "ring-2 ring-primary"
+                    isCurrentPlan && "ring-2 ring-primary",
+                    !isCurrentPlan && "opacity-60"
                   )}
                 >
                   {plan.popular && (
@@ -241,8 +251,7 @@ export default function ChangePlan() {
                     <Button
                       className="w-full"
                       variant={isCurrentPlan ? "secondary" : plan.popular ? "default" : "outline"}
-                      disabled={isCurrentPlan}
-                      onClick={() => handleSelectPlan(plan)}
+                      disabled
                     >
                       {isCurrentPlan ? (
                         <>
@@ -250,7 +259,7 @@ export default function ChangePlan() {
                           Plano atual
                         </>
                       ) : (
-                        'Selecionar'
+                        'Em breve'
                       )}
                     </Button>
                   </CardContent>
