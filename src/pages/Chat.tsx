@@ -70,7 +70,7 @@ export default function Chat() {
   return (
     <PageTransition>
       <DashboardLayout>
-        <div className="h-[calc(100vh-theme(spacing.14))] lg:h-[calc(100vh-theme(spacing.20))] flex">
+        <div className="h-[calc(100vh-3.5rem-4.5rem)] lg:h-[calc(100vh-4.5rem)] flex overflow-hidden">
           {/* Agents Sidebar */}
           <div className="w-80 border-r border-border bg-card hidden lg:flex flex-col">
             <div className="p-4 border-b border-border flex items-center justify-between">
