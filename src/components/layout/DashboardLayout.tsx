@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DashboardSidebar } from './DashboardSidebar';
 import { ContentHeader } from './ContentHeader';
 import { Button } from '@/components/ui/button';
-import { Menu, X, ChevronLeft, ChevronRight, Bot } from 'lucide-react';
+import { Menu, X, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 interface DashboardLayoutProps {
@@ -15,30 +15,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
-      {/* Header - Always visible */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-sidebar border-b border-sidebar-border h-14 flex items-center px-4">
-        {/* Desktop toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-        </Button>
-
+      {/* Mobile Header */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-sidebar border-b border-sidebar-border h-14 flex items-center px-4">
         {/* Mobile toggle */}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden text-sidebar-foreground hover:bg-sidebar-accent"
+          className="text-sidebar-foreground hover:bg-sidebar-accent"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </Button>
 
-        {/* Logo - visible on mobile */}
-        <Link to="/dashboard" className="lg:hidden flex items-center gap-2 ml-3">
+        {/* Logo */}
+        <Link to="/dashboard" className="flex items-center gap-2 ml-3">
           <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
             <Bot className="w-4 h-4 text-primary-foreground" />
           </div>
@@ -56,7 +46,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       {/* Sidebar - Desktop: always visible, Mobile: overlay drawer */}
       <div className={`
-        fixed lg:static z-50 lg:z-auto h-full pt-14
+        fixed lg:static z-50 lg:z-auto h-full pt-14 lg:pt-0
         transition-transform duration-300 ease-in-out
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
@@ -67,8 +57,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14 flex flex-col">
-        <ContentHeader />
+      <main className="flex-1 bg-background overflow-y-auto overflow-x-hidden pt-14 lg:pt-0 flex flex-col">
+        <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
         <div className="flex-1">
           {children}
         </div>
