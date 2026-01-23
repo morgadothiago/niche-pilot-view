@@ -1,42 +1,50 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   MessageSquare, 
   Bot, 
-  Users, 
+  User,
   LogOut,
-  Crown
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Novo Chat', href: '/chat/new', icon: MessageSquare },
+  { label: 'Chat', href: '/chat/new', icon: MessageSquare },
   { label: 'Agentes', href: '/agents', icon: Bot },
-  { label: 'Perfil', href: '/profile', icon: Users },
+  { label: 'Perfil', href: '/profile', icon: User },
 ];
+
+const userPlan = {
+  name: 'Pro',
+  color: 'bg-primary'
+};
 
 interface DashboardSidebarProps {
   onNavigate?: () => void;
   collapsed?: boolean;
 }
 
-// Mock user plan - in production this would come from database/Stripe
-const userPlan = {
-  name: 'Pro',
-  color: 'bg-primary',
-};
-
 export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
 
   const handleNavClick = () => {
     onNavigate?.();
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
+
   const NavItem = ({ item }: { item: typeof navItems[0] }) => {
-    const isActive = location.pathname === item.href;
+    const isActive = location.pathname === item.href || 
+      (item.href === '/chat/new' && location.pathname.startsWith('/chat'));
     const content = (
       <Link
         to={item.href}
@@ -45,7 +53,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
           "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
           collapsed && "justify-center px-2",
           isActive
-            ? "bg-sidebar-primary text-sidebar-primary-foreground"
+            ? "bg-primary text-primary-foreground"
             : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
         )}
       >
@@ -76,13 +84,18 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
         "h-full bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
         collapsed ? "w-16" : "w-64"
       )}>
-        {/* Logo - Desktop only */}
+        {/* Logo */}
         <div className={cn("p-4 border-b border-sidebar-border hidden lg:block", collapsed && "p-3")}>
           <Link to="/dashboard" className="flex items-center gap-2" onClick={handleNavClick}>
             <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
               <Bot className="w-5 h-5 text-primary-foreground" />
             </div>
-            {!collapsed && <span className="font-bold text-lg">AgentChat</span>}
+            {!collapsed && (
+              <div className="flex flex-col">
+                <span className="font-bold text-lg">AgentChat</span>
+                <span className="text-xs text-sidebar-foreground/60">AI Assistant</span>
+              </div>
+            )}
           </Link>
         </div>
 
@@ -93,55 +106,50 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
           ))}
         </nav>
 
-        {/* User Plan */}
-        <div className={cn("px-3 pb-2", collapsed && "px-2")}>
+        {/* User Plan Display */}
+        <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center justify-center p-2 rounded-lg bg-sidebar-accent">
-                  <Crown className="w-5 h-5 text-primary" />
+                <div className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70">
+                  <Sparkles className="w-5 h-5 flex-shrink-0" />
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right">Plano {userPlan.name}</TooltipContent>
             </Tooltip>
           ) : (
-            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent">
-              <Crown className="w-5 h-5 text-primary flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-sidebar-foreground/70">Seu plano</p>
-                <p className="font-semibold text-sm">{userPlan.name}</p>
-              </div>
-              <span className={cn("px-2 py-0.5 rounded text-xs font-medium", userPlan.color, "text-primary-foreground")}>
-                Ativo
+            <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70">
+              <Sparkles className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">Plano</span>
+              <span className={cn("ml-auto px-2 py-0.5 rounded text-xs font-medium text-primary-foreground", userPlan.color)}>
+                {userPlan.name}
               </span>
             </div>
           )}
         </div>
 
-        {/* Bottom section */}
+        {/* Sign Out */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
           {collapsed ? (
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link
-                  to="/login"
-                  onClick={handleNavClick}
-                  className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
                 >
                   <LogOut className="w-5 h-5 flex-shrink-0" />
-                </Link>
+                </button>
               </TooltipTrigger>
               <TooltipContent side="right">Sair</TooltipContent>
             </Tooltip>
           ) : (
-            <Link
-              to="/login"
-              onClick={handleNavClick}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
             >
               <LogOut className="w-5 h-5 flex-shrink-0" />
               <span className="font-medium">Sair</span>
-            </Link>
+            </button>
           )}
         </div>
       </aside>
