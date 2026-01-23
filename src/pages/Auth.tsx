@@ -23,12 +23,14 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   // Check if user is already logged in and redirect based on role
   useEffect(() => {
     async function checkUserAndRedirect() {
+      if (authLoading) return; // Aguarda o auth carregar
+      
       if (user) {
         // Check if user is admin
         const { data: roleData } = await supabase
@@ -38,14 +40,14 @@ export default function Auth() {
           .maybeSingle();
 
         if (roleData?.role === 'admin') {
-          navigate('/admin');
+          navigate('/admin', { replace: true });
         } else {
-          navigate('/dashboard');
+          navigate('/dashboard', { replace: true });
         }
       }
     }
     checkUserAndRedirect();
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
   const validateForm = () => {
     try {
