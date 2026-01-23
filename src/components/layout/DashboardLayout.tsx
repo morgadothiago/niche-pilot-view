@@ -4,6 +4,7 @@ import { ContentHeader } from './ContentHeader';
 import { Button } from '@/components/ui/button';
 import { Menu, X, Bot } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -62,7 +63,10 @@ export function DashboardLayout({ children, hideContentHeader = false }: Dashboa
         {!hideContentHeader && (
           <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
         )}
-        <div className="flex-1 overflow-hidden">
+        <div className={cn(
+          "flex-1",
+          hideContentHeader ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"
+        )}>
           {children}
         </div>
       </main>
