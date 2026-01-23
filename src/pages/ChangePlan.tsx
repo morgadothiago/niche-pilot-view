@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Loader2, Check, Sparkles, Zap, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PaymentModal } from '@/components/payment/PaymentModal';
+import { PlanChangeAnimation } from '@/components/payment/PlanChangeAnimation';
 
 const plans = [
   {
@@ -62,7 +64,10 @@ export default function ChangePlan() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { subscription, loading: subLoading, refetch } = useSubscription();
-  const [changingPlan, setChangingPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animationPlans, setAnimationPlans] = useState({ from: 'free', to: 'pro' });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -70,31 +75,70 @@ export default function ChangePlan() {
     }
   }, [user, authLoading, navigate]);
 
-  const handleChangePlan = async (planId: string) => {
-    if (!user || planId === subscription?.plan) return;
+  const handleSelectPlan = (plan: typeof plans[0]) => {
+    if (!user || plan.id === subscription?.plan) return;
 
-    if (planId === 'custom') {
+    if (plan.id === 'custom') {
       toast.info('Entre em contato para planos Enterprise');
       return;
     }
 
-    setChangingPlan(planId);
+    // Free plan doesn't need payment
+    if (plan.id === 'free') {
+      handleDowngrade();
+      return;
+    }
+
+    setSelectedPlan(plan);
+    setShowPayment(true);
+  };
+
+  const handleDowngrade = async () => {
+    if (!user) return;
 
     try {
       const { error } = await supabase
         .from('subscriptions')
-        .update({ plan: planId as 'free' | 'pro' | 'custom' })
+        .update({ plan: 'free' })
         .eq('user_id', user.id);
 
       if (error) throw error;
 
-      toast.success(`Plano alterado para ${plans.find(p => p.id === planId)?.name}!`);
-      refetch();
+      setAnimationPlans({ from: subscription?.plan || 'pro', to: 'free' });
+      setShowAnimation(true);
+      
+      setTimeout(() => {
+        setShowAnimation(false);
+        refetch();
+        toast.success('Plano alterado para Free');
+      }, 2000);
+    } catch (error) {
+      console.error('Error downgrading plan:', error);
+      toast.error('Erro ao alterar plano');
+    }
+  };
+
+  const handlePaymentSuccess = async () => {
+    if (!user || !selectedPlan) return;
+
+    try {
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({ plan: selectedPlan.id as 'free' | 'pro' | 'custom' })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setAnimationPlans({ from: subscription?.plan || 'free', to: selectedPlan.id });
+      setShowAnimation(true);
+      
+      setTimeout(() => {
+        setShowAnimation(false);
+        refetch();
+      }, 2000);
     } catch (error) {
       console.error('Error changing plan:', error);
       toast.error('Erro ao alterar plano');
-    } finally {
-      setChangingPlan(null);
     }
   };
 
@@ -151,7 +195,7 @@ export default function ChangePlan() {
                 <Card
                   key={plan.id}
                   className={cn(
-                    "relative transition-all duration-200 hover:shadow-lg",
+                    "relative transition-all duration-200 hover:shadow-lg hover:-translate-y-1",
                     plan.popular && "border-primary shadow-md",
                     isCurrentPlan && "ring-2 ring-primary"
                   )}
@@ -197,15 +241,17 @@ export default function ChangePlan() {
                     <Button
                       className="w-full"
                       variant={isCurrentPlan ? "secondary" : plan.popular ? "default" : "outline"}
-                      disabled={isCurrentPlan || changingPlan !== null}
-                      onClick={() => handleChangePlan(plan.id)}
+                      disabled={isCurrentPlan}
+                      onClick={() => handleSelectPlan(plan)}
                     >
-                      {changingPlan === plan.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      ) : isCurrentPlan ? (
-                        <Check className="w-4 h-4 mr-2" />
-                      ) : null}
-                      {isCurrentPlan ? 'Plano atual' : 'Selecionar'}
+                      {isCurrentPlan ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          Plano atual
+                        </>
+                      ) : (
+                        'Selecionar'
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
@@ -214,6 +260,27 @@ export default function ChangePlan() {
           </div>
         </div>
       </PageTransition>
+
+      {/* Payment Modal */}
+      {selectedPlan && (
+        <PaymentModal
+          open={showPayment}
+          onOpenChange={setShowPayment}
+          title="Assinar plano"
+          description={`Você está assinando o plano ${selectedPlan.name}`}
+          amount={selectedPlan.price || 0}
+          itemName={`Plano ${selectedPlan.name} (mensal)`}
+          isRecurring={true}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
+
+      {/* Plan Change Animation */}
+      <PlanChangeAnimation
+        fromPlan={animationPlans.from}
+        toPlan={animationPlans.to}
+        isVisible={showAnimation}
+      />
     </DashboardLayout>
   );
 }

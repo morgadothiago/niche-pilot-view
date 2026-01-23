@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Loader2, Coins, Zap, Star, Gem } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { PaymentModal } from '@/components/payment/PaymentModal';
 
 const creditPackages = [
   {
@@ -55,7 +56,8 @@ export default function BuyCredits() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { subscription, loading: subLoading, refetch } = useSubscription();
-  const [buyingPackage, setBuyingPackage] = useState<string | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<typeof creditPackages[0] | null>(null);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -63,16 +65,16 @@ export default function BuyCredits() {
     }
   }, [user, authLoading, navigate]);
 
-  const handleBuyCredits = async (packageId: string) => {
-    if (!user || !subscription) return;
+  const handleSelectPackage = (pkg: typeof creditPackages[0]) => {
+    setSelectedPackage(pkg);
+    setShowPayment(true);
+  };
 
-    const pkg = creditPackages.find(p => p.id === packageId);
-    if (!pkg) return;
-
-    setBuyingPackage(packageId);
+  const handlePaymentSuccess = async () => {
+    if (!user || !subscription || !selectedPackage) return;
 
     try {
-      const totalCredits = pkg.credits + (pkg.bonus || 0);
+      const totalCredits = selectedPackage.credits + (selectedPackage.bonus || 0);
       const newCredits = (subscription.credits || 0) + totalCredits;
 
       const { error } = await supabase
@@ -87,8 +89,6 @@ export default function BuyCredits() {
     } catch (error) {
       console.error('Error buying credits:', error);
       toast.error('Erro ao comprar créditos');
-    } finally {
-      setBuyingPackage(null);
     }
   };
 
@@ -180,17 +180,9 @@ export default function BuyCredits() {
                     <Button
                       className="w-full"
                       variant={pkg.popular ? "default" : "outline"}
-                      disabled={buyingPackage !== null}
-                      onClick={() => handleBuyCredits(pkg.id)}
+                      onClick={() => handleSelectPackage(pkg)}
                     >
-                      {buyingPackage === pkg.id ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                          Processando...
-                        </>
-                      ) : (
-                        'Comprar'
-                      )}
+                      Comprar
                     </Button>
                   </CardContent>
                 </Card>
@@ -208,6 +200,20 @@ export default function BuyCredits() {
           </Card>
         </div>
       </PageTransition>
+
+      {/* Payment Modal */}
+      {selectedPackage && (
+        <PaymentModal
+          open={showPayment}
+          onOpenChange={setShowPayment}
+          title="Comprar créditos"
+          description={`Você está comprando ${selectedPackage.credits + (selectedPackage.bonus || 0)} créditos`}
+          amount={selectedPackage.price}
+          itemName={`Pacote ${selectedPackage.name} (${selectedPackage.credits}${selectedPackage.bonus ? ` +${selectedPackage.bonus} bônus` : ''} créditos)`}
+          isRecurring={false}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </DashboardLayout>
   );
 }
