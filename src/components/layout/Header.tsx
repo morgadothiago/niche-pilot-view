@@ -50,9 +50,14 @@ export function Header() {
                 )}
               >
                 {link.label}
-                {isLandingPage && isActive(link.href) && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-                )}
+                <span 
+                  className={cn(
+                    "absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transition-all duration-300 ease-out",
+                    isLandingPage && isActive(link.href) 
+                      ? "opacity-100 scale-x-100" 
+                      : "opacity-0 scale-x-0"
+                  )} 
+                />
               </a>
             ))}
           </nav>
