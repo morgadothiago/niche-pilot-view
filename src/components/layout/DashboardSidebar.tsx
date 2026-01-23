@@ -47,8 +47,8 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   };
 
   const handleSignOut = async () => {
+    navigate('/login', { replace: true });
     await signOut();
-    navigate('/login');
   };
 
   const NavItem = ({ item }: { item: typeof navItems[0] }) => {
