@@ -48,7 +48,7 @@ export function Footer() {
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Sobre</a></li>
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Blog</a></li>
               <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Carreiras</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Contato</a></li>
+              <li><Link to="/contact" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Contato</Link></li>
             </ul>
           </div>
 
