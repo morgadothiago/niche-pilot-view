@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ChevronDown, Plus, MoreVertical } from 'lucide-react';
+import { Send, ChevronDown, Plus, MoreVertical, Trash2, Edit, Share, Pin, Archive } from 'lucide-react';
 import { chats, messages, agents } from '@/data/mockData';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/components/PageTransition';
@@ -12,7 +12,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 export default function Chat() {
   const { chatId } = useParams();
@@ -24,10 +26,14 @@ export default function Chat() {
     ? agents.find((a) => a.id === currentChat.agentId)
     : selectedAgent;
 
+  const handleOptionClick = (action: string) => {
+    toast.success(`Ação "${action}" executada`);
+  };
+
   return (
     <PageTransition>
       <DashboardLayout>
-        <div className="h-screen flex">
+        <div className="h-[calc(100vh-theme(spacing.14))] lg:h-screen flex">
           {/* Chat List Sidebar */}
           <div className="w-80 border-r border-border bg-card hidden lg:flex flex-col">
             <div className="p-4 border-b border-border flex items-center justify-between">
@@ -105,62 +111,100 @@ export default function Chat() {
                   <p className="text-xs text-muted-foreground">{currentAgent?.niche}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="w-4 h-4" />
-              </Button>
+
+              {/* Options Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-popover">
+                  <DropdownMenuItem onClick={() => handleOptionClick('Fixar conversa')} className="gap-2">
+                    <Pin className="w-4 h-4" />
+                    Fixar conversa
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleOptionClick('Renomear')} className="gap-2">
+                    <Edit className="w-4 h-4" />
+                    Renomear
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleOptionClick('Compartilhar')} className="gap-2">
+                    <Share className="w-4 h-4" />
+                    Compartilhar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleOptionClick('Arquivar')} className="gap-2">
+                    <Archive className="w-4 h-4" />
+                    Arquivar
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={() => handleOptionClick('Excluir conversa')} 
+                    className="gap-2 text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Excluir conversa
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-auto p-6 space-y-4 bg-secondary/20">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={cn(
-                    "flex",
-                    msg.sender === 'user' ? 'justify-end' : 'justify-start'
-                  )}
-                >
+            <div className="flex-1 overflow-auto p-4 space-y-4">
+              {chatId && messages[chatId] ? (
+                messages[chatId].map((msg) => (
                   <div
+                    key={msg.id}
                     className={cn(
-                      "max-w-[70%] rounded-2xl px-4 py-3",
-                      msg.sender === 'user'
-                        ? 'bg-chat-user text-chat-user-foreground rounded-br-md'
-                        : 'bg-chat-agent text-chat-agent-foreground rounded-bl-md shadow-soft'
+                      "flex",
+                      msg.role === 'user' ? 'justify-end' : 'justify-start'
                     )}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    <p
+                    <div
                       className={cn(
-                        "text-xs mt-1",
-                        msg.sender === 'user' ? 'text-chat-user-foreground/70' : 'text-muted-foreground'
+                        "max-w-[80%] md:max-w-[70%] rounded-2xl px-4 py-3",
+                        msg.role === 'user'
+                          ? 'bg-chat-user text-chat-user-foreground'
+                          : 'bg-chat-agent text-chat-agent-foreground'
                       )}
                     >
-                      {msg.timestamp}
+                      <p className="text-sm">{msg.content}</p>
+                      <span className="text-xs opacity-70 mt-1 block">
+                        {msg.timestamp}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="flex-1 flex items-center justify-center h-full">
+                  <div className="text-center max-w-md">
+                    <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center text-3xl mx-auto mb-4">
+                      {currentAgent?.avatar || '🤖'}
+                    </div>
+                    <h3 className="font-semibold text-lg mb-2">
+                      Comece uma conversa com {currentAgent?.name}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {currentAgent?.description}
                     </p>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* Input Area */}
+            {/* Input */}
             <div className="p-4 border-t border-border bg-card">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setMessage('');
-                }}
-                className="flex items-center gap-3"
-              >
+              <div className="flex gap-2">
                 <Input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Digite sua mensagem..."
-                  className="flex-1 h-12"
+                  className="flex-1"
+                  onKeyPress={(e) => e.key === 'Enter' && message.trim() && setMessage('')}
                 />
-                <Button type="submit" variant="hero" size="icon" className="h-12 w-12">
-                  <Send className="w-5 h-5" />
+                <Button size="icon" disabled={!message.trim()}>
+                  <Send className="w-4 h-4" />
                 </Button>
-              </form>
+              </div>
             </div>
           </div>
         </div>
