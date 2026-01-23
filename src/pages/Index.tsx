@@ -1,7 +1,12 @@
+import { PageTransition } from '@/components/PageTransition';
 import Landing from './Landing';
 
 const Index = () => {
-  return <Landing />;
+  return (
+    <PageTransition>
+      <Landing />
+    </PageTransition>
+  );
 };
 
 export default Index;
