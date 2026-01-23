@@ -83,26 +83,7 @@ export default function Auth() {
           }
         } else {
           toast.success('Login realizado com sucesso!');
-          
-          // Get the user after login to check role
-          const { data: { user: loggedUser } } = await supabase.auth.getUser();
-          
-          if (loggedUser) {
-            // Check if user is admin
-            const { data: roleData } = await supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', loggedUser.id)
-              .maybeSingle();
-
-            if (roleData?.role === 'admin') {
-              navigate('/admin');
-            } else {
-              navigate('/dashboard');
-            }
-          } else {
-            navigate('/dashboard');
-          }
+          // O useEffect vai lidar com o redirecionamento quando o user state mudar
         }
       } else {
         const { error } = await signUp(email, password);
@@ -114,7 +95,7 @@ export default function Auth() {
           }
         } else {
           toast.success('Conta criada com sucesso!');
-          navigate('/dashboard');
+          // O useEffect vai lidar com o redirecionamento quando o user state mudar
         }
       }
     } finally {
