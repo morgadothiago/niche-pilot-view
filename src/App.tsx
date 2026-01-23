@@ -13,6 +13,7 @@ import Chat from "./pages/Chat";
 import Agents from "./pages/Agents";
 import CreateAgent from "./pages/CreateAgent";
 import Profile from "./pages/Profile";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/pricing" element={<Pricing />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chat/:chatId" element={<Chat />} />
         <Route path="/chat/new" element={<Chat />} />

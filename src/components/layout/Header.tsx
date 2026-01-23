@@ -28,9 +28,9 @@ export function Header() {
             <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
               Como funciona
             </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Preços
-            </a>
+            </Link>
           </nav>
 
           {/* Desktop Auth Buttons */}
