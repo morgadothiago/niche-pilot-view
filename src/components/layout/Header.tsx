@@ -1,12 +1,28 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Bot, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { PaletteSelector } from '@/components/PaletteSelector';
+import { useActiveSection } from '@/hooks/useActiveSection';
+import { cn } from '@/lib/utils';
+
+const navLinks = [
+  { href: '#features', label: 'Recursos' },
+  { href: '#how-it-works', label: 'Como funciona' },
+  { href: '#pricing', label: 'Preços' },
+];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
+  const activeSection = useActiveSection(['features', 'how-it-works', 'pricing']);
+
+  const isActive = (href: string) => {
+    const sectionId = href.replace('#', '');
+    return activeSection === sectionId;
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
@@ -22,15 +38,23 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-              Recursos
-            </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              Como funciona
-            </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-              Preços
-            </a>
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "transition-colors relative py-1",
+                  isLandingPage && isActive(link.href)
+                    ? "text-primary font-medium"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {link.label}
+                {isLandingPage && isActive(link.href) && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                )}
+              </a>
+            ))}
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -58,15 +82,21 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-border animate-fade-in">
             <nav className="flex flex-col gap-4">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors py-2">
-                Recursos
-              </a>
-              <a href="#how-it-works" className="text-muted-foreground hover:text-foreground transition-colors py-2">
-                Como funciona
-              </a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors py-2" onClick={() => setMobileMenuOpen(false)}>
-                Preços
-              </a>
+              {navLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={cn(
+                    "transition-colors py-2",
+                    isLandingPage && isActive(link.href)
+                      ? "text-primary font-medium"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {link.label}
+                </a>
+              ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border">
                 <Button variant="outline" asChild className="w-full">
                   <Link to="/login">Entrar</Link>
