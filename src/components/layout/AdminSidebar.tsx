@@ -35,8 +35,8 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
   };
 
   const handleSignOut = async () => {
+    navigate('/login', { replace: true });
     await signOut();
-    navigate('/login');
   };
 
   const NavItem = ({ item }: { item: typeof navItems[0] }) => {
