@@ -4,24 +4,33 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { PageTransition } from '@/components/PageTransition';
-import { Loader2, Shield, User, UserCog } from 'lucide-react';
+import { Loader2, Shield, User, UserCog, Sparkles, Zap, Crown, Coins } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
-interface UserWithRole {
+interface UserWithDetails {
   id: string;
   user_id: string;
   full_name: string | null;
   avatar_url: string | null;
   created_at: string;
   role: string | null;
+  plan: string | null;
+  status: string | null;
+  credits: number | null;
 }
 
+const planConfig: Record<string, { name: string; icon: React.ElementType; color: string }> = {
+  free: { name: 'Free', icon: Sparkles, color: 'bg-muted text-muted-foreground' },
+  pro: { name: 'Pro', icon: Zap, color: 'bg-primary text-primary-foreground' },
+  custom: { name: 'Enterprise', icon: Crown, color: 'bg-amber-500 text-white' },
+};
+
 export default function AdminUsers() {
-  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [users, setUsers] = useState<UserWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
 
@@ -39,23 +48,33 @@ export default function AdminUsers() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch roles for each user
-      const usersWithRoles = await Promise.all(
+      // Fetch roles and subscriptions for each user
+      const usersWithDetails = await Promise.all(
         (profiles || []).map(async (profile) => {
-          const { data: roleData } = await supabase
-            .from('user_roles')
-            .select('role')
-            .eq('user_id', profile.user_id)
-            .maybeSingle();
+          const [roleResult, subscriptionResult] = await Promise.all([
+            supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', profile.user_id)
+              .maybeSingle(),
+            supabase
+              .from('subscriptions')
+              .select('plan, status, credits')
+              .eq('user_id', profile.user_id)
+              .maybeSingle(),
+          ]);
 
           return {
             ...profile,
-            role: roleData?.role || null,
+            role: roleResult.data?.role || null,
+            plan: subscriptionResult.data?.plan || null,
+            status: subscriptionResult.data?.status || null,
+            credits: subscriptionResult.data?.credits || null,
           };
         })
       );
 
-      setUsers(usersWithRoles);
+      setUsers(usersWithDetails);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Erro ao carregar usuários');
@@ -68,7 +87,6 @@ export default function AdminUsers() {
     setUpdating(userId);
     try {
       if (newRole === 'none') {
-        // Remove role
         const { error } = await supabase
           .from('user_roles')
           .delete()
@@ -76,7 +94,6 @@ export default function AdminUsers() {
 
         if (error) throw error;
       } else {
-        // Check if role exists
         const { data: existing } = await supabase
           .from('user_roles')
           .select('id')
@@ -86,7 +103,6 @@ export default function AdminUsers() {
         const roleValue = newRole as 'admin' | 'moderator' | 'user';
 
         if (existing) {
-          // Update existing
           const { error } = await supabase
             .from('user_roles')
             .update({ role: roleValue })
@@ -94,7 +110,6 @@ export default function AdminUsers() {
 
           if (error) throw error;
         } else {
-          // Insert new
           const { error } = await supabase
             .from('user_roles')
             .insert({ user_id: userId, role: roleValue });
@@ -124,6 +139,27 @@ export default function AdminUsers() {
     }
   };
 
+  const getPlanBadge = (plan: string | null) => {
+    const config = planConfig[plan || 'free'];
+    const Icon = config.icon;
+    return (
+      <Badge className={cn("gap-1", config.color)}>
+        <Icon className="w-3 h-3" />
+        {config.name}
+      </Badge>
+    );
+  };
+
+  const getStatusBadge = (status: string | null) => {
+    if (status === 'active') {
+      return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">Ativo</Badge>;
+    }
+    if (status === 'inactive') {
+      return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">Inativo</Badge>;
+    }
+    return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">Pendente</Badge>;
+  };
+
   return (
     <AdminGuard>
       <PageTransition>
@@ -132,7 +168,7 @@ export default function AdminUsers() {
             <CardHeader>
               <CardTitle>Gerenciar Usuários</CardTitle>
               <CardDescription>
-                Visualize e gerencie os usuários do sistema
+                Visualize e gerencie os usuários do sistema ({users.length} usuários)
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -141,65 +177,78 @@ export default function AdminUsers() {
                   <Loader2 className="w-6 h-6 animate-spin" />
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuário</TableHead>
-                      <TableHead>Role Atual</TableHead>
-                      <TableHead>Criado em</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.length === 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
                       <TableRow>
-                        <TableCell colSpan={4} className="text-center text-muted-foreground">
-                          Nenhum usuário encontrado
-                        </TableCell>
+                        <TableHead>Usuário</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Plano</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Créditos</TableHead>
+                        <TableHead>Criado em</TableHead>
+                        <TableHead>Alterar Role</TableHead>
                       </TableRow>
-                    ) : (
-                      users.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                {user.avatar_url ? (
-                                  <img src={user.avatar_url} alt="" className="w-10 h-10 rounded-full" />
-                                ) : (
-                                  <User className="w-5 h-5 text-primary" />
-                                )}
-                              </div>
-                              <div>
-                                <p className="font-medium">{user.full_name || 'Sem nome'}</p>
-                                <p className="text-sm text-muted-foreground">{user.user_id.slice(0, 8)}...</p>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{getRoleBadge(user.role)}</TableCell>
-                          <TableCell>
-                            {new Date(user.created_at).toLocaleDateString('pt-BR')}
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              value={user.role || 'none'}
-                              onValueChange={(value) => updateUserRole(user.user_id, value)}
-                              disabled={updating === user.user_id}
-                            >
-                              <SelectTrigger className="w-[140px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="none">Usuário</SelectItem>
-                                <SelectItem value="moderator">Moderador</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
-                              </SelectContent>
-                            </Select>
+                    </TableHeader>
+                    <TableBody>
+                      {users.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center text-muted-foreground">
+                            Nenhum usuário encontrado
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                      ) : (
+                        users.map((user) => (
+                          <TableRow key={user.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                  {user.avatar_url ? (
+                                    <img src={user.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+                                  ) : (
+                                    <User className="w-5 h-5 text-primary" />
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="font-medium truncate">{user.full_name || 'Sem nome'}</p>
+                                  <p className="text-xs text-muted-foreground font-mono">{user.user_id.slice(0, 8)}...</p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>{getRoleBadge(user.role)}</TableCell>
+                            <TableCell>{getPlanBadge(user.plan)}</TableCell>
+                            <TableCell>{getStatusBadge(user.status)}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1.5">
+                                <Coins className="w-4 h-4 text-amber-500" />
+                                <span className="font-medium">{user.credits?.toLocaleString() || 0}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={user.role || 'none'}
+                                onValueChange={(value) => updateUserRole(user.user_id, value)}
+                                disabled={updating === user.user_id}
+                              >
+                                <SelectTrigger className="w-[130px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="none">Usuário</SelectItem>
+                                  <SelectItem value="moderator">Moderador</SelectItem>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>
