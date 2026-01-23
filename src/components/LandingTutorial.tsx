@@ -152,27 +152,38 @@ export function LandingTutorial() {
                 </div>
 
                 {/* Icon badge */}
-                <div className="relative -mt-8 flex justify-center">
-                  <motion.div
-                    key={step.id}
-                    initial={{ scale: 0, rotate: -180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', duration: 0.5 }}
-                    className="w-16 h-16 rounded-2xl bg-card border-4 border-card shadow-lg flex items-center justify-center text-primary"
-                  >
-                    {step.icon}
-                  </motion.div>
-                </div>
-
-                {/* Content */}
-                <div className="p-6 pt-4 text-center">
+                <div className="relative -mt-8 flex justify-center overflow-hidden">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={step.id}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
+                      initial={{ scale: 0.5, opacity: 0, y: 20 }}
+                      animate={{ scale: 1, opacity: 1, y: 0 }}
+                      exit={{ scale: 0.5, opacity: 0, y: -20 }}
+                      transition={{ 
+                        type: 'spring', 
+                        stiffness: 300, 
+                        damping: 20,
+                        duration: 0.4 
+                      }}
+                      className="w-16 h-16 rounded-2xl bg-card border-4 border-card shadow-lg flex items-center justify-center text-primary"
+                    >
+                      {step.icon}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+
+                {/* Content */}
+                <div className="p-6 pt-4 text-center overflow-hidden">
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={step.id}
+                      initial={{ opacity: 0, x: 40, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, x: -40, filter: 'blur(4px)' }}
+                      transition={{ 
+                        duration: 0.35,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                      }}
                     >
                       <h3 className="text-xl font-bold mb-2">{step.title}</h3>
                       <p className="text-muted-foreground">{step.description}</p>
