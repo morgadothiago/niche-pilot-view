@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight, ChevronLeft, Sparkles, Palette, MessageSquare, CreditCard, Zap } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Sparkles, Palette, MessageSquare, CreditCard, Zap, Pause, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TutorialStep {
@@ -45,15 +45,67 @@ const tutorialSteps: TutorialStep[] = [
   },
 ];
 
+const AUTOPLAY_DURATION = 5000; // 5 seconds per step
+
 export function LandingTutorial() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [hasSeenTutorial, setHasSeenTutorial] = useState(false);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const progressInterval = useRef<NodeJS.Timeout | null>(null);
+  const autoplayTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const clearTimers = useCallback(() => {
+    if (progressInterval.current) {
+      clearInterval(progressInterval.current);
+      progressInterval.current = null;
+    }
+    if (autoplayTimeout.current) {
+      clearTimeout(autoplayTimeout.current);
+      autoplayTimeout.current = null;
+    }
+  }, []);
+
+  const startAutoplay = useCallback(() => {
+    if (!isAutoPlaying || !isOpen) return;
+    
+    clearTimers();
+    setProgress(0);
+    
+    const startTime = Date.now();
+    progressInterval.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / AUTOPLAY_DURATION) * 100, 100);
+      setProgress(newProgress);
+      
+      if (newProgress >= 100) {
+        clearTimers();
+      }
+    }, 50);
+
+    autoplayTimeout.current = setTimeout(() => {
+      setCurrentStep(prev => {
+        if (prev < tutorialSteps.length - 1) {
+          return prev + 1;
+        } else {
+          setIsAutoPlaying(false);
+          return prev;
+        }
+      });
+    }, AUTOPLAY_DURATION);
+  }, [isAutoPlaying, isOpen, clearTimers]);
+
+  useEffect(() => {
+    if (isOpen && isAutoPlaying) {
+      startAutoplay();
+    }
+    return clearTimers;
+  }, [currentStep, isOpen, isAutoPlaying, startAutoplay, clearTimers]);
 
   useEffect(() => {
     const seen = localStorage.getItem('landing-tutorial-seen');
     if (!seen) {
-      // Show tutorial after a short delay for first-time visitors
       const timer = setTimeout(() => setIsOpen(true), 2000);
       return () => clearTimeout(timer);
     } else {
@@ -62,12 +114,15 @@ export function LandingTutorial() {
   }, []);
 
   const handleClose = () => {
+    clearTimers();
     setIsOpen(false);
     localStorage.setItem('landing-tutorial-seen', 'true');
     setHasSeenTutorial(true);
   };
 
   const handleNext = () => {
+    clearTimers();
+    setProgress(0);
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -76,6 +131,8 @@ export function LandingTutorial() {
   };
 
   const handlePrev = () => {
+    clearTimers();
+    setProgress(0);
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
@@ -83,7 +140,18 @@ export function LandingTutorial() {
 
   const handleRestart = () => {
     setCurrentStep(0);
+    setIsAutoPlaying(true);
+    setProgress(0);
     setIsOpen(true);
+  };
+
+  const toggleAutoplay = () => {
+    if (isAutoPlaying) {
+      clearTimers();
+      setIsAutoPlaying(false);
+    } else {
+      setIsAutoPlaying(true);
+    }
   };
 
   const step = tutorialSteps[currentStep];
@@ -127,16 +195,44 @@ export function LandingTutorial() {
               <div className="bg-card rounded-2xl shadow-2xl border border-border overflow-hidden">
                 {/* Header */}
                 <div className="relative gradient-primary p-6 pb-12">
-                  {/* Step indicator */}
+                  {/* Step indicator with progress */}
                   <div className="flex gap-1.5 mb-4 pr-10">
                     {tutorialSteps.map((_, index) => (
                       <div
                         key={index}
-                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                          index <= currentStep ? 'bg-white' : 'bg-white/30'
-                        }`}
-                      />
+                        className="h-1.5 flex-1 rounded-full bg-white/30 overflow-hidden"
+                      >
+                        {index < currentStep ? (
+                          <div className="h-full w-full bg-white rounded-full" />
+                        ) : index === currentStep ? (
+                          <motion.div 
+                            className="h-full bg-white rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            transition={{ duration: 0.05, ease: 'linear' }}
+                          />
+                        ) : null}
+                      </div>
                     ))}
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-white/80 text-sm">
+                      Passo {currentStep + 1} de {tutorialSteps.length}
+                    </div>
+                    
+                    {/* Autoplay toggle */}
+                    <button
+                      onClick={toggleAutoplay}
+                      className="text-white/80 hover:text-white transition-colors p-1"
+                      title={isAutoPlaying ? 'Pausar' : 'Reproduzir'}
+                    >
+                      {isAutoPlaying ? (
+                        <Pause className="w-4 h-4" />
+                      ) : (
+                        <Play className="w-4 h-4" />
+                      )}
+                    </button>
                   </div>
 
                   <button
@@ -145,10 +241,6 @@ export function LandingTutorial() {
                   >
                     <X className="w-5 h-5" />
                   </button>
-
-                  <div className="text-white/80 text-sm">
-                    Passo {currentStep + 1} de {tutorialSteps.length}
-                  </div>
                 </div>
 
                 {/* Icon badge */}
