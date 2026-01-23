@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ChevronDown, Plus, MoreVertical, Trash2, Edit, Share, Pin, Archive, Bot } from 'lucide-react';
-import { agents } from '@/data/mockData';
+import { Send, ChevronDown, Plus, MoreVertical, Trash2, Edit, Share, Pin, Archive, Bot, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageTransition } from '@/components/PageTransition';
 import {
@@ -15,17 +14,56 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Agent {
+  id: string;
+  name: string;
+  avatar: string;
+  description: string | null;
+}
 
 export default function Chat() {
-  const { chatId } = useParams();
+  const { user } = useAuth();
   const [message, setMessage] = useState('');
-  const [selectedAgent, setSelectedAgent] = useState<typeof agents[0] | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch agents from database
+  useEffect(() => {
+    async function fetchAgents() {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setAgents(data || []);
+      } catch (error) {
+        console.error('Error fetching agents:', error);
+        toast.error('Erro ao carregar agentes');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchAgents();
+  }, [user]);
 
   const handleOptionClick = (action: string) => {
     toast.success(`Ação "${action}" executada`);
   };
 
-  const handleSelectAgent = (agent: typeof agents[0]) => {
+  const handleSelectAgent = (agent: Agent) => {
     setSelectedAgent(agent);
   };
 
@@ -44,7 +82,11 @@ export default function Chat() {
               </Button>
             </div>
             <div className="flex-1 overflow-auto">
-              {agents.length > 0 ? (
+              {loading ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : agents.length > 0 ? (
                 agents.map((agent) => {
                   const isActive = selectedAgent?.id === agent.id;
                   return (
@@ -61,9 +103,11 @@ export default function Chat() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="font-medium text-sm block truncate">{agent.name}</span>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {agent.niche}
-                        </p>
+                        {agent.description && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {agent.description}
+                          </p>
+                        )}
                       </div>
                     </button>
                   );
@@ -106,13 +150,21 @@ export default function Chat() {
                               <span className="text-xl">{agent.avatar}</span>
                               <div>
                                 <div className="font-medium">{agent.name}</div>
-                                <div className="text-xs text-muted-foreground">{agent.niche}</div>
+                                {agent.description && (
+                                  <div className="text-xs text-muted-foreground truncate max-w-[180px]">
+                                    {agent.description}
+                                  </div>
+                                )}
                               </div>
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <p className="text-xs text-muted-foreground">{selectedAgent.niche}</p>
+                      {selectedAgent.description && (
+                        <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                          {selectedAgent.description}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -162,9 +214,11 @@ export default function Chat() {
                       <h3 className="font-semibold text-lg mb-2">
                         Comece uma conversa com {selectedAgent.name}
                       </h3>
-                      <p className="text-muted-foreground text-sm">
-                        {selectedAgent.description}
-                      </p>
+                      {selectedAgent.description && (
+                        <p className="text-muted-foreground text-sm">
+                          {selectedAgent.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -192,9 +246,13 @@ export default function Chat() {
                   <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
                     <Bot className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h2 className="text-xl font-semibold mb-2">Selecione um agente</h2>
+                  <h2 className="text-xl font-semibold mb-2">
+                    {loading ? 'Carregando agentes...' : 'Selecione um agente'}
+                  </h2>
                   <p className="text-muted-foreground mb-6">
-                    Escolha um agente de IA na lista ao lado para iniciar uma conversa
+                    {agents.length > 0 
+                      ? 'Escolha um agente de IA na lista ao lado para iniciar uma conversa'
+                      : 'Crie seu primeiro agente de IA para começar a conversar'}
                   </p>
                   <Button asChild>
                     <Link to="/agents/create">
