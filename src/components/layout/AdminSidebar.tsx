@@ -100,30 +100,6 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
           ))}
         </nav>
 
-        {/* Back to App */}
-        <div className={cn("px-3 pb-2", collapsed && "px-2")}>
-          {collapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  to="/dashboard"
-                  className="flex items-center justify-center p-2 rounded-lg bg-sidebar-accent text-sidebar-foreground/70 hover:text-sidebar-foreground"
-                >
-                  <Bot className="w-5 h-5" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Voltar ao App</TooltipContent>
-            </Tooltip>
-          ) : (
-            <Link
-              to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent text-sidebar-foreground/70 hover:text-sidebar-foreground transition-all duration-200"
-            >
-              <Bot className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">Voltar ao App</span>
-            </Link>
-          )}
-        </div>
 
         {/* Sign Out */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
