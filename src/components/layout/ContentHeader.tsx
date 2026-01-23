@@ -1,6 +1,7 @@
 import { useLocation, Link } from 'react-router-dom';
-import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bot, MessageSquare } from 'lucide-react';
+import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -59,71 +60,99 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
   // Get actions for current route
   const actions = routeActions[location.pathname] || [];
 
+  // Mock notification count
+  const notificationCount = 3;
+
   return (
-    <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="px-4 md:px-6 lg:px-8 py-4">
-        <div className="flex items-center gap-3 mb-2">
-          {/* Toggle sidebar button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onCollapsedChange(!collapsed)}
-            className="hidden lg:flex h-8 w-8 text-muted-foreground hover:text-foreground"
-          >
-            {collapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
-          </Button>
+    <TooltipProvider delayDuration={0}>
+      <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="px-4 md:px-6 lg:px-8 py-4">
+          <div className="flex items-center gap-3 mb-2">
+            {/* Toggle sidebar button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onCollapsedChange(!collapsed)}
+                  className="hidden lg:flex h-8 w-8 text-muted-foreground hover:text-foreground"
+                >
+                  {collapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {collapsed ? 'Expandir menu' : 'Recolher menu'}
+              </TooltipContent>
+            </Tooltip>
 
-          {/* Breadcrumbs */}
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link to="/dashboard" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
-                    <Home className="w-4 h-4" />
-                    <span className="hidden sm:inline">Início</span>
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              
-              {breadcrumbs.map((item) => (
-                <BreadcrumbItem key={item.path}>
-                  <BreadcrumbSeparator>
-                    <ChevronRight className="w-4 h-4" />
-                  </BreadcrumbSeparator>
-                  {item.isLast ? (
-                    <BreadcrumbPage>{item.name}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink asChild>
-                      <Link to={item.path}>{item.name}</Link>
-                    </BreadcrumbLink>
-                  )}
+            {/* Breadcrumbs */}
+            <Breadcrumb className="flex-1">
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/dashboard" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                      <Home className="w-4 h-4" />
+                      <span className="hidden sm:inline">Início</span>
+                    </Link>
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
-              ))}
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+                
+                {breadcrumbs.map((item) => (
+                  <BreadcrumbItem key={item.path}>
+                    <BreadcrumbSeparator>
+                      <ChevronRight className="w-4 h-4" />
+                    </BreadcrumbSeparator>
+                    {item.isLast ? (
+                      <BreadcrumbPage>{item.name}</BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild>
+                        <Link to={item.path}>{item.name}</Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
 
-        {/* Page Title and Actions */}
-        <div className="flex items-center justify-between gap-4">
+            {/* Right side actions */}
+            <div className="flex items-center gap-1">
+              {/* Contextual Actions */}
+              {actions.map((action) => (
+                <Tooltip key={action.href}>
+                  <TooltipTrigger asChild>
+                    <Button asChild size="icon" variant="ghost" className="h-8 w-8">
+                      <Link to={action.href}>
+                        <action.icon className="w-5 h-5" />
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{action.label}</TooltipContent>
+                </Tooltip>
+              ))}
+
+              {/* Notifications */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 relative">
+                    <Bell className="w-5 h-5" />
+                    {notificationCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-medium flex items-center justify-center">
+                        {notificationCount > 9 ? '9+' : notificationCount}
+                      </span>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Notificações</TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+
+          {/* Page Title */}
           <h1 className="text-xl md:text-2xl font-bold text-foreground">
             {currentPageName}
           </h1>
-
-          {/* Contextual Actions */}
-          {actions.length > 0 && (
-            <div className="flex items-center gap-2">
-              {actions.map((action) => (
-                <Button key={action.href} asChild size="sm" className="gap-2">
-                  <Link to={action.href}>
-                    <action.icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{action.label}</span>
-                  </Link>
-                </Button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
