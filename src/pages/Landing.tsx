@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Bot, Sparkles, Zap, Shield, MessageSquare, Users, ArrowRight, CheckCircle } from 'lucide-react';
 import { HeroOrbs } from '@/components/HeroOrbs';
+import { AnimatedNicheText } from '@/components/AnimatedNicheText';
 
 const features = [
   {
@@ -74,7 +75,7 @@ export default function Landing() {
 
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
               Agentes de IA para{' '}
-              <span className="text-gradient">cada nicho</span>
+              <AnimatedNicheText />
               <br />do seu negócio
             </h1>
 
