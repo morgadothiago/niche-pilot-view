@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Bot, CheckCircle } from 'lucide-react';
+import { Bot, CheckCircle, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const benefits = [
   'Crie agentes ilimitados',
@@ -13,6 +17,82 @@ const benefits = [
 ];
 
 export default function Signup() {
+  const navigate = useNavigate();
+  const { signUp } = useAuth();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!name.trim()) {
+      toast.error('Por favor, informe seu nome');
+      return;
+    }
+    
+    if (!email.trim()) {
+      toast.error('Por favor, informe seu email');
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            full_name: name,
+          }
+        }
+      });
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          toast.error('Este email já está cadastrado. Tente fazer login.');
+        } else {
+          toast.error(error.message);
+        }
+        return;
+      }
+
+      toast.success('Conta criada com sucesso! Você já está logado.');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast.error('Erro ao criar conta. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        }
+      });
+
+      if (error) {
+        toast.error('Erro ao conectar com Google');
+      }
+    } catch (error) {
+      console.error('Google signup error:', error);
+      toast.error('Erro ao conectar com Google');
+    }
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen flex">
@@ -73,7 +153,7 @@ export default function Signup() {
             </div>
 
             {/* Form */}
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="name">Nome completo</Label>
                 <Input
@@ -81,6 +161,9 @@ export default function Signup() {
                   type="text"
                   placeholder="Seu nome"
                   className="h-12"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={loading}
                 />
               </div>
 
@@ -91,6 +174,9 @@ export default function Signup() {
                   type="email"
                   placeholder="seu@email.com"
                   className="h-12"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
                 />
               </div>
 
@@ -99,13 +185,29 @@ export default function Signup() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder="Mínimo 6 caracteres"
                   className="h-12"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
                 />
               </div>
 
-              <Button variant="hero" size="lg" className="w-full" asChild>
-                <Link to="/dashboard">Criar conta</Link>
+              <Button 
+                type="submit" 
+                variant="hero" 
+                size="lg" 
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Criando conta...
+                  </>
+                ) : (
+                  'Criar conta'
+                )}
               </Button>
             </form>
 
@@ -127,7 +229,8 @@ export default function Signup() {
                 variant="social" 
                 size="lg" 
                 className="w-full"
-                disabled
+                onClick={handleGoogleSignup}
+                disabled={loading}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path
