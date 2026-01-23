@@ -11,9 +11,17 @@ const navItems = [
   { icon: User, label: 'Perfil', href: '/profile' },
 ];
 
-export function DashboardSidebar() {
+interface DashboardSidebarProps {
+  onNavigate?: () => void;
+}
+
+export function DashboardSidebar({ onNavigate }: DashboardSidebarProps) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleNavClick = () => {
+    onNavigate?.();
+  };
 
   return (
     <aside className={cn(
@@ -22,7 +30,7 @@ export function DashboardSidebar() {
     )}>
       {/* Logo */}
       <div className="p-4 border-b border-sidebar-border">
-        <Link to="/dashboard" className="flex items-center gap-2">
+        <Link to="/dashboard" className="flex items-center gap-2" onClick={handleNavClick}>
           <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center flex-shrink-0">
             <Bot className="w-5 h-5 text-primary-foreground" />
           </div>
@@ -31,13 +39,14 @@ export function DashboardSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
+      <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           return (
             <Link
               key={item.href}
               to={item.href}
+              onClick={handleNavClick}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200",
                 isActive
@@ -58,13 +67,14 @@ export function DashboardSidebar() {
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full justify-center text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+          className="w-full justify-center text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent hidden lg:flex"
         >
           {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </Button>
         
         <Link
           to="/"
+          onClick={handleNavClick}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
         >
           <LogOut className="w-5 h-5 flex-shrink-0" />
