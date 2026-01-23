@@ -29,7 +29,7 @@ export default function CreateAgent() {
     
     if (!user) {
       toast.error('Você precisa estar logado para criar um agente');
-      navigate('/auth');
+      navigate('/login');
       return;
     }
 
