@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface Agent {
@@ -31,7 +30,7 @@ export default function Chat() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch agents from database
+  // Fetch agents from API
   useEffect(() => {
     async function fetchAgents() {
       if (!user) {
@@ -40,14 +39,13 @@ export default function Chat() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('agents')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+        // TODO: Replace with your API call
+        // const response = await fetch(`/api/agents?user_id=${user.id}`);
+        // const data = await response.json();
+        // setAgents(data);
 
-        if (error) throw error;
-        setAgents(data || []);
+        // Default empty agents for now
+        setAgents([]);
       } catch (error) {
         console.error('Error fetching agents:', error);
         toast.error('Erro ao carregar agentes');

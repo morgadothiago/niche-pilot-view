@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
-import { supabase } from '@/integrations/supabase/client';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageTransition } from '@/components/PageTransition';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,14 +74,14 @@ export default function BuyCredits() {
 
     try {
       const totalCredits = selectedPackage.credits + (selectedPackage.bonus || 0);
-      const newCredits = (subscription.credits || 0) + totalCredits;
 
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({ credits: newCredits })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/credits/purchase', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ credits: totalCredits, package_id: selectedPackage.id }),
+      // });
+      // if (!response.ok) throw new Error('Failed to purchase credits');
 
       toast.success(`${totalCredits} créditos adicionados com sucesso!`);
       refetch();

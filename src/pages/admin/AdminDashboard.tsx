@@ -3,7 +3,6 @@ import { AdminLayout } from '@/components/layout/AdminLayout';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Bot, CreditCard, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { PageTransition } from '@/components/PageTransition';
 
 interface Stats {
@@ -25,31 +24,17 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Fetch profiles count
-        const { count: usersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
+        // TODO: Replace with your API call
+        // const response = await fetch('/api/admin/stats');
+        // const data = await response.json();
+        // setStats(data);
 
-        // Fetch agents count
-        const { count: agentsCount } = await supabase
-          .from('agents')
-          .select('*', { count: 'exact', head: true });
-
-        // Fetch subscriptions
-        const { count: subsCount } = await supabase
-          .from('subscriptions')
-          .select('*', { count: 'exact', head: true });
-
-        const { count: proCount } = await supabase
-          .from('subscriptions')
-          .select('*', { count: 'exact', head: true })
-          .eq('plan', 'pro');
-
+        // Default stats for now
         setStats({
-          totalUsers: usersCount || 0,
-          totalAgents: agentsCount || 0,
-          totalSubscriptions: subsCount || 0,
-          proSubscriptions: proCount || 0,
+          totalUsers: 0,
+          totalAgents: 0,
+          totalSubscriptions: 0,
+          proSubscriptions: 0,
         });
       } catch (error) {
         console.error('Error fetching stats:', error);

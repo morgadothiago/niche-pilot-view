@@ -8,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Bot, ArrowLeft, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -40,16 +39,18 @@ export default function CreateAgent() {
 
     setLoading(true);
     try {
-      const { error } = await supabase
-        .from('agents')
-        .insert({
-          user_id: user.id,
-          name: formData.name.trim(),
-          avatar: formData.avatar,
-          description: formData.description.trim() || null,
-        });
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/agents', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     user_id: user.id,
+      //     name: formData.name.trim(),
+      //     avatar: formData.avatar,
+      //     description: formData.description.trim() || null,
+      //   }),
+      // });
+      // if (!response.ok) throw new Error('Failed to create agent');
 
       toast.success('Agente criado com sucesso!');
       navigate('/agents');

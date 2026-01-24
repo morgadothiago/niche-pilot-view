@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
 import { PageTransition } from '@/components/PageTransition';
 import { Loader2, Trash2, Plus, Bot, User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -77,26 +76,15 @@ export default function AdminAgents() {
 
   async function fetchData() {
     try {
-      const [agentsResult, profilesResult] = await Promise.all([
-        supabase.from('agents').select('*').order('created_at', { ascending: false }),
-        supabase.from('profiles').select('user_id, full_name').order('full_name'),
-      ]);
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/agents');
+      // const data = await response.json();
+      // setAgents(data.agents);
+      // setUsers(data.users);
 
-      if (agentsResult.error) throw agentsResult.error;
-      if (profilesResult.error) throw profilesResult.error;
-
-      // Map owner names to agents
-      const profileMap = new Map(
-        (profilesResult.data || []).map(p => [p.user_id, p.full_name])
-      );
-
-      const agentsWithOwners = (agentsResult.data || []).map(agent => ({
-        ...agent,
-        owner_name: profileMap.get(agent.user_id) || null,
-      }));
-
-      setAgents(agentsWithOwners);
-      setUsers(profilesResult.data || []);
+      // Default empty data for now
+      setAgents([]);
+      setUsers([]);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Erro ao carregar dados');
@@ -108,12 +96,10 @@ export default function AdminAgents() {
   async function deleteAgent(agentId: string) {
     setDeleting(agentId);
     try {
-      const { error } = await supabase
-        .from('agents')
-        .delete()
-        .eq('id', agentId);
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/admin/agents/${agentId}`, { method: 'DELETE' });
+      // if (!response.ok) throw new Error('Failed to delete agent');
 
-      if (error) throw error;
       toast.success('Agente deletado com sucesso');
       fetchData();
     } catch (error) {
@@ -139,16 +125,18 @@ export default function AdminAgents() {
 
     setCreating(true);
     try {
-      const { error } = await supabase
-        .from('agents')
-        .insert({
-          user_id: formData.user_id,
-          name: formData.name.trim(),
-          avatar: formData.avatar,
-          description: formData.description.trim() || null,
-        });
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/agents', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     user_id: formData.user_id,
+      //     name: formData.name.trim(),
+      //     avatar: formData.avatar,
+      //     description: formData.description.trim() || null,
+      //   }),
+      // });
+      // if (!response.ok) throw new Error('Failed to create agent');
 
       toast.success('Agente criado com sucesso!');
       setShowCreateDialog(false);

@@ -9,7 +9,6 @@ import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User, Bell, Shield, CreditCard, LogOut, Trash2, Camera, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageTransition } from '@/components/PageTransition';
 
@@ -37,25 +36,17 @@ export default function Profile() {
   useEffect(() => {
     async function fetchProfile() {
       if (!user) return;
-      
+
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching profile:', error);
-          return;
-        }
-        
-        if (data) {
-          setProfile({
-            full_name: data.full_name || '',
-            avatar_url: data.avatar_url || '',
-          });
-        }
+        // TODO: Replace with your API call
+        // const response = await fetch(`/api/profiles/${user.id}`);
+        // const data = await response.json();
+
+        // Default profile for now
+        setProfile({
+          full_name: user.user_metadata?.full_name || '',
+          avatar_url: user.user_metadata?.avatar_url || '',
+        });
       } catch (error) {
         console.error('Error:', error);
       } finally {
@@ -82,19 +73,17 @@ export default function Profile() {
 
   const handleSaveProfile = async () => {
     if (!user) return;
-    
+
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: profile.full_name,
-          avatar_url: profile.avatar_url,
-        })
-        .eq('user_id', user.id);
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/profiles/${user.id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ full_name: profile.full_name, avatar_url: profile.avatar_url }),
+      // });
+      // if (!response.ok) throw new Error('Failed to update profile');
 
-      if (error) throw error;
-      
       toast.success('Perfil atualizado com sucesso!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -108,36 +97,20 @@ export default function Profile() {
     if (!event.target.files || !event.target.files[0] || !user) return;
 
     const file = event.target.files[0];
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${user.id}/avatar.${fileExt}`;
 
     setUploading(true);
     try {
-      // Delete old avatar if exists
-      await supabase.storage.from('avatars').remove([filePath]);
-      
-      // Upload new avatar
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, file, { upsert: true });
+      // TODO: Replace with your API call for file upload
+      // const formData = new FormData();
+      // formData.append('avatar', file);
+      // const response = await fetch(`/api/users/${user.id}/avatar`, {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      // const data = await response.json();
+      // setProfile(prev => ({ ...prev, avatar_url: data.url }));
 
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      // Update profile with new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('user_id', user.id);
-
-      if (updateError) throw updateError;
-
-      setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
-      toast.success('Avatar atualizado com sucesso!');
+      toast.info('Upload de avatar não configurado. Implemente com sua API.');
     } catch (error) {
       console.error('Error uploading avatar:', error);
       toast.error('Erro ao fazer upload do avatar');

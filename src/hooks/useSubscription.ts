@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export interface Subscription {
@@ -25,17 +24,21 @@ export function useSubscription() {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/subscriptions/${user.id}`);
+      // const data = await response.json();
+      // setSubscription(data);
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching subscription:', error);
-      }
-
-      setSubscription(data as Subscription | null);
+      // Default subscription for now
+      setSubscription({
+        id: 'default',
+        user_id: user.id,
+        plan: 'free',
+        status: 'active',
+        credits: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
     } catch (error) {
       console.error('Error fetching subscription:', error);
     } finally {

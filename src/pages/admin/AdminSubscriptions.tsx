@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { PageTransition } from '@/components/PageTransition';
 import { Loader2, Plus, CreditCard, User, Coins, Sparkles, Zap, Crown, Pencil } from 'lucide-react';
 import { toast } from 'sonner';
@@ -76,31 +75,17 @@ export default function AdminSubscriptions() {
 
   async function fetchData() {
     try {
-      const [subsResult, profilesResult] = await Promise.all([
-        supabase.from('subscriptions').select('*').order('created_at', { ascending: false }),
-        supabase.from('profiles').select('user_id, full_name, email').order('full_name'),
-      ]);
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/subscriptions');
+      // const data = await response.json();
+      // setSubscriptions(data.subscriptions);
+      // setUsers(data.users);
+      // setUsersWithoutSub(data.usersWithoutSub);
 
-      if (subsResult.error) throw subsResult.error;
-      if (profilesResult.error) throw profilesResult.error;
-
-      const profileMap = new Map(
-        (profilesResult.data || []).map(p => [p.user_id, { name: p.full_name, email: p.email }])
-      );
-
-      const subsWithOwners = (subsResult.data || []).map(sub => ({
-        ...sub,
-        owner_name: profileMap.get(sub.user_id)?.name || null,
-        owner_email: profileMap.get(sub.user_id)?.email || null,
-      }));
-
-      // Find users without subscriptions
-      const usersWithSubs = new Set((subsResult.data || []).map(s => s.user_id));
-      const usersNoSub = (profilesResult.data || []).filter(p => !usersWithSubs.has(p.user_id));
-
-      setSubscriptions(subsWithOwners);
-      setUsers(profilesResult.data || []);
-      setUsersWithoutSub(usersNoSub);
+      // Default empty data for now
+      setSubscriptions([]);
+      setUsers([]);
+      setUsersWithoutSub([]);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Erro ao carregar dados');
@@ -119,16 +104,13 @@ export default function AdminSubscriptions() {
 
     setCreating(true);
     try {
-      const { error } = await supabase
-        .from('subscriptions')
-        .insert({
-          user_id: createForm.user_id,
-          plan: createForm.plan,
-          status: createForm.status,
-          credits: createForm.credits,
-        });
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/subscriptions', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(createForm),
+      // });
+      // if (!response.ok) throw new Error('Failed to create subscription');
 
       toast.success('Assinatura criada com sucesso!');
       setShowCreateDialog(false);
@@ -148,16 +130,13 @@ export default function AdminSubscriptions() {
 
     setUpdating(selectedSub.id);
     try {
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({
-          plan: editForm.plan,
-          status: editForm.status,
-          credits: editForm.credits,
-        })
-        .eq('id', selectedSub.id);
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/admin/subscriptions/${selectedSub.id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(editForm),
+      // });
+      // if (!response.ok) throw new Error('Failed to update subscription');
 
       toast.success('Assinatura atualizada com sucesso!');
       setShowEditDialog(false);

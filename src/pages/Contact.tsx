@@ -10,7 +10,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(100),
@@ -66,21 +65,19 @@ export default function Contact() {
       setErrors({});
       setLoading(true);
 
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: {
-          name: form.name,
-          email: form.email,
-          company: form.company || undefined,
-          subject: form.subject,
-          message: form.message,
-        },
-      });
-
-      if (error) {
-        console.error('Error sending contact email:', error);
-        toast.error('Erro ao enviar mensagem. Tente novamente.');
-        return;
-      }
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/contact', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     name: form.name,
+      //     email: form.email,
+      //     company: form.company || undefined,
+      //     subject: form.subject,
+      //     message: form.message,
+      //   }),
+      // });
+      // if (!response.ok) throw new Error('Failed to send message');
 
       toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
       setForm({ name: '', email: '', company: '', subject: '', message: '' });

@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
 import { PageTransition } from '@/components/PageTransition';
 import { Loader2, Shield, User, UserCog, Sparkles, Zap, Crown, Coins } from 'lucide-react';
 import { toast } from 'sonner';
@@ -40,41 +39,13 @@ export default function AdminUsers() {
 
   async function fetchUsers() {
     try {
-      // Fetch profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/users');
+      // const data = await response.json();
+      // setUsers(data);
 
-      if (profilesError) throw profilesError;
-
-      // Fetch roles and subscriptions for each user
-      const usersWithDetails = await Promise.all(
-        (profiles || []).map(async (profile) => {
-          const [roleResult, subscriptionResult] = await Promise.all([
-            supabase
-              .from('user_roles')
-              .select('role')
-              .eq('user_id', profile.user_id)
-              .maybeSingle(),
-            supabase
-              .from('subscriptions')
-              .select('plan, status, credits')
-              .eq('user_id', profile.user_id)
-              .maybeSingle(),
-          ]);
-
-          return {
-            ...profile,
-            role: roleResult.data?.role || null,
-            plan: subscriptionResult.data?.plan || null,
-            status: subscriptionResult.data?.status || null,
-            credits: subscriptionResult.data?.credits || null,
-          };
-        })
-      );
-
-      setUsers(usersWithDetails);
+      // Default empty users for now
+      setUsers([]);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast.error('Erro ao carregar usuários');
@@ -86,37 +57,13 @@ export default function AdminUsers() {
   async function updateUserRole(userId: string, newRole: string) {
     setUpdating(userId);
     try {
-      if (newRole === 'none') {
-        const { error } = await supabase
-          .from('user_roles')
-          .delete()
-          .eq('user_id', userId);
-
-        if (error) throw error;
-      } else {
-        const { data: existing } = await supabase
-          .from('user_roles')
-          .select('id')
-          .eq('user_id', userId)
-          .maybeSingle();
-
-        const roleValue = newRole as 'admin' | 'moderator' | 'user';
-
-        if (existing) {
-          const { error } = await supabase
-            .from('user_roles')
-            .update({ role: roleValue })
-            .eq('user_id', userId);
-
-          if (error) throw error;
-        } else {
-          const { error } = await supabase
-            .from('user_roles')
-            .insert({ user_id: userId, role: roleValue });
-
-          if (error) throw error;
-        }
-      }
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/admin/users/${userId}/role`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ role: newRole }),
+      // });
+      // if (!response.ok) throw new Error('Failed to update role');
 
       toast.success('Role atualizada com sucesso');
       fetchUsers();

@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Bot, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -20,30 +19,18 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  
+
   const { signIn, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already logged in and redirect based on role
+  // Check if user is already logged in and redirect
   useEffect(() => {
-    async function checkUserAndRedirect() {
-      if (authLoading) return;
-      
-      if (user) {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
+    if (authLoading) return;
 
-        if (roleData?.role === 'admin') {
-          navigate('/admin', { replace: true });
-        } else {
-          navigate('/dashboard', { replace: true });
-        }
-      }
+    if (user) {
+      // TODO: Check user role via your API and redirect accordingly
+      navigate('/dashboard', { replace: true });
     }
-    checkUserAndRedirect();
   }, [user, authLoading, navigate]);
 
   const validateForm = () => {
@@ -66,11 +53,11 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     setLoading(true);
-    
+
     try {
       const { error } = await signIn(email, password);
       if (error) {
@@ -81,7 +68,6 @@ export default function Login() {
         }
       } else {
         toast.success('Login realizado com sucesso!');
-        // O useEffect vai lidar com o redirecionamento quando o user state mudar
       }
     } finally {
       setLoading(false);
@@ -91,15 +77,8 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/login`
-        }
-      });
-      if (error) {
-        toast.error('Erro ao conectar com Google');
-      }
+      // TODO: Implement Google OAuth with your API
+      toast.error('Google login not configured. Implement OAuth with your API.');
     } catch {
       toast.error('Erro ao conectar com Google');
     } finally {
@@ -166,10 +145,10 @@ export default function Login() {
                 )}
               </div>
 
-              <Button 
-                variant="hero" 
-                size="lg" 
-                className="w-full" 
+              <Button
+                variant="hero"
+                size="lg"
+                className="w-full"
                 type="submit"
                 disabled={loading}
               >
@@ -198,9 +177,9 @@ export default function Login() {
 
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-4">
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
@@ -225,9 +204,9 @@ export default function Login() {
                 </svg>
                 Google
               </Button>
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full opacity-60 cursor-not-allowed"
                 disabled
               >

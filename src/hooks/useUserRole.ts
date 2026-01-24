@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 type AppRole = 'admin' | 'moderator' | 'user';
@@ -25,18 +24,13 @@ export function useUserRole(): UserRoleState {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
+        // TODO: Replace with your API call
+        // const response = await fetch(`/api/users/${user.id}/role`);
+        // const data = await response.json();
+        // setRole(data.role);
 
-        if (error) {
-          console.error('Error fetching user role:', error);
-          setRole(null);
-        } else {
-          setRole(data?.role as AppRole || null);
-        }
+        // Default role for now
+        setRole('user');
       } catch (err) {
         console.error('Error fetching user role:', err);
         setRole(null);

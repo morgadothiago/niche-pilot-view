@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Bot, CheckCircle, Loader2 } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const benefits = [
@@ -26,17 +25,17 @@ export default function Signup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim()) {
       toast.error('Por favor, informe seu nome');
       return;
     }
-    
+
     if (!email.trim()) {
       toast.error('Por favor, informe seu email');
       return;
     }
-    
+
     if (password.length < 6) {
       toast.error('A senha deve ter pelo menos 6 caracteres');
       return;
@@ -45,16 +44,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-          data: {
-            full_name: name,
-          }
-        }
-      });
+      const { error } = await signUp(email, password);
 
       if (error) {
         if (error.message.includes('already registered')) {
@@ -77,16 +67,8 @@ export default function Signup() {
 
   const handleGoogleSignup = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        }
-      });
-
-      if (error) {
-        toast.error('Erro ao conectar com Google');
-      }
+      // TODO: Implement Google OAuth with your API
+      toast.error('Google signup not configured. Implement OAuth with your API.');
     } catch (error) {
       console.error('Google signup error:', error);
       toast.error('Erro ao conectar com Google');
@@ -193,10 +175,10 @@ export default function Signup() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                variant="hero" 
-                size="lg" 
+              <Button
+                type="submit"
+                variant="hero"
+                size="lg"
                 className="w-full"
                 disabled={loading}
               >
@@ -225,9 +207,9 @@ export default function Signup() {
 
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-4">
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full"
                 onClick={handleGoogleSignup}
                 disabled={loading}
@@ -252,9 +234,9 @@ export default function Signup() {
                 </svg>
                 Google
               </Button>
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full opacity-60 cursor-not-allowed"
                 disabled
               >

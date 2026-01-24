@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
-import { supabase } from '@/integrations/supabase/client';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { PageTransition } from '@/components/PageTransition';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -97,16 +96,13 @@ export default function ChangePlan() {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({ plan: 'free' })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/subscriptions/downgrade', { method: 'POST' });
+      // if (!response.ok) throw new Error('Failed to downgrade');
 
       setAnimationPlans({ from: subscription?.plan || 'pro', to: 'free' });
       setShowAnimation(true);
-      
+
       setTimeout(() => {
         setShowAnimation(false);
         refetch();
@@ -122,16 +118,17 @@ export default function ChangePlan() {
     if (!user || !selectedPlan) return;
 
     try {
-      const { error } = await supabase
-        .from('subscriptions')
-        .update({ plan: selectedPlan.id as 'free' | 'pro' | 'custom' })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/subscriptions/upgrade', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ plan: selectedPlan.id }),
+      // });
+      // if (!response.ok) throw new Error('Failed to upgrade');
 
       setAnimationPlans({ from: subscription?.plan || 'free', to: selectedPlan.id });
       setShowAnimation(true);
-      
+
       setTimeout(() => {
         setShowAnimation(false);
         refetch();
