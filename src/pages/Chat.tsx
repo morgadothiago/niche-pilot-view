@@ -46,7 +46,7 @@ export default function Chat() {
 
         // Default empty agents for now
         setAgents([]);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching agents:", error);
         toast.error("Erro ao carregar agentes");
       } finally {

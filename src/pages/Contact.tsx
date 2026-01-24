@@ -81,7 +81,7 @@ export default function Contact() {
 
       toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.");
       setForm({ name: "", email: "", company: "", subject: "", message: "" });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Partial<ContactForm> = {};
         error.errors.forEach((err) => {

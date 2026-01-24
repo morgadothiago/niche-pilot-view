@@ -38,7 +38,7 @@ export default function Login() {
       loginSchema.parse({ email, password });
       setErrors({});
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof z.ZodError) {
         const fieldErrors: { email?: string; password?: string } = {};
         error.errors.forEach((err) => {

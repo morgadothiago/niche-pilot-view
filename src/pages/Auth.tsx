@@ -28,7 +28,7 @@ export default function Auth() {
     try {
       // TODO: Implement Google OAuth with your API
       toast.error("Google login not configured. Implement OAuth with your API.");
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error("Erro ao conectar com Google");
       console.error("Google OAuth error:", error);
     } finally {

@@ -36,7 +36,7 @@ export default function AdminDashboard() {
           totalSubscriptions: 0,
           proSubscriptions: 0,
         });
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching stats:", error);
       } finally {
         setLoading(false);

@@ -54,7 +54,7 @@ export default function CreateAgent() {
 
       toast.success("Agente criado com sucesso!");
       navigate("/agents");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating agent:", error);
       toast.error("Erro ao criar agente");
     } finally {

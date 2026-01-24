@@ -104,7 +104,7 @@ export default function ChangePlan() {
         refetch();
         toast.success("Plano alterado para Free");
       }, 2000);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error downgrading plan:", error);
       toast.error("Erro ao alterar plano");
     }
@@ -129,7 +129,7 @@ export default function ChangePlan() {
         setShowAnimation(false);
         refetch();
       }, 2000);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error changing plan:", error);
       toast.error("Erro ao alterar plano");
     }

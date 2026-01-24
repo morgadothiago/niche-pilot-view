@@ -1,27 +1,15 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-
-// TODO: Replace with your API types
-export interface User {
-  id: string;
-  email: string;
-  user_metadata?: {
-    full_name?: string;
-    avatar_url?: string;
-  };
-}
-
-export interface Session {
-  user: User;
-  access_token: string;
-}
+import { User, Session } from "../types";
+import { authService } from "../services/authService";
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,23 +19,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const refreshProfile = async () => {
+    try {
+      const userData = await authService.getProfile();
+      setUser(userData);
+    } catch (error: unknown) {
+      console.error("Failed to refresh profile", error);
+      // If fetching profile fails (e.g. 401), we might want to sign out?
+      // For now, keeping it simple.
+    }
+  };
+
   useEffect(() => {
-    // TODO: Check for existing session from your API
-    // Example: check localStorage for token and validate with your API
     const checkSession = async () => {
       try {
         const token = localStorage.getItem("auth_token");
         if (token) {
-          // TODO: Validate token with your API
-          // const response = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
-          // if (response.ok) {
-          //   const userData = await response.json();
-          //   setUser(userData);
-          //   setSession({ user: userData, access_token: token });
-          // }
+          // We have a token, let's try to get me
+          const userData = await authService.getProfile();
+          setUser(userData);
+          // We don't necessarily have the full session object here if we just refreshed,
+          // but we can reconstruct a basic one or change Session type.
+          // For now assuming existing token is valid access_token.
+          setSession({ user: userData, access_token: token });
         }
-      } catch (error) {
-        console.error("Error checking session:", error);
+      } catch (error: unknown) {
+        // If 401, remove token
+        localStorage.removeItem("auth_token");
+        setUser(null);
+        setSession(null);
       } finally {
         setLoading(false);
       }
@@ -58,53 +58,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      // TODO: Replace with your API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
-      // if (!response.ok) throw new Error(data.message);
-      // localStorage.setItem('auth_token', data.token);
-      // setUser(data.user);
-      // setSession({ user: data.user, access_token: data.token });
-
-      console.log("TODO: Implement signIn with your API", { email, password });
-      return { error: new Error("API not configured. Implement signIn with your API.") };
-    } catch (error) {
-      return { error: error as Error };
+      const sessionData = await authService.signIn(email, password);
+      localStorage.setItem("auth_token", sessionData.access_token);
+      setSession(sessionData);
+      setUser(sessionData.user);
+      return { error: null };
+    } catch (error: unknown) {
+      return { error: error instanceof Error ? error : new Error(String(error)) };
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, fullName: string) => {
     try {
-      // TODO: Replace with your API call
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
-      // if (!response.ok) throw new Error(data.message);
-
-      console.log("TODO: Implement signUp with your API", { email, password });
-      return { error: new Error("API not configured. Implement signUp with your API.") };
-    } catch (error) {
-      return { error: error as Error };
+      const sessionData = await authService.signUp(email, password, fullName);
+      localStorage.setItem("auth_token", sessionData.access_token);
+      setSession(sessionData);
+      setUser(sessionData.user);
+      return { error: null };
+    } catch (error: unknown) {
+      return { error: error instanceof Error ? error : new Error(String(error)) };
     }
   };
 
   const signOut = async () => {
-    // TODO: Call your API to invalidate the session
-    // await fetch('/api/auth/logout', { method: 'POST' });
-    localStorage.removeItem("auth_token");
-    setUser(null);
-    setSession(null);
+    try {
+      await authService.signOut();
+    } catch (error: unknown) {
+      console.error("Error signing out", error);
+    } finally {
+      localStorage.removeItem("auth_token");
+      setUser(null);
+      setSession(null);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, loading, signIn, signUp, signOut, refreshProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

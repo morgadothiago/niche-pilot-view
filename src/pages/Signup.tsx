@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,9 @@ import { Bot, CheckCircle, Loader2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useFormValidation } from "@/hooks/useFormValidation";
+import { signupSchema } from "@/schemas";
+import { z } from "zod";
 
 const benefits = [
   "Crie agentes ilimitados",
@@ -15,61 +17,41 @@ const benefits = [
   "Acesso a novos recursos",
 ];
 
+type SignupFormValues = z.infer<typeof signupSchema>;
+
 export default function Signup() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      toast.error("Por favor, informe seu nome");
-      return;
-    }
-
-    if (!email.trim()) {
-      toast.error("Por favor, informe seu email");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("A senha deve ter pelo menos 6 caracteres");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { error } = await signUp(email, password);
+  const { form, isSubmitting, handleSubmit } = useFormValidation<SignupFormValues>({
+    schema: signupSchema,
+    onSubmit: async (data) => {
+      const { error } = await signUp(data.email, data.password, data.fullName);
 
       if (error) {
         if (error.message.includes("already registered")) {
-          toast.error("Este email já está cadastrado. Tente fazer login.");
-        } else {
-          toast.error(error.message);
+          // toast.error is handled in hook or we can re-throw?
+          // The hook catches errors and sets submitError state, but we can also toast here if we want specific behavior
+          throw new Error("Este email já está cadastrado. Tente fazer login.");
         }
-        return;
+        throw error;
       }
 
       toast.success("Conta criada com sucesso! Você já está logado.");
       navigate("/dashboard");
-    } catch (error) {
-      console.error("Signup error:", error);
-      toast.error("Erro ao criar conta. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
+
+  const {
+    register,
+    formState: { errors },
+  } = form;
 
   const handleGoogleSignup = async () => {
     try {
       // TODO: Implement Google OAuth with your API
       toast.error("Google signup not configured. Implement OAuth with your API.");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Google signup error:", error);
       toast.error("Erro ao conectar com Google");
     }
@@ -142,16 +124,17 @@ export default function Signup() {
             {/* Form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <Label htmlFor="name">Nome completo</Label>
+                <Label htmlFor="fullName">Nome completo</Label>
                 <Input
-                  id="name"
-                  type="text"
+                  id="fullName"
                   placeholder="Seu nome"
                   className="h-12"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  disabled={loading}
+                  disabled={isSubmitting}
+                  {...register("fullName")}
                 />
+                {errors.fullName && (
+                  <p className="text-sm text-destructive">{errors.fullName.message}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -161,10 +144,10 @@ export default function Signup() {
                   type="email"
                   placeholder="seu@email.com"
                   className="h-12"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
+                  disabled={isSubmitting}
+                  {...register("email")}
                 />
+                {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
               </div>
 
               <div className="space-y-2">
@@ -174,14 +157,22 @@ export default function Signup() {
                   type="password"
                   placeholder="Mínimo 6 caracteres"
                   className="h-12"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
+                  disabled={isSubmitting}
+                  {...register("password")}
                 />
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
               </div>
 
-              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
-                {loading ? (
+              <Button
+                type="submit"
+                variant="hero"
+                size="lg"
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Criando conta...
@@ -209,7 +200,7 @@ export default function Signup() {
                 size="lg"
                 className="w-full"
                 onClick={handleGoogleSignup}
-                disabled={loading}
+                disabled={isSubmitting}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                   <path

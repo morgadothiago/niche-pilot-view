@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,11 +11,44 @@ import { User, Bell, Shield, CreditCard, LogOut, Trash2, Camera, Loader2 } from 
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { PageTransition } from "@/components/PageTransition";
+import { useFormValidation } from "@/hooks/useFormValidation";
+import { profileSchema } from "@/schemas";
+import { userService } from "@/services/userService";
+import { z } from "zod";
+import { useState } from "react";
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function Profile() {
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // We rely on AuthContext for initial user data.
+  // If we wanted to fetch fresh data on mount, we could call userService.getProfile() in an effect,
+  // but AuthContext usually holds the session user.
+
+  const {
+    form,
+    isSubmitting: saving,
+    handleSubmit,
+  } = useFormValidation<ProfileFormValues>({
+    schema: profileSchema,
+    defaultValues: {
+      full_name: user?.user_metadata?.full_name || "",
+      email: user?.email || "",
+      avatar_url: user?.user_metadata?.avatar_url || "",
+    },
+    onSubmit: async (data) => {
+      // Only update full_name for now as email is separate and avatar is handled separately
+      await userService.updateProfile({ user_metadata: { full_name: data.full_name } });
+      await refreshProfile();
+      toast.success("Perfil atualizado com sucesso!");
+    },
+  });
+
+  const { register } = form;
 
   const [notifications, setNotifications] = useState({
     email: true,
@@ -23,74 +56,10 @@ export default function Profile() {
     tips: false,
   });
 
-  const [profile, setProfile] = useState({
-    full_name: "",
-    avatar_url: "",
-  });
-
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
-
-  // Fetch profile data
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user) return;
-
-      try {
-        // TODO: Replace with your API call
-        // const response = await fetch(`/api/profiles/${user.id}`);
-        // const data = await response.json();
-
-        // Default profile for now
-        setProfile({
-          full_name: user.user_metadata?.full_name || "",
-          avatar_url: user.user_metadata?.avatar_url || "",
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (user) {
-      fetchProfile();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate("/login");
-    }
-  }, [user, authLoading, navigate]);
-
   const handleSignOut = async () => {
     await signOut();
     toast.success("Logout realizado com sucesso");
     navigate("/login");
-  };
-
-  const handleSaveProfile = async () => {
-    if (!user) return;
-
-    setSaving(true);
-    try {
-      // TODO: Replace with your API call
-      // const response = await fetch(`/api/profiles/${user.id}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ full_name: profile.full_name, avatar_url: profile.avatar_url }),
-      // });
-      // if (!response.ok) throw new Error('Failed to update profile');
-
-      toast.success("Perfil atualizado com sucesso!");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Erro ao atualizar perfil");
-    } finally {
-      setSaving(false);
-    }
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,18 +69,10 @@ export default function Profile() {
 
     setUploading(true);
     try {
-      // TODO: Replace with your API call for file upload
-      // const formData = new FormData();
-      // formData.append('avatar', file);
-      // const response = await fetch(`/api/users/${user.id}/avatar`, {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      // const data = await response.json();
-      // setProfile(prev => ({ ...prev, avatar_url: data.url }));
-
-      toast.info("Upload de avatar não configurado. Implemente com sua API.");
-    } catch (error) {
+      await userService.uploadAvatar(file);
+      await refreshProfile();
+      toast.success("Avatar atualizado com sucesso!");
+    } catch (error: unknown) {
       console.error("Error uploading avatar:", error);
       toast.error("Erro ao fazer upload do avatar");
     } finally {
@@ -119,7 +80,7 @@ export default function Profile() {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
@@ -129,8 +90,8 @@ export default function Profile() {
     );
   }
 
-  const initials = profile.full_name
-    ? profile.full_name
+  const initials = user?.user_metadata?.full_name
+    ? user.user_metadata.full_name
         .split(" ")
         .map((n) => n[0])
         .join("")
@@ -162,7 +123,10 @@ export default function Profile() {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Avatar className="w-24 h-24">
-                  <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
+                  <AvatarImage
+                    src={user?.user_metadata?.avatar_url}
+                    alt={user?.user_metadata?.full_name}
+                  />
                   <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
                     {initials}
                   </AvatarFallback>
@@ -184,7 +148,7 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <p className="font-medium">{profile.full_name || "Seu Nome"}</p>
+                <p className="font-medium">{user?.user_metadata?.full_name || "Seu Nome"}</p>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </CardContent>
@@ -202,20 +166,19 @@ export default function Profile() {
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nome completo</Label>
+                  <Label htmlFor="full_name">Nome completo</Label>
                   <Input
-                    id="name"
-                    value={profile.full_name}
-                    onChange={(e) => setProfile((prev) => ({ ...prev, full_name: e.target.value }))}
+                    id="full_name"
                     placeholder="Seu nome completo"
+                    {...register("full_name")}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue={user?.email || ""} disabled />
+                  <Input id="email" type="email" value={user?.email || ""} disabled />
                 </div>
               </div>
-              <Button onClick={handleSaveProfile} disabled={saving}>
+              <Button onClick={() => handleSubmit()} disabled={saving}>
                 {saving ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

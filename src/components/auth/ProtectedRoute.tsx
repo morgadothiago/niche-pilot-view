@@ -1,27 +1,24 @@
-import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Loader2 } from "lucide-react";
+import { ReactNode } from "react";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
-  redirectTo?: string;
+  children: ReactNode;
 }
 
-export function ProtectedRoute({ children, redirectTo = "/login" }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
-  const location = useLocation();
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const { user, loading } = useAuthGuard();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!user) {
-    return <Navigate to={redirectTo} state={{ from: location }} replace />;
+    return null; // or redirect happens in hook
   }
 
   return <>{children}</>;
-}
+};

@@ -59,7 +59,7 @@ export default function AdminUsers() {
 
       // Default empty users for now
       setUsers([]);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching users:", error);
       toast.error("Erro ao carregar usuários");
     } finally {
@@ -80,7 +80,7 @@ export default function AdminUsers() {
 
       toast.success("Role atualizada com sucesso");
       fetchUsers();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating role:", error);
       toast.error("Erro ao atualizar role");
     } finally {

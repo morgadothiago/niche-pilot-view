@@ -39,7 +39,7 @@ export function useSubscription() {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching subscription:", error);
     } finally {
       setLoading(false);

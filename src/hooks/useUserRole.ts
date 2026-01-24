@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 type AppRole = "admin" | "moderator" | "user";
@@ -11,36 +10,12 @@ interface UserRoleState {
 }
 
 export function useUserRole(): UserRoleState {
-  const { user } = useAuth();
-  const [role, setRole] = useState<AppRole | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
 
-  useEffect(() => {
-    async function fetchRole() {
-      if (!user) {
-        setRole(null);
-        setLoading(false);
-        return;
-      }
+  const role: AppRole | null = (user?.role as AppRole) || "user"; // Default to user if undefined but logged in? Or null?
 
-      try {
-        // TODO: Replace with your API call
-        // const response = await fetch(`/api/users/${user.id}/role`);
-        // const data = await response.json();
-        // setRole(data.role);
-
-        // Default role for now
-        setRole("user");
-      } catch (err) {
-        console.error("Error fetching user role:", err);
-        setRole(null);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchRole();
-  }, [user]);
+  // If we want to be strict:
+  // const role = user?.role || null;
 
   return {
     role,

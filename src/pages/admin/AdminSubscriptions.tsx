@@ -99,7 +99,7 @@ export default function AdminSubscriptions() {
       setSubscriptions([]);
       setUsers([]);
       setUsersWithoutSub([]);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching data:", error);
       toast.error("Erro ao carregar dados");
     } finally {
@@ -129,7 +129,7 @@ export default function AdminSubscriptions() {
       setShowCreateDialog(false);
       setCreateForm({ user_id: "", plan: "free", status: "active", credits: 0 });
       fetchData();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating subscription:", error);
       toast.error("Erro ao criar assinatura");
     } finally {
@@ -155,7 +155,7 @@ export default function AdminSubscriptions() {
       setShowEditDialog(false);
       setSelectedSub(null);
       fetchData();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error updating subscription:", error);
       toast.error("Erro ao atualizar assinatura");
     } finally {

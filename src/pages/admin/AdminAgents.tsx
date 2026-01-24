@@ -92,7 +92,7 @@ export default function AdminAgents() {
       // Default empty data for now
       setAgents([]);
       setUsers([]);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error fetching data:", error);
       toast.error("Erro ao carregar dados");
     } finally {
@@ -109,7 +109,7 @@ export default function AdminAgents() {
 
       toast.success("Agente deletado com sucesso");
       fetchData();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error deleting agent:", error);
       toast.error("Erro ao deletar agente");
     } finally {
@@ -149,7 +149,7 @@ export default function AdminAgents() {
       setShowCreateDialog(false);
       setFormData({ name: "", avatar: "🤖", description: "", user_id: "" });
       fetchData();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating agent:", error);
       toast.error("Erro ao criar agente");
     } finally {

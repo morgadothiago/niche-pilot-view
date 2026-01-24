@@ -109,7 +109,7 @@ export function PaletteSelector() {
           root.style.setProperty("--chat-user", palette.primary);
           setCurrentPalette(palette.name);
         }
-      } catch (e) {
+      } catch (e: unknown) {
         console.error("Error parsing saved palette:", e);
       }
     }
