@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Subscription {
   id: string;
   user_id: string;
-  plan: 'free' | 'pro' | 'custom';
+  plan: "free" | "pro" | "custom";
   status: string;
   credits: number;
   created_at: string;
@@ -17,7 +16,7 @@ export function useSubscription() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSubscription = async () => {
+  const fetchSubscription = useCallback(async () => {
     if (!user) {
       setSubscription(null);
       setLoading(false);
@@ -25,27 +24,31 @@ export function useSubscription() {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/subscriptions/${user.id}`);
+      // const data = await response.json();
+      // setSubscription(data);
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching subscription:', error);
-      }
-
-      setSubscription(data as Subscription | null);
+      // Default subscription for now
+      setSubscription({
+        id: "default",
+        user_id: user.id,
+        plan: "free",
+        status: "active",
+        credits: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      console.error("Error fetching subscription:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchSubscription();
-  }, [user]);
+  }, [fetchSubscription]);
 
   const refetch = () => {
     setLoading(true);

@@ -1,4 +1,4 @@
-import { useCountUp } from '@/hooks/useCountUp';
+import { useCountUp } from "@/hooks/useCountUp";
 
 interface CountUpNumberProps {
   end: number;
@@ -8,18 +8,20 @@ interface CountUpNumberProps {
   className?: string;
 }
 
-export function CountUpNumber({ 
-  end, 
-  duration = 2000, 
-  suffix = '', 
-  prefix = '',
-  className = '' 
+export function CountUpNumber({
+  end,
+  duration = 2000,
+  suffix = "",
+  prefix = "",
+  className = "",
 }: CountUpNumberProps) {
   const { count, ref } = useCountUp(end, duration);
 
   return (
     <span ref={ref as React.RefObject<HTMLSpanElement>} className={className}>
-      {prefix}{count.toLocaleString()}{suffix}
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
     </span>
   );
 }

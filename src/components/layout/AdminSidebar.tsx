@@ -1,23 +1,15 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Bot, 
-  CreditCard,
-  Settings,
-  LogOut,
-  Shield
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useAuth } from '@/contexts/AuthContext';
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, Users, Bot, CreditCard, Settings, LogOut, Shield } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { label: 'Usuários', href: '/admin/users', icon: Users },
-  { label: 'Agentes', href: '/admin/agents', icon: Bot },
-  { label: 'Assinaturas', href: '/admin/subscriptions', icon: CreditCard },
-  { label: 'Configurações', href: '/admin/settings', icon: Settings },
+  { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Usuários", href: "/admin/users", icon: Users },
+  { label: "Agentes", href: "/admin/agents", icon: Bot },
+  { label: "Assinaturas", href: "/admin/subscriptions", icon: CreditCard },
+  { label: "Configurações", href: "/admin/settings", icon: Settings },
 ];
 
 interface AdminSidebarProps {
@@ -35,11 +27,11 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
   };
 
   const handleSignOut = async () => {
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
     await signOut();
   };
 
-  const NavItem = ({ item }: { item: typeof navItems[0] }) => {
+  const NavItem = ({ item }: { item: (typeof navItems)[0] }) => {
     const isActive = location.pathname === item.href;
     const content = (
       <Link
@@ -61,12 +53,8 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
     if (collapsed) {
       return (
         <Tooltip>
-          <TooltipTrigger asChild>
-            {content}
-          </TooltipTrigger>
-          <TooltipContent side="right">
-            {item.label}
-          </TooltipContent>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent side="right">{item.label}</TooltipContent>
         </Tooltip>
       );
     }
@@ -76,12 +64,16 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
 
   return (
     <TooltipProvider delayDuration={0}>
-      <aside className={cn(
-        "h-full bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
-        collapsed ? "w-16" : "w-64"
-      )}>
+      <aside
+        className={cn(
+          "h-full bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 border-r border-sidebar-border",
+          collapsed ? "w-16" : "w-64"
+        )}
+      >
         {/* Logo */}
-        <div className={cn("p-4 border-b border-sidebar-border hidden lg:block", collapsed && "p-3")}>
+        <div
+          className={cn("p-4 border-b border-sidebar-border hidden lg:block", collapsed && "p-3")}
+        >
           <Link to="/admin" className="flex items-center gap-2" onClick={handleNavClick}>
             <div className="w-9 h-9 rounded-lg bg-destructive flex items-center justify-center flex-shrink-0">
               <Shield className="w-5 h-5 text-destructive-foreground" />
@@ -101,7 +93,6 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
             <NavItem key={item.href} item={item} />
           ))}
         </nav>
-
 
         {/* Sign Out */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>

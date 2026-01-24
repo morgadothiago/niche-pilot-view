@@ -1,17 +1,23 @@
-import { useEffect, useState } from 'react';
-import { AdminLayout } from '@/components/layout/AdminLayout';
-import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
-import { PageTransition } from '@/components/PageTransition';
-import { Loader2, Trash2, Plus, Bot, User } from 'lucide-react';
-import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useEffect, useState } from "react";
+import { AdminLayout } from "@/components/layout/AdminLayout";
+import { AdminGuard } from "@/components/admin/AdminGuard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { PageTransition } from "@/components/PageTransition";
+import { Loader2, Trash2, Plus, Bot, User } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogContent,
@@ -30,14 +36,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 interface Agent {
   id: string;
@@ -54,7 +60,7 @@ interface UserProfile {
   full_name: string | null;
 }
 
-const emojiAvatars = ['🤖', '🧠', '💡', '🎯', '🚀', '💬', '⚡', '🔮', '🎨', '📊', '💼', '🛠️'];
+const emojiAvatars = ["🤖", "🧠", "💡", "🎯", "🚀", "💬", "⚡", "🔮", "🎨", "📊", "💼", "🛠️"];
 
 export default function AdminAgents() {
   const { user } = useAuth();
@@ -65,10 +71,10 @@ export default function AdminAgents() {
   const [creating, setCreating] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    avatar: '🤖',
-    description: '',
-    user_id: '',
+    name: "",
+    avatar: "🤖",
+    description: "",
+    user_id: "",
   });
 
   useEffect(() => {
@@ -77,29 +83,18 @@ export default function AdminAgents() {
 
   async function fetchData() {
     try {
-      const [agentsResult, profilesResult] = await Promise.all([
-        supabase.from('agents').select('*').order('created_at', { ascending: false }),
-        supabase.from('profiles').select('user_id, full_name').order('full_name'),
-      ]);
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/agents');
+      // const data = await response.json();
+      // setAgents(data.agents);
+      // setUsers(data.users);
 
-      if (agentsResult.error) throw agentsResult.error;
-      if (profilesResult.error) throw profilesResult.error;
-
-      // Map owner names to agents
-      const profileMap = new Map(
-        (profilesResult.data || []).map(p => [p.user_id, p.full_name])
-      );
-
-      const agentsWithOwners = (agentsResult.data || []).map(agent => ({
-        ...agent,
-        owner_name: profileMap.get(agent.user_id) || null,
-      }));
-
-      setAgents(agentsWithOwners);
-      setUsers(profilesResult.data || []);
+      // Default empty data for now
+      setAgents([]);
+      setUsers([]);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Erro ao carregar dados');
+      console.error("Error fetching data:", error);
+      toast.error("Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
@@ -108,17 +103,15 @@ export default function AdminAgents() {
   async function deleteAgent(agentId: string) {
     setDeleting(agentId);
     try {
-      const { error } = await supabase
-        .from('agents')
-        .delete()
-        .eq('id', agentId);
+      // TODO: Replace with your API call
+      // const response = await fetch(`/api/admin/agents/${agentId}`, { method: 'DELETE' });
+      // if (!response.ok) throw new Error('Failed to delete agent');
 
-      if (error) throw error;
-      toast.success('Agente deletado com sucesso');
+      toast.success("Agente deletado com sucesso");
       fetchData();
     } catch (error) {
-      console.error('Error deleting agent:', error);
-      toast.error('Erro ao deletar agente');
+      console.error("Error deleting agent:", error);
+      toast.error("Erro ao deletar agente");
     } finally {
       setDeleting(null);
     }
@@ -126,37 +119,39 @@ export default function AdminAgents() {
 
   async function createAgent(e: React.FormEvent) {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
-      toast.error('Nome do agente é obrigatório');
+      toast.error("Nome do agente é obrigatório");
       return;
     }
 
     if (!formData.user_id) {
-      toast.error('Selecione um usuário');
+      toast.error("Selecione um usuário");
       return;
     }
 
     setCreating(true);
     try {
-      const { error } = await supabase
-        .from('agents')
-        .insert({
-          user_id: formData.user_id,
-          name: formData.name.trim(),
-          avatar: formData.avatar,
-          description: formData.description.trim() || null,
-        });
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/admin/agents', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     user_id: formData.user_id,
+      //     name: formData.name.trim(),
+      //     avatar: formData.avatar,
+      //     description: formData.description.trim() || null,
+      //   }),
+      // });
+      // if (!response.ok) throw new Error('Failed to create agent');
 
-      if (error) throw error;
-
-      toast.success('Agente criado com sucesso!');
+      toast.success("Agente criado com sucesso!");
       setShowCreateDialog(false);
-      setFormData({ name: '', avatar: '🤖', description: '', user_id: '' });
+      setFormData({ name: "", avatar: "🤖", description: "", user_id: "" });
       fetchData();
     } catch (error) {
-      console.error('Error creating agent:', error);
-      toast.error('Erro ao criar agente');
+      console.error("Error creating agent:", error);
+      toast.error("Erro ao criar agente");
     } finally {
       setCreating(false);
     }
@@ -197,7 +192,9 @@ export default function AdminAgents() {
                       <Label>Usuário proprietário *</Label>
                       <Select
                         value={formData.user_id}
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, user_id: value }))}
+                        onValueChange={(value) =>
+                          setFormData((prev) => ({ ...prev, user_id: value }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione um usuário" />
@@ -223,11 +220,11 @@ export default function AdminAgents() {
                           <button
                             key={emoji}
                             type="button"
-                            onClick={() => setFormData(prev => ({ ...prev, avatar: emoji }))}
+                            onClick={() => setFormData((prev) => ({ ...prev, avatar: emoji }))}
                             className={`w-10 h-10 rounded-lg text-xl flex items-center justify-center transition-all ${
                               formData.avatar === emoji
-                                ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
-                                : 'bg-muted hover:bg-muted/80'
+                                ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background"
+                                : "bg-muted hover:bg-muted/80"
                             }`}
                           >
                             {emoji}
@@ -243,7 +240,7 @@ export default function AdminAgents() {
                         id="agent-name"
                         placeholder="Ex: Assistente de Vendas"
                         value={formData.name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                         required
                       />
                     </div>
@@ -256,7 +253,9 @@ export default function AdminAgents() {
                         placeholder="Descreva o que o agente faz..."
                         rows={3}
                         value={formData.description}
-                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, description: e.target.value }))
+                        }
                       />
                     </div>
 
@@ -275,7 +274,7 @@ export default function AdminAgents() {
                             Criando...
                           </>
                         ) : (
-                          'Criar Agente'
+                          "Criar Agente"
                         )}
                       </Button>
                     </div>
@@ -313,22 +312,22 @@ export default function AdminAgents() {
                             <TableCell>
                               <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl">
-                                  {agent.avatar || '🤖'}
+                                  {agent.avatar || "🤖"}
                                 </div>
                                 <span className="font-medium">{agent.name}</span>
                               </div>
                             </TableCell>
                             <TableCell className="max-w-[200px] truncate">
-                              {agent.description || '-'}
+                              {agent.description || "-"}
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <User className="w-4 h-4 text-muted-foreground" />
-                                <span>{agent.owner_name || 'Sem nome'}</span>
+                                <span>{agent.owner_name || "Sem nome"}</span>
                               </div>
                             </TableCell>
                             <TableCell>
-                              {new Date(agent.created_at).toLocaleDateString('pt-BR')}
+                              {new Date(agent.created_at).toLocaleDateString("pt-BR")}
                             </TableCell>
                             <TableCell>
                               <AlertDialog>
@@ -350,7 +349,8 @@ export default function AdminAgents() {
                                   <AlertDialogHeader>
                                     <AlertDialogTitle>Deletar Agente</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Tem certeza que deseja deletar o agente "{agent.name}"? Esta ação não pode ser desfeita.
+                                      Tem certeza que deseja deletar o agente "{agent.name}"? Esta
+                                      ação não pode ser desfeita.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>

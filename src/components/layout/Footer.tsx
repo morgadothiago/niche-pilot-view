@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Bot, Github, Twitter, Linkedin } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Bot, Github, Twitter, Linkedin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -18,13 +18,22 @@ export function Footer() {
               Plataforma de agentes de IA especializados para transformar sua produtividade.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+              <a
+                href="#"
+                className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+              >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+              <a
+                href="#"
+                className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+              >
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors">
+              <a
+                href="#"
+                className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+              >
                 <Linkedin className="w-5 h-5" />
               </a>
             </div>
@@ -34,10 +43,38 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Produto</h4>
             <ul className="space-y-3">
-              <li><a href="#features" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Recursos</a></li>
-              <li><Link to="/pricing" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Preços</Link></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Integrações</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Changelog</a></li>
+              <li>
+                <a
+                  href="#features"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Recursos
+                </a>
+              </li>
+              <li>
+                <Link
+                  to="/pricing"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Preços
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Integrações
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Changelog
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -45,10 +82,38 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Empresa</h4>
             <ul className="space-y-3">
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Sobre</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Blog</a></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Carreiras</a></li>
-              <li><Link to="/contact" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Contato</Link></li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Sobre
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Carreiras
+                </a>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Contato
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -56,9 +121,30 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-3">
-              <li><Link to="/privacy" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Privacidade</Link></li>
-              <li><Link to="/terms" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Termos</Link></li>
-              <li><a href="#" className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm">Cookies</a></li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Privacidade
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Termos
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  className="text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors text-sm"
+                >
+                  Cookies
+                </a>
+              </li>
             </ul>
           </div>
         </div>

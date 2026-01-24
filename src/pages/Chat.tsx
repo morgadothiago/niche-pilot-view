@@ -1,21 +1,20 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Send, ChevronDown, Plus, MoreVertical, Bot, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { PageTransition } from '@/components/PageTransition';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Send, ChevronDown, Plus, MoreVertical, Bot, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PageTransition } from "@/components/PageTransition";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Agent {
   id: string;
@@ -26,12 +25,12 @@ interface Agent {
 
 export default function Chat() {
   const { user } = useAuth();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch agents from database
+  // Fetch agents from API
   useEffect(() => {
     async function fetchAgents() {
       if (!user) {
@@ -40,17 +39,16 @@ export default function Chat() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from('agents')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+        // TODO: Replace with your API call
+        // const response = await fetch(`/api/agents?user_id=${user.id}`);
+        // const data = await response.json();
+        // setAgents(data);
 
-        if (error) throw error;
-        setAgents(data || []);
+        // Default empty agents for now
+        setAgents([]);
       } catch (error) {
-        console.error('Error fetching agents:', error);
-        toast.error('Erro ao carregar agentes');
+        console.error("Error fetching agents:", error);
+        toast.error("Erro ao carregar agentes");
       } finally {
         setLoading(false);
       }
@@ -99,7 +97,7 @@ export default function Chat() {
                       )}
                     >
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0">
-                        {agent.avatar || '🤖'}
+                        {agent.avatar || "🤖"}
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="font-medium text-sm block truncate">{agent.name}</span>
@@ -132,7 +130,7 @@ export default function Chat() {
                 <div className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-xl">
-                      {selectedAgent.avatar || '🤖'}
+                      {selectedAgent.avatar || "🤖"}
                     </div>
                     <div>
                       <DropdownMenu>
@@ -220,15 +218,13 @@ export default function Chat() {
                   <div className="flex-1 flex items-center justify-center h-full">
                     <div className="text-center max-w-md">
                       <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center text-3xl mx-auto mb-4">
-                        {selectedAgent.avatar || '🤖'}
+                        {selectedAgent.avatar || "🤖"}
                       </div>
                       <h3 className="font-semibold text-lg mb-2">
                         Comece uma conversa com {selectedAgent.name}
                       </h3>
                       {selectedAgent.description && (
-                        <p className="text-muted-foreground text-sm">
-                          {selectedAgent.description}
-                        </p>
+                        <p className="text-muted-foreground text-sm">{selectedAgent.description}</p>
                       )}
                     </div>
                   </div>
@@ -242,7 +238,7 @@ export default function Chat() {
                       onChange={(e) => setMessage(e.target.value)}
                       placeholder="Digite sua mensagem..."
                       className="flex-1"
-                      onKeyPress={(e) => e.key === 'Enter' && message.trim() && setMessage('')}
+                      onKeyPress={(e) => e.key === "Enter" && message.trim() && setMessage("")}
                     />
                     <Button size="icon" disabled={!message.trim()}>
                       <Send className="w-4 h-4" />
@@ -258,12 +254,12 @@ export default function Chat() {
                     <Bot className="w-10 h-10 text-muted-foreground" />
                   </div>
                   <h2 className="text-xl font-semibold mb-2">
-                    {loading ? 'Carregando agentes...' : 'Selecione um agente'}
+                    {loading ? "Carregando agentes..." : "Selecione um agente"}
                   </h2>
                   <p className="text-muted-foreground mb-6">
-                    {agents.length > 0 
-                      ? 'Escolha um agente de IA na lista ao lado para iniciar uma conversa'
-                      : 'Crie seu primeiro agente de IA para começar a conversar'}
+                    {agents.length > 0
+                      ? "Escolha um agente de IA na lista ao lado para iniciar uma conversa"
+                      : "Crie seu primeiro agente de IA para começar a conversar"}
                   </p>
                   <Button asChild>
                     <Link to="/agents/create">

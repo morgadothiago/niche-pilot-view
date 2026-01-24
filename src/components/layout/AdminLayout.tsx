@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AdminSidebar } from './AdminSidebar';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Shield } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { AdminSidebar } from "./AdminSidebar";
+import { Button } from "@/components/ui/button";
+import { Menu, X, Shield } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -37,22 +37,21 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
 
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40 pt-14"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed lg:static z-50 lg:z-auto h-full pt-14 lg:pt-0",
-        "transition-transform duration-300 ease-in-out",
-        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      )}>
-        <AdminSidebar 
-          onNavigate={() => setMobileMenuOpen(false)} 
-          collapsed={collapsed}
-        />
+      <div
+        className={cn(
+          "fixed lg:static z-50 lg:z-auto h-full pt-14 lg:pt-0",
+          "transition-transform duration-300 ease-in-out",
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        )}
+      >
+        <AdminSidebar onNavigate={() => setMobileMenuOpen(false)} collapsed={collapsed} />
       </div>
 
       {/* Main Content */}
@@ -70,7 +69,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
                 >
                   <Menu className="w-5 h-5" />
                 </Button>
-                <h1 className="text-xl font-bold">{title || 'Admin'}</h1>
+                <h1 className="text-xl font-bold">{title || "Admin"}</h1>
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full bg-destructive/10 text-destructive text-sm font-medium">
@@ -82,9 +81,7 @@ export function AdminLayout({ children, title }: AdminLayoutProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</div>
       </main>
     </div>
   );

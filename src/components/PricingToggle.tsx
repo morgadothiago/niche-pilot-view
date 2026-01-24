@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 interface PricingToggleProps {
   isAnnual: boolean;
@@ -11,28 +11,28 @@ export function PricingToggle({ isAnnual, onToggle }: PricingToggleProps) {
       <button
         onClick={() => onToggle(false)}
         className={`text-sm font-medium transition-colors ${
-          !isAnnual ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+          !isAnnual ? "text-foreground" : "text-muted-foreground hover:text-foreground"
         }`}
       >
         Mensal
       </button>
-      
+
       <button
         onClick={() => onToggle(!isAnnual)}
         className="relative w-14 h-8 rounded-full bg-secondary border border-border transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
         <motion.div
           className="absolute top-1 w-6 h-6 rounded-full bg-primary shadow-md"
-          animate={{ left: isAnnual ? 'calc(100% - 28px)' : '4px' }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          animate={{ left: isAnnual ? "calc(100% - 28px)" : "4px" }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
       </button>
-      
+
       <div className="flex items-center gap-2">
         <button
           onClick={() => onToggle(true)}
           className={`text-sm font-medium transition-colors ${
-            isAnnual ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+            isAnnual ? "text-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Anual

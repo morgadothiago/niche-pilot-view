@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
+import { Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
 
 export default function Privacy() {
   return (
@@ -9,8 +9,8 @@ export default function Privacy() {
         {/* Header */}
         <header className="p-4 border-b border-border">
           <div className="container mx-auto">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -22,11 +22,9 @@ export default function Privacy() {
         {/* Content */}
         <main className="container mx-auto px-4 py-8 max-w-4xl">
           <h1 className="text-3xl sm:text-4xl font-bold mb-8">Política de Privacidade</h1>
-          
+
           <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6">
-            <p className="text-muted-foreground">
-              Última atualização: Janeiro de 2026
-            </p>
+            <p className="text-muted-foreground">Última atualização: Janeiro de 2026</p>
 
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">1. Informações que Coletamos</h2>
@@ -55,9 +53,7 @@ export default function Privacy() {
 
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">3. Compartilhamento de Dados</h2>
-              <p>
-                Não vendemos suas informações pessoais. Podemos compartilhar dados com:
-              </p>
+              <p>Não vendemos suas informações pessoais. Podemos compartilhar dados com:</p>
               <ul className="list-disc pl-6 space-y-2 mt-4">
                 <li>Provedores de serviços que auxiliam nossas operações</li>
                 <li>Parceiros de pagamento para processamento de transações</li>
@@ -68,8 +64,8 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">4. Segurança dos Dados</h2>
               <p>
-                Implementamos medidas de segurança técnicas e organizacionais para proteger suas informações, 
-                incluindo:
+                Implementamos medidas de segurança técnicas e organizacionais para proteger suas
+                informações, incluindo:
               </p>
               <ul className="list-disc pl-6 space-y-2 mt-4">
                 <li>Criptografia de dados em trânsito e em repouso</li>
@@ -82,8 +78,9 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">5. Retenção de Dados</h2>
               <p>
-                Mantemos suas informações pelo tempo necessário para fornecer os serviços solicitados ou 
-                conforme exigido por lei. Você pode solicitar a exclusão de seus dados a qualquer momento.
+                Mantemos suas informações pelo tempo necessário para fornecer os serviços
+                solicitados ou conforme exigido por lei. Você pode solicitar a exclusão de seus
+                dados a qualquer momento.
               </p>
             </section>
 
@@ -101,19 +98,21 @@ export default function Privacy() {
             </section>
 
             <section>
-              <h2 className="text-2xl font-semibold mt-8 mb-4">7. Cookies e Tecnologias Similares</h2>
+              <h2 className="text-2xl font-semibold mt-8 mb-4">
+                7. Cookies e Tecnologias Similares
+              </h2>
               <p>
-                Utilizamos cookies e tecnologias similares para melhorar sua experiência, analisar o uso do 
-                serviço e personalizar conteúdo. Você pode gerenciar suas preferências de cookies nas 
-                configurações do navegador.
+                Utilizamos cookies e tecnologias similares para melhorar sua experiência, analisar o
+                uso do serviço e personalizar conteúdo. Você pode gerenciar suas preferências de
+                cookies nas configurações do navegador.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">8. Dados de Menores</h2>
               <p>
-                Nosso serviço não é destinado a menores de 18 anos. Não coletamos intencionalmente 
-                informações de menores. Se tomarmos conhecimento de que coletamos dados de um menor, 
+                Nosso serviço não é destinado a menores de 18 anos. Não coletamos intencionalmente
+                informações de menores. Se tomarmos conhecimento de que coletamos dados de um menor,
                 excluiremos essas informações imediatamente.
               </p>
             </section>
@@ -121,18 +120,20 @@ export default function Privacy() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">9. Alterações nesta Política</h2>
               <p>
-                Podemos atualizar esta política periodicamente. Notificaremos sobre alterações significativas 
-                por email ou através de um aviso em nosso serviço.
+                Podemos atualizar esta política periodicamente. Notificaremos sobre alterações
+                significativas por email ou através de um aviso em nosso serviço.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">10. Contato</h2>
               <p>
-                Para questões sobre esta Política de Privacidade ou exercer seus direitos, entre em contato:
+                Para questões sobre esta Política de Privacidade ou exercer seus direitos, entre em
+                contato:
               </p>
               <p className="mt-4">
-                Email: privacidade@agentchat.com<br />
+                Email: privacidade@agentchat.com
+                <br />
                 Endereço: São Paulo, SP - Brasil
               </p>
             </section>

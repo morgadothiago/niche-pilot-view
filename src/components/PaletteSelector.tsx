@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -72,7 +72,7 @@ export function PaletteSelector() {
 
   const applyPalette = (palette: ColorPalette) => {
     const root = document.documentElement;
-    
+
     // Update CSS variables for light mode
     root.style.setProperty("--primary", palette.primary);
     root.style.setProperty("--accent", palette.accent);
@@ -80,13 +80,13 @@ export function PaletteSelector() {
     root.style.setProperty("--sidebar-primary", palette.primary);
     root.style.setProperty("--sidebar-ring", palette.primary);
     root.style.setProperty("--chat-user", palette.primary);
-    
+
     setCurrentPalette(palette.name);
-    
+
     // Save palette with current theme
     const savedData = {
       palette,
-      theme: theme || 'light'
+      theme: theme || "light",
     };
     localStorage.setItem("selected-palette", JSON.stringify(savedData));
   };

@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
-import { AdminLayout } from '@/components/layout/AdminLayout';
-import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Bot, CreditCard, TrendingUp } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { PageTransition } from '@/components/PageTransition';
+import { useEffect, useState } from "react";
+import { AdminLayout } from "@/components/layout/AdminLayout";
+import { AdminGuard } from "@/components/admin/AdminGuard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Users, Bot, CreditCard, TrendingUp } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
 
 interface Stats {
   totalUsers: number;
@@ -25,34 +24,20 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        // Fetch profiles count
-        const { count: usersCount } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true });
+        // TODO: Replace with your API call
+        // const response = await fetch('/api/admin/stats');
+        // const data = await response.json();
+        // setStats(data);
 
-        // Fetch agents count
-        const { count: agentsCount } = await supabase
-          .from('agents')
-          .select('*', { count: 'exact', head: true });
-
-        // Fetch subscriptions
-        const { count: subsCount } = await supabase
-          .from('subscriptions')
-          .select('*', { count: 'exact', head: true });
-
-        const { count: proCount } = await supabase
-          .from('subscriptions')
-          .select('*', { count: 'exact', head: true })
-          .eq('plan', 'pro');
-
+        // Default stats for now
         setStats({
-          totalUsers: usersCount || 0,
-          totalAgents: agentsCount || 0,
-          totalSubscriptions: subsCount || 0,
-          proSubscriptions: proCount || 0,
+          totalUsers: 0,
+          totalAgents: 0,
+          totalSubscriptions: 0,
+          proSubscriptions: 0,
         });
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error("Error fetching stats:", error);
       } finally {
         setLoading(false);
       }
@@ -63,36 +48,36 @@ export default function AdminDashboard() {
 
   const statCards = [
     {
-      title: 'Total de Usuários',
+      title: "Total de Usuários",
       value: stats.totalUsers,
-      description: 'Usuários registrados',
+      description: "Usuários registrados",
       icon: Users,
-      color: 'text-blue-500',
-      bgColor: 'bg-blue-500/10',
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
     },
     {
-      title: 'Agentes Criados',
+      title: "Agentes Criados",
       value: stats.totalAgents,
-      description: 'Agentes no sistema',
+      description: "Agentes no sistema",
       icon: Bot,
-      color: 'text-green-500',
-      bgColor: 'bg-green-500/10',
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
     },
     {
-      title: 'Assinaturas Ativas',
+      title: "Assinaturas Ativas",
       value: stats.totalSubscriptions,
-      description: 'Total de assinaturas',
+      description: "Total de assinaturas",
       icon: CreditCard,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-500/10',
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
     },
     {
-      title: 'Planos Pro',
+      title: "Planos Pro",
       value: stats.proSubscriptions,
-      description: 'Usuários premium',
+      description: "Usuários premium",
       icon: TrendingUp,
-      color: 'text-orange-500',
-      bgColor: 'bg-orange-500/10',
+      color: "text-orange-500",
+      bgColor: "bg-orange-500/10",
     },
   ];
 
@@ -114,12 +99,8 @@ export default function AdminDashboard() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {loading ? '...' : stat.value}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {stat.description}
-                    </p>
+                    <div className="text-2xl font-bold">{loading ? "..." : stat.value}</div>
+                    <p className="text-xs text-muted-foreground mt-1">{stat.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -129,9 +110,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Ações Rápidas</CardTitle>
-                <CardDescription>
-                  Gerencie os principais recursos do sistema
-                </CardDescription>
+                <CardDescription>Gerencie os principais recursos do sistema</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-3">

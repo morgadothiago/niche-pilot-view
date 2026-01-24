@@ -1,6 +1,19 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+
+// TODO: Replace with your API types
+export interface User {
+  id: string;
+  email: string;
+  user_metadata?: {
+    full_name?: string;
+    avatar_url?: string;
+  };
+}
+
+export interface Session {
+  user: User;
+  access_token: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -19,54 +32,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    // TODO: Check for existing session from your API
+    // Example: check localStorage for token and validate with your API
+    const checkSession = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          // TODO: Validate token with your API
+          // const response = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+          // if (response.ok) {
+          //   const userData = await response.json();
+          //   setUser(userData);
+          //   setSession({ user: userData, access_token: token });
+          // }
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    checkSession();
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error };
+    try {
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/auth/login', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email, password }),
+      // });
+      // const data = await response.json();
+      // if (!response.ok) throw new Error(data.message);
+      // localStorage.setItem('auth_token', data.token);
+      // setUser(data.user);
+      // setSession({ user: data.user, access_token: data.token });
+
+      console.log("TODO: Implement signIn with your API", { email, password });
+      return { error: new Error("API not configured. Implement signIn with your API.") };
+    } catch (error) {
+      return { error: error as Error };
+    }
   };
 
   const signUp = async (email: string, password: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl
-      }
-    });
-    return { error };
+    try {
+      // TODO: Replace with your API call
+      // const response = await fetch('/api/auth/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email, password }),
+      // });
+      // const data = await response.json();
+      // if (!response.ok) throw new Error(data.message);
+
+      console.log("TODO: Implement signUp with your API", { email, password });
+      return { error: new Error("API not configured. Implement signUp with your API.") };
+    } catch (error) {
+      return { error: error as Error };
+    }
   };
 
   const signOut = async () => {
-    // Clear state immediately before calling signOut
+    // TODO: Call your API to invalidate the session
+    // await fetch('/api/auth/logout', { method: 'POST' });
+    localStorage.removeItem("auth_token");
     setUser(null);
     setSession(null);
-    
-    // Sign out from Supabase (ignore errors since session might already be invalid)
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (error) {
-      console.log('Sign out completed');
-    }
   };
 
   return (
@@ -76,10 +110,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

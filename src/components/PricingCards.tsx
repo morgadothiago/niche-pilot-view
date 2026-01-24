@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Check, X, Sparkles, Zap, Building2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Check, X, Sparkles, Zap, Building2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface PlanFeature {
   text: string;
@@ -23,54 +23,54 @@ interface Plan {
 
 const plans: Plan[] = [
   {
-    name: 'Free',
-    description: 'Perfeito para começar',
+    name: "Free",
+    description: "Perfeito para começar",
     monthlyPrice: 0,
     annualPrice: 0,
     icon: Sparkles,
     features: [
-      { text: '3 agentes ativos', included: true },
-      { text: '100 mensagens/mês', included: true },
-      { text: 'Histórico de 7 dias', included: true },
-      { text: 'Suporte por email', included: true },
-      { text: 'Agentes personalizados', included: false },
-      { text: 'API de integração', included: false },
+      { text: "3 agentes ativos", included: true },
+      { text: "100 mensagens/mês", included: true },
+      { text: "Histórico de 7 dias", included: true },
+      { text: "Suporte por email", included: true },
+      { text: "Agentes personalizados", included: false },
+      { text: "API de integração", included: false },
     ],
-    cta: 'Começar grátis',
+    cta: "Começar grátis",
   },
   {
-    name: 'Pro',
-    description: 'Para profissionais',
+    name: "Pro",
+    description: "Para profissionais",
     monthlyPrice: 49,
     annualPrice: 39,
     icon: Zap,
     popular: true,
     features: [
-      { text: 'Agentes ilimitados', included: true },
-      { text: 'Mensagens ilimitadas', included: true },
-      { text: 'Histórico completo', included: true },
-      { text: 'Suporte prioritário', included: true },
-      { text: 'Agentes personalizados', included: true },
-      { text: 'API de integração', included: true },
+      { text: "Agentes ilimitados", included: true },
+      { text: "Mensagens ilimitadas", included: true },
+      { text: "Histórico completo", included: true },
+      { text: "Suporte prioritário", included: true },
+      { text: "Agentes personalizados", included: true },
+      { text: "API de integração", included: true },
     ],
-    cta: 'Assinar Pro',
+    cta: "Assinar Pro",
   },
   {
-    name: 'Enterprise',
-    description: 'Para grandes empresas',
+    name: "Enterprise",
+    description: "Para grandes empresas",
     monthlyPrice: 0,
     annualPrice: 0,
     isCustom: true,
     icon: Building2,
     features: [
-      { text: 'Tudo do Pro', included: true },
-      { text: 'SSO e segurança', included: true },
-      { text: 'SLA garantido 99.9%', included: true },
-      { text: 'Gerente dedicado', included: true },
-      { text: 'Deploy on-premise', included: true },
-      { text: 'Suporte 24/7', included: true },
+      { text: "Tudo do Pro", included: true },
+      { text: "SSO e segurança", included: true },
+      { text: "SLA garantido 99.9%", included: true },
+      { text: "Gerente dedicado", included: true },
+      { text: "Deploy on-premise", included: true },
+      { text: "Suporte 24/7", included: true },
     ],
-    cta: 'Falar com vendas',
+    cta: "Falar com vendas",
   },
 ];
 
@@ -81,21 +81,23 @@ interface PricingCardsProps {
 
 export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
   const formatPrice = (plan: Plan) => {
-    if (plan.isCustom) return 'Personalizado';
+    if (plan.isCustom) return "Personalizado";
     const price = isAnnual ? plan.annualPrice : plan.monthlyPrice;
     return `R$ ${price}`;
   };
 
   const getPeriod = (plan: Plan) => {
-    if (plan.isCustom) return '';
-    return '/mês';
+    if (plan.isCustom) return "";
+    return "/mês";
   };
 
   return (
-    <div className={cn(
-      "grid gap-4 sm:gap-6",
-      compact ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 md:grid-cols-3 lg:gap-8"
-    )}>
+    <div
+      className={cn(
+        "grid gap-4 sm:gap-6",
+        compact ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1 md:grid-cols-3 lg:gap-8"
+      )}
+    >
       {plans.map((plan, index) => {
         const Icon = plan.icon;
         return (
@@ -107,8 +109,8 @@ export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
             viewport={{ once: true }}
             className={cn(
               "relative bg-card rounded-2xl border transition-all duration-300 hover:shadow-medium",
-              plan.popular 
-                ? "border-primary shadow-soft ring-2 ring-primary/20" 
+              plan.popular
+                ? "border-primary shadow-soft ring-2 ring-primary/20"
                 : "border-border shadow-soft"
             )}
           >
@@ -123,10 +125,12 @@ export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
             <div className={cn("p-5 sm:p-6", compact && "p-4 sm:p-5")}>
               {/* Header */}
               <div className="flex items-center gap-3 mb-3 sm:mb-4">
-                <div className={cn(
-                  "w-10 h-10 rounded-xl flex items-center justify-center",
-                  plan.popular ? "bg-primary text-primary-foreground" : "bg-primary/10"
-                )}>
+                <div
+                  className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center",
+                    plan.popular ? "bg-primary text-primary-foreground" : "bg-primary/10"
+                  )}
+                >
                   <Icon className={cn("w-5 h-5", !plan.popular && "text-primary")} />
                 </div>
                 <div>
@@ -157,10 +161,12 @@ export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
                     ) : (
                       <X className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
                     )}
-                    <span className={cn(
-                      "text-xs sm:text-sm",
-                      feature.included ? "text-foreground" : "text-muted-foreground/60"
-                    )}>
+                    <span
+                      className={cn(
+                        "text-xs sm:text-sm",
+                        feature.included ? "text-foreground" : "text-muted-foreground/60"
+                      )}
+                    >
                       {feature.text}
                     </span>
                   </li>
@@ -168,15 +174,13 @@ export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
               </ul>
 
               {/* CTA */}
-              <Button 
-                variant={plan.popular ? "hero" : "outline"} 
+              <Button
+                variant={plan.popular ? "hero" : "outline"}
                 className="w-full"
                 size={compact ? "sm" : "default"}
                 asChild
               >
-                <Link to={plan.isCustom ? "/contact" : "/signup"}>
-                  {plan.cta}
-                </Link>
+                <Link to={plan.isCustom ? "/contact" : "/signup"}>{plan.cta}</Link>
               </Button>
             </div>
           </motion.div>

@@ -1,6 +1,6 @@
-import { motion } from 'framer-motion';
-import { Sparkles, Zap, Crown, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { motion } from "framer-motion";
+import { Sparkles, Zap, Crown, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PlanChangeAnimationProps {
   fromPlan: string;
@@ -8,10 +8,13 @@ interface PlanChangeAnimationProps {
   isVisible: boolean;
 }
 
-const planConfig: Record<string, { name: string; icon: React.ElementType; color: string; bgColor: string }> = {
-  free: { name: 'Free', icon: Sparkles, color: 'text-muted-foreground', bgColor: 'bg-muted' },
-  pro: { name: 'Pro', icon: Zap, color: 'text-primary', bgColor: 'bg-primary/10' },
-  custom: { name: 'Enterprise', icon: Crown, color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
+const planConfig: Record<
+  string,
+  { name: string; icon: React.ElementType; color: string; bgColor: string }
+> = {
+  free: { name: "Free", icon: Sparkles, color: "text-muted-foreground", bgColor: "bg-muted" },
+  pro: { name: "Pro", icon: Zap, color: "text-primary", bgColor: "bg-primary/10" },
+  custom: { name: "Enterprise", icon: Crown, color: "text-amber-500", bgColor: "bg-amber-500/10" },
 };
 
 export function PlanChangeAnimation({ fromPlan, toPlan, isVisible }: PlanChangeAnimationProps) {
@@ -35,9 +38,9 @@ export function PlanChangeAnimation({ fromPlan, toPlan, isVisible }: PlanChangeA
           initial={{ x: 0, opacity: 1 }}
           animate={{ x: -20, opacity: 0.5 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className={cn('w-24 h-24 rounded-2xl flex items-center justify-center', from.bgColor)}
+          className={cn("w-24 h-24 rounded-2xl flex items-center justify-center", from.bgColor)}
         >
-          <FromIcon className={cn('w-12 h-12', from.color)} />
+          <FromIcon className={cn("w-12 h-12", from.color)} />
         </motion.div>
 
         {/* Arrow */}
@@ -53,14 +56,14 @@ export function PlanChangeAnimation({ fromPlan, toPlan, isVisible }: PlanChangeA
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.4 }}
-          className={cn('w-24 h-24 rounded-2xl flex items-center justify-center', to.bgColor)}
+          transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.4 }}
+          className={cn("w-24 h-24 rounded-2xl flex items-center justify-center", to.bgColor)}
         >
           <motion.div
             animate={{ rotate: [0, -10, 10, 0] }}
             transition={{ duration: 0.5, delay: 0.7 }}
           >
-            <ToIcon className={cn('w-12 h-12', to.color)} />
+            <ToIcon className={cn("w-12 h-12", to.color)} />
           </motion.div>
         </motion.div>
       </div>
@@ -75,26 +78,26 @@ export function PlanChangeAnimation({ fromPlan, toPlan, isVisible }: PlanChangeA
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
-            initial={{ 
-              x: '50%', 
-              y: '50%', 
+            initial={{
+              x: "50%",
+              y: "50%",
               scale: 0,
-              opacity: 1 
+              opacity: 1,
             }}
-            animate={{ 
-              x: `${50 + (Math.random() - 0.5) * 100}%`, 
+            animate={{
+              x: `${50 + (Math.random() - 0.5) * 100}%`,
               y: `${50 + (Math.random() - 0.5) * 100}%`,
               scale: [0, 1, 0],
-              opacity: [1, 1, 0]
+              opacity: [1, 1, 0],
             }}
-            transition={{ 
+            transition={{
               duration: 1,
               delay: 0.8 + i * 0.05,
-              ease: 'easeOut'
+              ease: "easeOut",
             }}
             className={cn(
-              'absolute w-3 h-3 rounded-full',
-              i % 3 === 0 ? 'bg-primary' : i % 3 === 1 ? 'bg-amber-500' : 'bg-green-500'
+              "absolute w-3 h-3 rounded-full",
+              i % 3 === 0 ? "bg-primary" : i % 3 === 1 ? "bg-amber-500" : "bg-green-500"
             )}
           />
         ))}

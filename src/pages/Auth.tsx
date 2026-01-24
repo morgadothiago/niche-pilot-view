@@ -1,65 +1,36 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Bot, ArrowLeft, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Bot, ArrowLeft, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  
+
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already logged in and redirect based on role
+  // Check if user is already logged in and redirect
   useEffect(() => {
-    async function checkUserAndRedirect() {
-      if (authLoading) return;
-      
-      if (user) {
-        console.log('User logged in:', user.id, user.email);
-        
-        // Check if user is admin
-        const { data: roleData, error } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
+    if (authLoading) return;
 
-        console.log('Role data:', roleData, 'Error:', error);
-
-        if (roleData?.role === 'admin') {
-          console.log('Redirecting to admin...');
-          navigate('/admin', { replace: true });
-        } else {
-          console.log('Redirecting to dashboard...');
-          navigate('/dashboard', { replace: true });
-        }
-      }
+    if (user) {
+      // TODO: Check user role via your API and redirect accordingly
+      navigate("/dashboard", { replace: true });
     }
-    checkUserAndRedirect();
   }, [user, authLoading, navigate]);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth`,
-        },
-      });
-      
-      if (error) {
-        toast.error('Erro ao conectar com Google');
-        console.error('Google OAuth error:', error);
-      }
+      // TODO: Implement Google OAuth with your API
+      toast.error("Google login not configured. Implement OAuth with your API.");
     } catch (error) {
-      toast.error('Erro ao conectar com Google');
-      console.error('Google OAuth error:', error);
+      toast.error("Erro ao conectar com Google");
+      console.error("Google OAuth error:", error);
     } finally {
       setLoading(false);
     }
@@ -70,8 +41,8 @@ export default function Auth() {
       <div className="min-h-screen bg-background flex flex-col">
         {/* Header */}
         <header className="p-4">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -100,9 +71,9 @@ export default function Auth() {
               </div>
 
               {/* Google Login Button */}
-              <Button 
-                variant="outline" 
-                size="lg" 
+              <Button
+                variant="outline"
+                size="lg"
                 className="w-full h-12 text-base"
                 onClick={handleGoogleLogin}
                 disabled={loading}
@@ -143,9 +114,7 @@ export default function Auth() {
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">
-                    Seguro e rápido
-                  </span>
+                  <span className="bg-card px-2 text-muted-foreground">Seguro e rápido</span>
                 </div>
               </div>
 
@@ -167,11 +136,11 @@ export default function Auth() {
 
               {/* Terms */}
               <p className="mt-6 text-xs text-center text-muted-foreground">
-                Ao continuar, você concorda com nossos{' '}
+                Ao continuar, você concorda com nossos{" "}
                 <Link to="/terms" className="text-primary hover:underline">
                   Termos de Serviço
-                </Link>{' '}
-                e{' '}
+                </Link>{" "}
+                e{" "}
                 <Link to="/privacy" className="text-primary hover:underline">
                   Política de Privacidade
                 </Link>

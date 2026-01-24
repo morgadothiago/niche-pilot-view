@@ -1,75 +1,65 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Bot, CheckCircle, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Bot, CheckCircle, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const benefits = [
-  'Crie agentes ilimitados',
-  'Histórico completo de conversas',
-  'Suporte prioritário',
-  'Acesso a novos recursos',
+  "Crie agentes ilimitados",
+  "Histórico completo de conversas",
+  "Suporte prioritário",
+  "Acesso a novos recursos",
 ];
 
 export default function Signup() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!name.trim()) {
-      toast.error('Por favor, informe seu nome');
+      toast.error("Por favor, informe seu nome");
       return;
     }
-    
+
     if (!email.trim()) {
-      toast.error('Por favor, informe seu email');
+      toast.error("Por favor, informe seu email");
       return;
     }
-    
+
     if (password.length < 6) {
-      toast.error('A senha deve ter pelo menos 6 caracteres');
+      toast.error("A senha deve ter pelo menos 6 caracteres");
       return;
     }
 
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-          data: {
-            full_name: name,
-          }
-        }
-      });
+      const { error } = await signUp(email, password);
 
       if (error) {
-        if (error.message.includes('already registered')) {
-          toast.error('Este email já está cadastrado. Tente fazer login.');
+        if (error.message.includes("already registered")) {
+          toast.error("Este email já está cadastrado. Tente fazer login.");
         } else {
           toast.error(error.message);
         }
         return;
       }
 
-      toast.success('Conta criada com sucesso! Você já está logado.');
-      navigate('/dashboard');
+      toast.success("Conta criada com sucesso! Você já está logado.");
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Signup error:', error);
-      toast.error('Erro ao criar conta. Tente novamente.');
+      console.error("Signup error:", error);
+      toast.error("Erro ao criar conta. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -77,19 +67,11 @@ export default function Signup() {
 
   const handleGoogleSignup = async () => {
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-        }
-      });
-
-      if (error) {
-        toast.error('Erro ao conectar com Google');
-      }
+      // TODO: Implement Google OAuth with your API
+      toast.error("Google signup not configured. Implement OAuth with your API.");
     } catch (error) {
-      console.error('Google signup error:', error);
-      toast.error('Erro ao conectar com Google');
+      console.error("Google signup error:", error);
+      toast.error("Erro ao conectar com Google");
     }
   };
 
@@ -104,13 +86,17 @@ export default function Signup() {
                 Comece sua jornada com IA
               </h2>
               <p className="text-sidebar-foreground/70 text-lg">
-                Milhares de empresas já usam o AgentChat para automatizar tarefas e aumentar a produtividade.
+                Milhares de empresas já usam o AgentChat para automatizar tarefas e aumentar a
+                produtividade.
               </p>
             </div>
 
             <div className="space-y-4">
               {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-center gap-3 bg-sidebar-accent rounded-xl px-5 py-4">
+                <div
+                  key={benefit}
+                  className="flex items-center gap-3 bg-sidebar-accent rounded-xl px-5 py-4"
+                >
                   <CheckCircle className="w-5 h-5 text-accent flex-shrink-0" />
                   <span className="text-sidebar-foreground">{benefit}</span>
                 </div>
@@ -124,7 +110,8 @@ export default function Signup() {
                 </div>
                 <div>
                   <p className="text-sidebar-foreground italic">
-                    "O AgentChat transformou a forma como nossa equipe trabalha. Economia de 10+ horas por semana!"
+                    "O AgentChat transformou a forma como nossa equipe trabalha. Economia de 10+
+                    horas por semana!"
                   </p>
                   <p className="text-sidebar-foreground/60 text-sm mt-2">
                     — Maria Silva, CEO da TechStartup
@@ -193,20 +180,14 @@ export default function Signup() {
                 />
               </div>
 
-              <Button 
-                type="submit" 
-                variant="hero" 
-                size="lg" 
-                className="w-full"
-                disabled={loading}
-              >
+              <Button type="submit" variant="hero" size="lg" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Criando conta...
                   </>
                 ) : (
-                  'Criar conta'
+                  "Criar conta"
                 )}
               </Button>
             </form>
@@ -217,17 +198,15 @@ export default function Signup() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background text-muted-foreground">
-                  ou cadastre-se com
-                </span>
+                <span className="px-4 bg-background text-muted-foreground">ou cadastre-se com</span>
               </div>
             </div>
 
             {/* Social Login */}
             <div className="grid grid-cols-2 gap-4">
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full"
                 onClick={handleGoogleSignup}
                 disabled={loading}
@@ -252,9 +231,9 @@ export default function Signup() {
                 </svg>
                 Google
               </Button>
-              <Button 
-                variant="social" 
-                size="lg" 
+              <Button
+                variant="social"
+                size="lg"
                 className="w-full opacity-60 cursor-not-allowed"
                 disabled
               >
@@ -270,15 +249,19 @@ export default function Signup() {
 
             {/* Terms */}
             <p className="text-center text-sm text-muted-foreground">
-              Ao criar uma conta, você concorda com nossos{' '}
-              <a href="#" className="text-primary hover:underline">Termos de Serviço</a>
-              {' '}e{' '}
-              <a href="#" className="text-primary hover:underline">Política de Privacidade</a>
+              Ao criar uma conta, você concorda com nossos{" "}
+              <a href="#" className="text-primary hover:underline">
+                Termos de Serviço
+              </a>{" "}
+              e{" "}
+              <a href="#" className="text-primary hover:underline">
+                Política de Privacidade
+              </a>
             </p>
 
             {/* Login link */}
             <p className="text-center text-muted-foreground">
-              Já tem uma conta?{' '}
+              Já tem uma conta?{" "}
               <Link to="/login" className="text-primary hover:underline font-medium">
                 Entrar
               </Link>

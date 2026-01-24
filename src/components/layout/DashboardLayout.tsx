@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { DashboardSidebar } from './DashboardSidebar';
-import { ContentHeader } from './ContentHeader';
-import { Button } from '@/components/ui/button';
-import { Menu, X, Bot } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { DashboardSidebar } from "./DashboardSidebar";
+import { ContentHeader } from "./ContentHeader";
+import { Button } from "@/components/ui/button";
+import { Menu, X, Bot } from "lucide-react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -40,22 +40,21 @@ export function DashboardLayout({ children, hideContentHeader = false }: Dashboa
 
       {/* Mobile Overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40 pt-14"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Sidebar - Desktop: always visible, Mobile: overlay drawer */}
-      <div className={`
+      <div
+        className={`
         fixed lg:static z-50 lg:z-auto h-full pt-14 lg:pt-0
         transition-transform duration-300 ease-in-out
-        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-      `}>
-        <DashboardSidebar 
-          onNavigate={() => setMobileMenuOpen(false)} 
-          collapsed={collapsed}
-        />
+        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+      `}
+      >
+        <DashboardSidebar onNavigate={() => setMobileMenuOpen(false)} collapsed={collapsed} />
       </div>
 
       {/* Main Content */}
@@ -63,10 +62,12 @@ export function DashboardLayout({ children, hideContentHeader = false }: Dashboa
         {!hideContentHeader && (
           <ContentHeader collapsed={collapsed} onCollapsedChange={setCollapsed} />
         )}
-        <div className={cn(
-          "flex-1",
-          hideContentHeader ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"
-        )}>
+        <div
+          className={cn(
+            "flex-1",
+            hideContentHeader ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden"
+          )}
+        >
           {children}
         </div>
       </main>
