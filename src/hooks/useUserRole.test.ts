@@ -6,6 +6,12 @@ import { useUserRole } from "./useUserRole";
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: vi.fn(() => ({
     user: { id: "test-user-id", email: "test@example.com" },
+    session: null,
+    loading: false,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
   })),
 }));
 
@@ -35,6 +41,7 @@ describe("useUserRole", () => {
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
+      refreshProfile: vi.fn(),
     });
 
     const { result } = renderHook(() => useUserRole());

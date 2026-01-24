@@ -12,10 +12,8 @@ interface UserRoleState {
 export function useUserRole(): UserRoleState {
   const { user, loading } = useAuth();
 
-  const role: AppRole | null = (user?.role as AppRole) || "user"; // Default to user if undefined but logged in? Or null?
-
-  // If we want to be strict:
-  // const role = user?.role || null;
+  // Return null if user is not logged in, otherwise default to 'user' role
+  const role: AppRole | null = user ? (user.role as AppRole) || "user" : null;
 
   return {
     role,
