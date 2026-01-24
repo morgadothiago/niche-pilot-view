@@ -1,26 +1,26 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Bot, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { PaletteSelector } from '@/components/PaletteSelector';
-import { useActiveSection } from '@/hooks/useActiveSection';
-import { cn } from '@/lib/utils';
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Bot, Menu, X } from "lucide-react";
+import { useState } from "react";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { PaletteSelector } from "@/components/PaletteSelector";
+import { useActiveSection } from "@/hooks/useActiveSection";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: '#features', label: 'Recursos' },
-  { href: '#how-it-works', label: 'Como funciona' },
-  { href: '#pricing', label: 'Preços' },
+  { href: "#features", label: "Recursos" },
+  { href: "#how-it-works", label: "Como funciona" },
+  { href: "#pricing", label: "Preços" },
 ];
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const isLandingPage = location.pathname === '/' || location.pathname === '/landing';
-  const activeSection = useActiveSection(['features', 'how-it-works', 'pricing']);
+  const isLandingPage = location.pathname === "/" || location.pathname === "/landing";
+  const activeSection = useActiveSection(["features", "how-it-works", "pricing"]);
 
   const isActive = (href: string) => {
-    const sectionId = href.replace('#', '');
+    const sectionId = href.replace("#", "");
     return activeSection === sectionId;
   };
 
@@ -50,13 +50,13 @@ export function Header() {
                 )}
               >
                 {link.label}
-                <span 
+                <span
                   className={cn(
                     "absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full transition-all duration-300 ease-out",
-                    isLandingPage && isActive(link.href) 
-                      ? "opacity-100 scale-x-100" 
+                    isLandingPage && isActive(link.href)
+                      ? "opacity-100 scale-x-100"
                       : "opacity-0 scale-x-0"
-                  )} 
+                  )}
                 />
               </a>
             ))}
@@ -75,10 +75,7 @@ export function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="md:hidden p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>

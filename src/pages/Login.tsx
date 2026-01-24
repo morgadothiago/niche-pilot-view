@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Bot, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { z } from 'zod';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Bot, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
 });
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
@@ -29,7 +29,7 @@ export default function Login() {
 
     if (user) {
       // TODO: Check user role via your API and redirect accordingly
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -42,8 +42,8 @@ export default function Login() {
       if (error instanceof z.ZodError) {
         const fieldErrors: { email?: string; password?: string } = {};
         error.errors.forEach((err) => {
-          if (err.path[0] === 'email') fieldErrors.email = err.message;
-          if (err.path[0] === 'password') fieldErrors.password = err.message;
+          if (err.path[0] === "email") fieldErrors.email = err.message;
+          if (err.path[0] === "password") fieldErrors.password = err.message;
         });
         setErrors(fieldErrors);
       }
@@ -61,13 +61,13 @@ export default function Login() {
     try {
       const { error } = await signIn(email, password);
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Email ou senha incorretos');
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Email ou senha incorretos");
         } else {
           toast.error(error.message);
         }
       } else {
-        toast.success('Login realizado com sucesso!');
+        toast.success("Login realizado com sucesso!");
       }
     } finally {
       setLoading(false);
@@ -78,9 +78,9 @@ export default function Login() {
     setLoading(true);
     try {
       // TODO: Implement Google OAuth with your API
-      toast.error('Google login not configured. Implement OAuth with your API.');
+      toast.error("Google login not configured. Implement OAuth with your API.");
     } catch {
-      toast.error('Erro ao conectar com Google');
+      toast.error("Erro ao conectar com Google");
     } finally {
       setLoading(false);
     }
@@ -101,9 +101,7 @@ export default function Login() {
                 <span className="font-bold text-2xl">AgentChat</span>
               </Link>
               <h1 className="text-3xl font-bold">Bem-vindo de volta</h1>
-              <p className="text-muted-foreground mt-2">
-                Entre com sua conta para continuar
-              </p>
+              <p className="text-muted-foreground mt-2">Entre com sua conta para continuar</p>
             </div>
 
             {/* Form */}
@@ -119,9 +117,7 @@ export default function Login() {
                   className="h-12"
                   disabled={loading}
                 />
-                {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email}</p>
-                )}
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
@@ -140,25 +136,17 @@ export default function Login() {
                   className="h-12"
                   disabled={loading}
                 />
-                {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
               </div>
 
-              <Button
-                variant="hero"
-                size="lg"
-                className="w-full"
-                type="submit"
-                disabled={loading}
-              >
+              <Button variant="hero" size="lg" className="w-full" type="submit" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     Entrando...
                   </>
                 ) : (
-                  'Entrar'
+                  "Entrar"
                 )}
               </Button>
             </form>
@@ -169,9 +157,7 @@ export default function Login() {
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background text-muted-foreground">
-                  ou continue com
-                </span>
+                <span className="px-4 bg-background text-muted-foreground">ou continue com</span>
               </div>
             </div>
 
@@ -222,7 +208,7 @@ export default function Login() {
 
             {/* Sign up link */}
             <p className="text-center text-muted-foreground">
-              Não tem uma conta?{' '}
+              Não tem uma conta?{" "}
               <Link to="/signup" className="text-primary hover:underline font-medium">
                 Criar conta
               </Link>

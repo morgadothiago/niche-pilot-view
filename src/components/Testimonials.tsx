@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Star, Quote } from "lucide-react";
 
 interface Testimonial {
   name: string;
@@ -12,51 +12,57 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: 'Ana Silva',
-    role: 'CEO',
-    company: 'TechStart Brasil',
-    avatar: '👩‍💼',
-    content: 'Os agentes de IA transformaram completamente nosso atendimento ao cliente. Reduzimos o tempo de resposta em 80% e a satisfação dos clientes aumentou significativamente.',
+    name: "Ana Silva",
+    role: "CEO",
+    company: "TechStart Brasil",
+    avatar: "👩‍💼",
+    content:
+      "Os agentes de IA transformaram completamente nosso atendimento ao cliente. Reduzimos o tempo de resposta em 80% e a satisfação dos clientes aumentou significativamente.",
     rating: 5,
   },
   {
-    name: 'Carlos Mendes',
-    role: 'Diretor de Marketing',
-    company: 'Agência Digital Pro',
-    avatar: '👨‍💻',
-    content: 'Incrível como a plataforma é intuitiva. Em poucos minutos configurei agentes personalizados para diferentes campanhas. O ROI foi impressionante!',
+    name: "Carlos Mendes",
+    role: "Diretor de Marketing",
+    company: "Agência Digital Pro",
+    avatar: "👨‍💻",
+    content:
+      "Incrível como a plataforma é intuitiva. Em poucos minutos configurei agentes personalizados para diferentes campanhas. O ROI foi impressionante!",
     rating: 5,
   },
   {
-    name: 'Mariana Costa',
-    role: 'Fundadora',
-    company: 'E-commerce Plus',
-    avatar: '👩‍🚀',
-    content: 'A melhor decisão que tomamos foi implementar os agentes de IA. Nosso suporte funciona 24/7 e as vendas aumentaram 40% no primeiro mês.',
+    name: "Mariana Costa",
+    role: "Fundadora",
+    company: "E-commerce Plus",
+    avatar: "👩‍🚀",
+    content:
+      "A melhor decisão que tomamos foi implementar os agentes de IA. Nosso suporte funciona 24/7 e as vendas aumentaram 40% no primeiro mês.",
     rating: 5,
   },
   {
-    name: 'Roberto Alves',
-    role: 'CTO',
-    company: 'FinTech Solutions',
-    avatar: '👨‍🔬',
-    content: 'A segurança e a personalização são excepcionais. Conseguimos integrar com todos os nossos sistemas existentes sem problemas.',
+    name: "Roberto Alves",
+    role: "CTO",
+    company: "FinTech Solutions",
+    avatar: "👨‍🔬",
+    content:
+      "A segurança e a personalização são excepcionais. Conseguimos integrar com todos os nossos sistemas existentes sem problemas.",
     rating: 5,
   },
   {
-    name: 'Juliana Santos',
-    role: 'Head de Produto',
-    company: 'SaaS Company',
-    avatar: '👩‍💻',
-    content: 'O suporte da equipe é fantástico e a plataforma evolui constantemente. Já recomendei para várias empresas do nosso grupo.',
+    name: "Juliana Santos",
+    role: "Head de Produto",
+    company: "SaaS Company",
+    avatar: "👩‍💻",
+    content:
+      "O suporte da equipe é fantástico e a plataforma evolui constantemente. Já recomendei para várias empresas do nosso grupo.",
     rating: 5,
   },
   {
-    name: 'Fernando Lima',
-    role: 'Empreendedor',
-    company: 'Startup Hub',
-    avatar: '🧑‍💼',
-    content: 'Como startup, precisávamos de uma solução escalável e acessível. Encontramos tudo isso aqui, além de uma experiência incrível.',
+    name: "Fernando Lima",
+    role: "Empreendedor",
+    company: "Startup Hub",
+    avatar: "🧑‍💼",
+    content:
+      "Como startup, precisávamos de uma solução escalável e acessível. Encontramos tudo isso aqui, além de uma experiência incrível.",
     rating: 5,
   },
 ];
@@ -89,9 +95,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
         ))}
       </div>
 
-      <p className="text-muted-foreground leading-relaxed">
-        "{testimonial.content}"
-      </p>
+      <p className="text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
     </motion.div>
   );
 }
@@ -108,7 +112,7 @@ export function Testimonials() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            O que nossos{' '}
+            O que nossos{" "}
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               clientes dizem
             </span>
@@ -133,10 +137,10 @@ export function Testimonials() {
           className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8"
         >
           {[
-            { value: '10,000+', label: 'Empresas ativas' },
-            { value: '50M+', label: 'Mensagens processadas' },
-            { value: '99.9%', label: 'Uptime garantido' },
-            { value: '4.9/5', label: 'Avaliação média' },
+            { value: "10,000+", label: "Empresas ativas" },
+            { value: "50M+", label: "Mensagens processadas" },
+            { value: "99.9%", label: "Uptime garantido" },
+            { value: "4.9/5", label: "Avaliação média" },
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <p className="text-3xl md:text-4xl font-bold text-primary mb-2">{stat.value}</p>

@@ -1,7 +1,7 @@
-import { useSubscription } from '@/hooks/useSubscription';
-import { Progress } from '@/components/ui/progress';
-import { MessageSquare, Bot, Zap } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useSubscription } from "@/hooks/useSubscription";
+import { Progress } from "@/components/ui/progress";
+import { MessageSquare, Bot, Zap } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface UsageLimitsProps {
   className?: string;
@@ -12,7 +12,12 @@ export function UsageLimits({ className }: UsageLimitsProps) {
 
   if (loading) {
     return (
-      <div className={cn("bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border animate-pulse", className)}>
+      <div
+        className={cn(
+          "bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border animate-pulse",
+          className
+        )}
+      >
         <div className="h-6 bg-muted rounded w-1/3 mb-4" />
         <div className="space-y-4">
           <div className="h-4 bg-muted rounded w-full" />
@@ -22,7 +27,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
     );
   }
 
-  const plan = subscription?.plan || 'free';
+  const plan = subscription?.plan || "free";
   const credits = subscription?.credits || 0;
 
   // Define limits based on plan
@@ -46,13 +51,15 @@ export function UsageLimits({ className }: UsageLimitsProps) {
   };
 
   const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return 'bg-destructive';
-    if (percentage >= 70) return 'bg-amber-500';
-    return 'bg-primary';
+    if (percentage >= 90) return "bg-destructive";
+    if (percentage >= 70) return "bg-amber-500";
+    return "bg-primary";
   };
 
   return (
-    <div className={cn("bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border", className)}>
+    <div
+      className={cn("bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border", className)}
+    >
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-sm lg:text-base">Limites de Uso</h3>
         <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary font-medium capitalize">
@@ -77,8 +84,8 @@ export function UsageLimits({ className }: UsageLimitsProps) {
             </span>
           </div>
           {currentLimits.messages !== -1 && (
-            <Progress 
-              value={getPercentage(usage.messages, currentLimits.messages)} 
+            <Progress
+              value={getPercentage(usage.messages, currentLimits.messages)}
               className="h-2"
             />
           )}
@@ -100,10 +107,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
             </span>
           </div>
           {currentLimits.agents !== -1 && (
-            <Progress 
-              value={getPercentage(usage.agents, currentLimits.agents)} 
-              className="h-2"
-            />
+            <Progress value={getPercentage(usage.agents, currentLimits.agents)} className="h-2" />
           )}
         </div>
 
@@ -116,10 +120,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
             </div>
             <span className="text-sm font-medium text-accent">{credits}</span>
           </div>
-          <Progress 
-            value={getPercentage(credits, currentLimits.credits)} 
-            className="h-2"
-          />
+          <Progress value={getPercentage(credits, currentLimits.credits)} className="h-2" />
         </div>
       </div>
     </div>

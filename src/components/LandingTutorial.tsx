@@ -1,7 +1,16 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronRight, ChevronLeft, Sparkles, Palette, MessageSquare, CreditCard, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  ChevronRight,
+  ChevronLeft,
+  Sparkles,
+  Palette,
+  MessageSquare,
+  CreditCard,
+  Zap,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TutorialStep {
   id: number;
@@ -14,33 +23,38 @@ interface TutorialStep {
 const tutorialSteps: TutorialStep[] = [
   {
     id: 1,
-    title: 'Bem-vindo ao AgentChat! 👋',
-    description: 'Crie agentes de IA personalizados que entendem seu negócio e atendem seus clientes 24/7.',
+    title: "Bem-vindo ao AgentChat! 👋",
+    description:
+      "Crie agentes de IA personalizados que entendem seu negócio e atendem seus clientes 24/7.",
     icon: <Sparkles className="w-8 h-8" />,
   },
   {
     id: 2,
-    title: 'Personalize as Cores',
-    description: 'Use o seletor de paleta no canto superior direito para escolher as cores que combinam com sua marca.',
+    title: "Personalize as Cores",
+    description:
+      "Use o seletor de paleta no canto superior direito para escolher as cores que combinam com sua marca.",
     icon: <Palette className="w-8 h-8" />,
-    highlight: 'palette',
+    highlight: "palette",
   },
   {
     id: 3,
-    title: 'Agentes Especializados',
-    description: 'Crie agentes para diferentes nichos: vendas, suporte, marketing, fitness e muito mais!',
+    title: "Agentes Especializados",
+    description:
+      "Crie agentes para diferentes nichos: vendas, suporte, marketing, fitness e muito mais!",
     icon: <MessageSquare className="w-8 h-8" />,
   },
   {
     id: 4,
-    title: 'Planos Flexíveis',
-    description: 'Escolha entre planos Free, Pro ou Personalizado. Economize 20% com planos anuais!',
+    title: "Planos Flexíveis",
+    description:
+      "Escolha entre planos Free, Pro ou Personalizado. Economize 20% com planos anuais!",
     icon: <CreditCard className="w-8 h-8" />,
   },
   {
     id: 5,
-    title: 'Comece Agora!',
-    description: 'Clique em "Começar gratuitamente" para criar sua conta e seu primeiro agente de IA.',
+    title: "Comece Agora!",
+    description:
+      'Clique em "Começar gratuitamente" para criar sua conta e seu primeiro agente de IA.',
     icon: <Zap className="w-8 h-8" />,
   },
 ];
@@ -69,23 +83,23 @@ export function LandingTutorial() {
 
   const startAutoplay = useCallback(() => {
     if (!isAutoPlaying || !isOpen) return;
-    
+
     clearTimers();
     setProgress(0);
-    
+
     const startTime = Date.now();
     progressInterval.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
       const newProgress = Math.min((elapsed / AUTOPLAY_DURATION) * 100, 100);
       setProgress(newProgress);
-      
+
       if (newProgress >= 100) {
         clearTimers();
       }
     }, 50);
 
     autoplayTimeout.current = setTimeout(() => {
-      setCurrentStep(prev => {
+      setCurrentStep((prev) => {
         if (prev < tutorialSteps.length - 1) {
           return prev + 1;
         } else {
@@ -104,7 +118,7 @@ export function LandingTutorial() {
   }, [currentStep, isOpen, isAutoPlaying, startAutoplay, clearTimers]);
 
   useEffect(() => {
-    const seen = localStorage.getItem('landing-tutorial-seen');
+    const seen = localStorage.getItem("landing-tutorial-seen");
     if (!seen) {
       const timer = setTimeout(() => setIsOpen(true), 2000);
       return () => clearTimeout(timer);
@@ -116,7 +130,7 @@ export function LandingTutorial() {
   const handleClose = () => {
     clearTimers();
     setIsOpen(false);
-    localStorage.setItem('landing-tutorial-seen', 'true');
+    localStorage.setItem("landing-tutorial-seen", "true");
     setHasSeenTutorial(true);
   };
 
@@ -189,7 +203,7 @@ export function LandingTutorial() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              transition={{ type: 'spring', duration: 0.5 }}
+              transition={{ type: "spring", duration: 0.5 }}
               className="fixed inset-x-4 top-1/2 -translate-y-1/2 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 z-50 w-auto sm:w-full sm:max-w-md"
             >
               <div className="bg-card rounded-2xl shadow-2xl border border-border overflow-hidden">
@@ -205,11 +219,11 @@ export function LandingTutorial() {
                         {index < currentStep ? (
                           <div className="h-full w-full bg-white rounded-full" />
                         ) : index === currentStep ? (
-                          <motion.div 
+                          <motion.div
                             className="h-full bg-white rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${progress}%` }}
-                            transition={{ duration: 0.05, ease: 'linear' }}
+                            transition={{ duration: 0.05, ease: "linear" }}
                           />
                         ) : null}
                       </div>
@@ -236,11 +250,11 @@ export function LandingTutorial() {
                       initial={{ scale: 0.5, opacity: 0, y: 20 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
                       exit={{ scale: 0.5, opacity: 0, y: -20 }}
-                      transition={{ 
-                        type: 'spring', 
-                        stiffness: 300, 
+                      transition={{
+                        type: "spring",
+                        stiffness: 300,
                         damping: 20,
-                        duration: 0.4 
+                        duration: 0.4,
                       }}
                       className="w-16 h-16 rounded-2xl bg-card border-4 border-card shadow-lg flex items-center justify-center text-primary"
                     >
@@ -254,12 +268,12 @@ export function LandingTutorial() {
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={step.id}
-                      initial={{ opacity: 0, x: 40, filter: 'blur(4px)' }}
-                      animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, x: -40, filter: 'blur(4px)' }}
-                      transition={{ 
+                      initial={{ opacity: 0, x: 40, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                      exit={{ opacity: 0, x: -40, filter: "blur(4px)" }}
+                      transition={{
                         duration: 0.35,
-                        ease: [0.25, 0.46, 0.45, 0.94]
+                        ease: [0.25, 0.46, 0.45, 0.94],
                       }}
                     >
                       <h3 className="text-xl font-bold mb-2">{step.title}</h3>
@@ -279,13 +293,9 @@ export function LandingTutorial() {
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Anterior
                   </Button>
-                  <Button
-                    variant="hero"
-                    onClick={handleNext}
-                    className="flex-1"
-                  >
+                  <Button variant="hero" onClick={handleNext} className="flex-1">
                     {currentStep === tutorialSteps.length - 1 ? (
-                      'Começar!'
+                      "Começar!"
                     ) : (
                       <>
                         Próximo

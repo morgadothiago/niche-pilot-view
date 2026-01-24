@@ -1,0 +1,47 @@
+# Labels for PR based on files changed
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: "src/**/*"
+
+styles:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**/*.css"
+          - "tailwind.config.*"
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "src/**/*.test.*"
+          - "src/**/*.spec.*"
+          - "vitest.config.*"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.config.*"
+          - ".github/**/*"
+          - "package.json"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - "docs/**/*"
+
+components:
+  - changed-files:
+      - any-glob-to-any-file: "src/components/**/*"
+
+pages:
+  - changed-files:
+      - any-glob-to-any-file: "src/pages/**/*"
+
+hooks:
+  - changed-files:
+      - any-glob-to-any-file: "src/hooks/**/*"
+
+contexts:
+  - changed-files:
+      - any-glob-to-any-file: "src/contexts/**/*"

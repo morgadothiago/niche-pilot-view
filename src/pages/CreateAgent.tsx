@@ -1,39 +1,39 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Bot, ArrowLeft, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Bot, ArrowLeft, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
-const emojiAvatars = ['🤖', '🧠', '💡', '🎯', '🚀', '💬', '⚡', '🔮', '🎨', '📊', '💼', '🛠️'];
+const emojiAvatars = ["🤖", "🧠", "💡", "🎯", "🚀", "💬", "⚡", "🔮", "🎨", "📊", "💼", "🛠️"];
 
 export default function CreateAgent() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    avatar: '🤖',
-    description: '',
+    name: "",
+    avatar: "🤖",
+    description: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) {
-      toast.error('Você precisa estar logado para criar um agente');
-      navigate('/login');
+      toast.error("Você precisa estar logado para criar um agente");
+      navigate("/login");
       return;
     }
 
     if (!formData.name.trim()) {
-      toast.error('Nome do agente é obrigatório');
+      toast.error("Nome do agente é obrigatório");
       return;
     }
 
@@ -52,11 +52,11 @@ export default function CreateAgent() {
       // });
       // if (!response.ok) throw new Error('Failed to create agent');
 
-      toast.success('Agente criado com sucesso!');
-      navigate('/agents');
+      toast.success("Agente criado com sucesso!");
+      navigate("/agents");
     } catch (error) {
-      console.error('Error creating agent:', error);
-      toast.error('Erro ao criar agente');
+      console.error("Error creating agent:", error);
+      toast.error("Erro ao criar agente");
     } finally {
       setLoading(false);
     }
@@ -68,8 +68,8 @@ export default function CreateAgent() {
         <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto">
           {/* Header */}
           <div className="mb-6 lg:mb-8">
-            <Link 
-              to="/agents" 
+            <Link
+              to="/agents"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -102,11 +102,11 @@ export default function CreateAgent() {
                       <button
                         key={emoji}
                         type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, avatar: emoji }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, avatar: emoji }))}
                         className={`w-12 h-12 rounded-lg text-2xl flex items-center justify-center transition-all ${
                           formData.avatar === emoji
-                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background'
-                            : 'bg-muted hover:bg-muted/80'
+                            ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-background"
+                            : "bg-muted hover:bg-muted/80"
                         }`}
                       >
                         {emoji}
@@ -118,11 +118,11 @@ export default function CreateAgent() {
                 {/* Name */}
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome do agente *</Label>
-                  <Input 
-                    id="name" 
+                  <Input
+                    id="name"
                     placeholder="Ex: ChatGPT, Assistente de Vendas..."
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     required
                   />
                 </div>
@@ -130,12 +130,14 @@ export default function CreateAgent() {
                 {/* Description */}
                 <div className="space-y-2">
                   <Label htmlFor="description">Descrição (opcional)</Label>
-                  <Textarea 
-                    id="description" 
+                  <Textarea
+                    id="description"
                     placeholder="Descreva o que seu agente faz..."
                     rows={3}
                     value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, description: e.target.value }))
+                    }
                   />
                 </div>
               </div>
@@ -153,7 +155,7 @@ export default function CreateAgent() {
                     Criando...
                   </>
                 ) : (
-                  'Criar agente'
+                  "Criar agente"
                 )}
               </Button>
             </div>

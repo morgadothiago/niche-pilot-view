@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare, Bot, Clock, Loader2 } from 'lucide-react';
-import { chats, agents } from '@/data/mockData';
-import { PageTransition } from '@/components/PageTransition';
-import { UsageLimits } from '@/components/UsageLimits';
+import { useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Plus, MessageSquare, Bot, Clock, Loader2 } from "lucide-react";
+import { chats, agents } from "@/data/mockData";
+import { PageTransition } from "@/components/PageTransition";
+import { UsageLimits } from "@/components/UsageLimits";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -14,7 +14,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, loading, navigate]);
 
@@ -26,7 +26,7 @@ export default function Dashboard() {
     );
   }
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário';
+  const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuário";
 
   return (
     <PageTransition>
@@ -103,11 +103,13 @@ export default function Dashboard() {
                     className="flex items-center gap-3 lg:gap-4 p-3 lg:p-4 hover:bg-secondary/50 transition-colors"
                   >
                     <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl lg:text-2xl flex-shrink-0">
-                      {agent?.avatar || '🤖'}
+                      {agent?.avatar || "🤖"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium truncate text-sm lg:text-base">{chat.title}</span>
+                        <span className="font-medium truncate text-sm lg:text-base">
+                          {chat.title}
+                        </span>
                         {chat.unread && (
                           <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
                         )}
@@ -116,7 +118,9 @@ export default function Dashboard() {
                         {chat.agentName}: {chat.lastMessage}
                       </p>
                     </div>
-                    <span className="text-xs lg:text-sm text-muted-foreground hidden sm:block">{chat.timestamp}</span>
+                    <span className="text-xs lg:text-sm text-muted-foreground hidden sm:block">
+                      {chat.timestamp}
+                    </span>
                   </Link>
                 );
               })}

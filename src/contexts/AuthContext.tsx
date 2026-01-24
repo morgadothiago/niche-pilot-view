@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 // TODO: Replace with your API types
 export interface User {
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Example: check localStorage for token and validate with your API
     const checkSession = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem("auth_token");
         if (token) {
           // TODO: Validate token with your API
           // const response = await fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } });
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // }
         }
       } catch (error) {
-        console.error('Error checking session:', error);
+        console.error("Error checking session:", error);
       } finally {
         setLoading(false);
       }
@@ -70,8 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // setUser(data.user);
       // setSession({ user: data.user, access_token: data.token });
 
-      console.log('TODO: Implement signIn with your API', { email, password });
-      return { error: new Error('API not configured. Implement signIn with your API.') };
+      console.log("TODO: Implement signIn with your API", { email, password });
+      return { error: new Error("API not configured. Implement signIn with your API.") };
     } catch (error) {
       return { error: error as Error };
     }
@@ -88,8 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // const data = await response.json();
       // if (!response.ok) throw new Error(data.message);
 
-      console.log('TODO: Implement signUp with your API', { email, password });
-      return { error: new Error('API not configured. Implement signUp with your API.') };
+      console.log("TODO: Implement signUp with your API", { email, password });
+      return { error: new Error("API not configured. Implement signUp with your API.") };
     } catch (error) {
       return { error: error as Error };
     }
@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     // TODO: Call your API to invalidate the session
     // await fetch('/api/auth/logout', { method: 'POST' });
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem("auth_token");
     setUser(null);
     setSession(null);
   };
@@ -110,10 +110,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

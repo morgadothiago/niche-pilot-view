@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Send, Building2, Mail, Phone, MessageSquare, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, Send, Building2, Mail, Phone, MessageSquare, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+import { z } from "zod";
+import { motion } from "framer-motion";
 
 const contactSchema = z.object({
-  name: z.string().min(2, 'Nome deve ter no mínimo 2 caracteres').max(100),
-  email: z.string().email('Email inválido').max(255),
+  name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres").max(100),
+  email: z.string().email("Email inválido").max(255),
   company: z.string().optional(),
-  subject: z.string().min(5, 'Assunto deve ter no mínimo 5 caracteres').max(200),
-  message: z.string().min(10, 'Mensagem deve ter no mínimo 10 caracteres').max(2000),
+  subject: z.string().min(5, "Assunto deve ter no mínimo 5 caracteres").max(200),
+  message: z.string().min(10, "Mensagem deve ter no mínimo 10 caracteres").max(2000),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
@@ -24,42 +24,42 @@ type ContactForm = z.infer<typeof contactSchema>;
 const contactOptions = [
   {
     icon: Building2,
-    title: 'Plano Enterprise',
-    description: 'Soluções personalizadas para grandes empresas com SSO, SLA e suporte dedicado.',
+    title: "Plano Enterprise",
+    description: "Soluções personalizadas para grandes empresas com SSO, SLA e suporte dedicado.",
   },
   {
     icon: MessageSquare,
-    title: 'Suporte Técnico',
-    description: 'Ajuda com problemas técnicos, integrações e uso da plataforma.',
+    title: "Suporte Técnico",
+    description: "Ajuda com problemas técnicos, integrações e uso da plataforma.",
   },
   {
     icon: Mail,
-    title: 'Parcerias',
-    description: 'Interessado em se tornar parceiro ou revendedor? Entre em contato.',
+    title: "Parcerias",
+    description: "Interessado em se tornar parceiro ou revendedor? Entre em contato.",
   },
 ];
 
 export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<ContactForm>({
-    name: '',
-    email: '',
-    company: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    company: "",
+    subject: "",
+    message: "",
   });
   const [errors, setErrors] = useState<Partial<ContactForm>>({});
 
   const handleChange = (field: keyof ContactForm, value: string) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       contactSchema.parse(form);
       setErrors({});
@@ -79,8 +79,8 @@ export default function Contact() {
       // });
       // if (!response.ok) throw new Error('Failed to send message');
 
-      toast.success('Mensagem enviada com sucesso! Entraremos em contato em breve.');
-      setForm({ name: '', email: '', company: '', subject: '', message: '' });
+      toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.");
+      setForm({ name: "", email: "", company: "", subject: "", message: "" });
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Partial<ContactForm> = {};
@@ -90,8 +90,8 @@ export default function Contact() {
         });
         setErrors(fieldErrors);
       } else {
-        console.error('Unexpected error:', error);
-        toast.error('Erro inesperado. Tente novamente.');
+        console.error("Unexpected error:", error);
+        toast.error("Erro inesperado. Tente novamente.");
       }
     } finally {
       setLoading(false);
@@ -104,8 +104,8 @@ export default function Contact() {
         {/* Header */}
         <header className="p-4 border-b border-border">
           <div className="container mx-auto">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -125,13 +125,13 @@ export default function Contact() {
               className="text-center mb-12"
             >
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-                Entre em{' '}
+                Entre em{" "}
                 <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   contato
                 </span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                Estamos aqui para ajudar. Entre em contato para saber mais sobre nossos planos 
+                Estamos aqui para ajudar. Entre em contato para saber mais sobre nossos planos
                 Enterprise ou obter suporte técnico.
               </p>
             </motion.div>
@@ -146,7 +146,10 @@ export default function Contact() {
               {contactOptions.map((option, index) => {
                 const Icon = option.icon;
                 return (
-                  <Card key={index} className="bg-card border-border hover:shadow-medium transition-all duration-300">
+                  <Card
+                    key={index}
+                    className="bg-card border-border hover:shadow-medium transition-all duration-300"
+                  >
                     <CardContent className="p-6 text-center">
                       <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <Icon className="w-6 h-6 text-primary" />
@@ -179,12 +182,10 @@ export default function Contact() {
                             id="name"
                             placeholder="Seu nome"
                             value={form.name}
-                            onChange={(e) => handleChange('name', e.target.value)}
+                            onChange={(e) => handleChange("name", e.target.value)}
                             disabled={loading}
                           />
-                          {errors.name && (
-                            <p className="text-sm text-destructive">{errors.name}</p>
-                          )}
+                          {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">Email *</Label>
@@ -193,7 +194,7 @@ export default function Contact() {
                             type="email"
                             placeholder="seu@email.com"
                             value={form.email}
-                            onChange={(e) => handleChange('email', e.target.value)}
+                            onChange={(e) => handleChange("email", e.target.value)}
                             disabled={loading}
                           />
                           {errors.email && (
@@ -208,7 +209,7 @@ export default function Contact() {
                           id="company"
                           placeholder="Nome da sua empresa"
                           value={form.company}
-                          onChange={(e) => handleChange('company', e.target.value)}
+                          onChange={(e) => handleChange("company", e.target.value)}
                           disabled={loading}
                         />
                       </div>
@@ -219,7 +220,7 @@ export default function Contact() {
                           id="subject"
                           placeholder="Sobre o que você quer falar?"
                           value={form.subject}
-                          onChange={(e) => handleChange('subject', e.target.value)}
+                          onChange={(e) => handleChange("subject", e.target.value)}
                           disabled={loading}
                         />
                         {errors.subject && (
@@ -234,7 +235,7 @@ export default function Contact() {
                           placeholder="Descreva sua necessidade em detalhes..."
                           rows={5}
                           value={form.message}
-                          onChange={(e) => handleChange('message', e.target.value)}
+                          onChange={(e) => handleChange("message", e.target.value)}
                           disabled={loading}
                         />
                         {errors.message && (
@@ -242,10 +243,10 @@ export default function Contact() {
                         )}
                       </div>
 
-                      <Button 
-                        type="submit" 
-                        variant="hero" 
-                        size="lg" 
+                      <Button
+                        type="submit"
+                        variant="hero"
+                        size="lg"
                         className="w-full"
                         disabled={loading}
                       >
@@ -277,7 +278,8 @@ export default function Contact() {
                   <CardContent className="p-6 sm:p-8">
                     <h3 className="text-xl font-semibold mb-4">Plano Enterprise</h3>
                     <p className="text-white/90 mb-6">
-                      Soluções sob medida para empresas que precisam de escala, segurança e suporte premium.
+                      Soluções sob medida para empresas que precisam de escala, segurança e suporte
+                      premium.
                     </p>
                     <ul className="space-y-3 text-sm">
                       <li className="flex items-center gap-2">

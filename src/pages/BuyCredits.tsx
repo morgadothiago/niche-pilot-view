@@ -1,52 +1,52 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/hooks/useSubscription';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { PageTransition } from '@/components/PageTransition';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { Loader2, Coins, Zap, Star, Gem } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { PaymentModal } from '@/components/payment/PaymentModal';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { PageTransition } from "@/components/PageTransition";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { Loader2, Coins, Zap, Star, Gem } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PaymentModal } from "@/components/payment/PaymentModal";
 
 const creditPackages = [
   {
-    id: 'starter',
-    name: 'Starter',
+    id: "starter",
+    name: "Starter",
     credits: 100,
-    price: 9.90,
+    price: 9.9,
     icon: Coins,
-    color: 'bg-blue-500',
+    color: "bg-blue-500",
   },
   {
-    id: 'popular',
-    name: 'Popular',
+    id: "popular",
+    name: "Popular",
     credits: 500,
-    price: 39.90,
+    price: 39.9,
     icon: Zap,
     popular: true,
-    color: 'bg-primary',
+    color: "bg-primary",
     bonus: 50,
   },
   {
-    id: 'pro',
-    name: 'Pro',
+    id: "pro",
+    name: "Pro",
     credits: 1000,
-    price: 69.90,
+    price: 69.9,
     icon: Star,
-    color: 'bg-amber-500',
+    color: "bg-amber-500",
     bonus: 150,
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
+    id: "enterprise",
+    name: "Enterprise",
     credits: 5000,
-    price: 299.90,
+    price: 299.9,
     icon: Gem,
-    color: 'bg-purple-500',
+    color: "bg-purple-500",
     bonus: 1000,
   },
 ];
@@ -55,16 +55,16 @@ export default function BuyCredits() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { subscription, loading: subLoading, refetch } = useSubscription();
-  const [selectedPackage, setSelectedPackage] = useState<typeof creditPackages[0] | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<(typeof creditPackages)[0] | null>(null);
   const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, authLoading, navigate]);
 
-  const handleSelectPackage = (pkg: typeof creditPackages[0]) => {
+  const handleSelectPackage = (pkg: (typeof creditPackages)[0]) => {
     setSelectedPackage(pkg);
     setShowPayment(true);
   };
@@ -86,8 +86,8 @@ export default function BuyCredits() {
       toast.success(`${totalCredits} créditos adicionados com sucesso!`);
       refetch();
     } catch (error) {
-      console.error('Error buying credits:', error);
-      toast.error('Erro ao comprar créditos');
+      console.error("Error buying credits:", error);
+      toast.error("Erro ao comprar créditos");
     }
   };
 
@@ -121,7 +121,8 @@ export default function BuyCredits() {
                   </div>
                 </div>
                 <Badge variant="secondary" className="text-sm px-3 py-1">
-                  Plano {subscription?.plan?.charAt(0).toUpperCase()}{subscription?.plan?.slice(1)}
+                  Plano {subscription?.plan?.charAt(0).toUpperCase()}
+                  {subscription?.plan?.slice(1)}
                 </Badge>
               </div>
             </CardContent>
@@ -160,10 +161,12 @@ export default function BuyCredits() {
                   )}
 
                   <CardHeader className="pb-3">
-                    <div className={cn(
-                      "w-12 h-12 rounded-lg flex items-center justify-center text-white mb-3",
-                      pkg.color
-                    )}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-lg flex items-center justify-center text-white mb-3",
+                        pkg.color
+                      )}
+                    >
                       <Icon className="w-6 h-6" />
                     </div>
                     <CardTitle className="text-lg">{pkg.name}</CardTitle>
@@ -201,8 +204,8 @@ export default function BuyCredits() {
           <Card className="mt-8 bg-muted/50">
             <CardContent className="py-4">
               <p className="text-sm text-muted-foreground text-center">
-                💡 Os créditos não expiram e podem ser usados a qualquer momento.
-                Pacotes maiores incluem bônus exclusivos!
+                💡 Os créditos não expiram e podem ser usados a qualquer momento. Pacotes maiores
+                incluem bônus exclusivos!
               </p>
             </CardContent>
           </Card>
@@ -217,7 +220,7 @@ export default function BuyCredits() {
           title="Comprar créditos"
           description={`Você está comprando ${selectedPackage.credits + (selectedPackage.bonus || 0)} créditos`}
           amount={selectedPackage.price}
-          itemName={`Pacote ${selectedPackage.name} (${selectedPackage.credits}${selectedPackage.bonus ? ` +${selectedPackage.bonus} bônus` : ''} créditos)`}
+          itemName={`Pacote ${selectedPackage.name} (${selectedPackage.credits}${selectedPackage.bonus ? ` +${selectedPackage.bonus} bônus` : ""} créditos)`}
           isRecurring={false}
           onSuccess={handlePaymentSuccess}
         />

@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Bot, ArrowLeft, Loader2 } from 'lucide-react';
-import { PageTransition } from '@/components/PageTransition';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Bot, ArrowLeft, Loader2 } from "lucide-react";
+import { PageTransition } from "@/components/PageTransition";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function Auth() {
 
     if (user) {
       // TODO: Check user role via your API and redirect accordingly
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -27,10 +27,10 @@ export default function Auth() {
     setLoading(true);
     try {
       // TODO: Implement Google OAuth with your API
-      toast.error('Google login not configured. Implement OAuth with your API.');
+      toast.error("Google login not configured. Implement OAuth with your API.");
     } catch (error) {
-      toast.error('Erro ao conectar com Google');
-      console.error('Google OAuth error:', error);
+      toast.error("Erro ao conectar com Google");
+      console.error("Google OAuth error:", error);
     } finally {
       setLoading(false);
     }
@@ -114,9 +114,7 @@ export default function Auth() {
                   <div className="w-full border-t border-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-2 text-muted-foreground">
-                    Seguro e rápido
-                  </span>
+                  <span className="bg-card px-2 text-muted-foreground">Seguro e rápido</span>
                 </div>
               </div>
 
@@ -138,11 +136,11 @@ export default function Auth() {
 
               {/* Terms */}
               <p className="mt-6 text-xs text-center text-muted-foreground">
-                Ao continuar, você concorda com nossos{' '}
+                Ao continuar, você concorda com nossos{" "}
                 <Link to="/terms" className="text-primary hover:underline">
                   Termos de Serviço
-                </Link>{' '}
-                e{' '}
+                </Link>{" "}
+                e{" "}
                 <Link to="/privacy" className="text-primary hover:underline">
                   Política de Privacidade
                 </Link>

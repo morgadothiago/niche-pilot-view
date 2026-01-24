@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Button } from '@/components/ui/button';
-import { Plus, MessageSquare } from 'lucide-react';
-import { agents } from '@/data/mockData';
-import { PageTransition } from '@/components/PageTransition';
+import { Link } from "react-router-dom";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { Plus, MessageSquare } from "lucide-react";
+import { agents } from "@/data/mockData";
+import { PageTransition } from "@/components/PageTransition";
 
 export default function Agents() {
   return (
@@ -50,9 +50,7 @@ export default function Agents() {
 
                 {/* Card Body */}
                 <div className="px-4 lg:px-6 pb-3 lg:pb-4">
-                  <p className="text-muted-foreground text-sm line-clamp-2">
-                    {agent.description}
-                  </p>
+                  <p className="text-muted-foreground text-sm line-clamp-2">{agent.description}</p>
                 </div>
 
                 {/* Card Footer */}
@@ -71,7 +69,7 @@ export default function Agents() {
           {/* Empty State Hint */}
           <div className="mt-8 lg:mt-12 text-center">
             <p className="text-muted-foreground text-sm lg:text-base">
-              Não encontrou o que procura?{' '}
+              Não encontrou o que procura?{" "}
               <Link to="/agents/create" className="text-primary hover:underline font-medium">
                 Crie seu próprio agente personalizado
               </Link>

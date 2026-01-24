@@ -1,17 +1,30 @@
-import { useEffect, useState } from 'react';
-import { AdminLayout } from '@/components/layout/AdminLayout';
-import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PageTransition } from '@/components/PageTransition';
-import { Loader2, Plus, CreditCard, User, Coins, Sparkles, Zap, Crown, Pencil } from 'lucide-react';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { AdminLayout } from "@/components/layout/AdminLayout";
+import { AdminGuard } from "@/components/admin/AdminGuard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PageTransition } from "@/components/PageTransition";
+import { Loader2, Plus, CreditCard, User, Coins, Sparkles, Zap, Crown, Pencil } from "lucide-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 
 interface Subscription {
   id: string;
@@ -40,9 +53,9 @@ interface UserProfile {
 }
 
 const planConfig: Record<string, { name: string; icon: React.ElementType; color: string }> = {
-  free: { name: 'Free', icon: Sparkles, color: 'bg-muted text-muted-foreground' },
-  pro: { name: 'Pro', icon: Zap, color: 'bg-primary text-primary-foreground' },
-  custom: { name: 'Enterprise', icon: Crown, color: 'bg-amber-500 text-white' },
+  free: { name: "Free", icon: Sparkles, color: "bg-muted text-muted-foreground" },
+  pro: { name: "Pro", icon: Zap, color: "bg-primary text-primary-foreground" },
+  custom: { name: "Enterprise", icon: Crown, color: "bg-amber-500 text-white" },
 };
 
 export default function AdminSubscriptions() {
@@ -57,15 +70,15 @@ export default function AdminSubscriptions() {
   const [creating, setCreating] = useState(false);
 
   const [createForm, setCreateForm] = useState({
-    user_id: '',
-    plan: 'free' as 'free' | 'pro' | 'custom',
-    status: 'active',
+    user_id: "",
+    plan: "free" as "free" | "pro" | "custom",
+    status: "active",
     credits: 0,
   });
 
   const [editForm, setEditForm] = useState({
-    plan: 'free' as 'free' | 'pro' | 'custom',
-    status: 'active',
+    plan: "free" as "free" | "pro" | "custom",
+    status: "active",
     credits: 0,
   });
 
@@ -87,8 +100,8 @@ export default function AdminSubscriptions() {
       setUsers([]);
       setUsersWithoutSub([]);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Erro ao carregar dados');
+      console.error("Error fetching data:", error);
+      toast.error("Erro ao carregar dados");
     } finally {
       setLoading(false);
     }
@@ -98,7 +111,7 @@ export default function AdminSubscriptions() {
     e.preventDefault();
 
     if (!createForm.user_id) {
-      toast.error('Selecione um usuário');
+      toast.error("Selecione um usuário");
       return;
     }
 
@@ -112,13 +125,13 @@ export default function AdminSubscriptions() {
       // });
       // if (!response.ok) throw new Error('Failed to create subscription');
 
-      toast.success('Assinatura criada com sucesso!');
+      toast.success("Assinatura criada com sucesso!");
       setShowCreateDialog(false);
-      setCreateForm({ user_id: '', plan: 'free', status: 'active', credits: 0 });
+      setCreateForm({ user_id: "", plan: "free", status: "active", credits: 0 });
       fetchData();
     } catch (error) {
-      console.error('Error creating subscription:', error);
-      toast.error('Erro ao criar assinatura');
+      console.error("Error creating subscription:", error);
+      toast.error("Erro ao criar assinatura");
     } finally {
       setCreating(false);
     }
@@ -138,13 +151,13 @@ export default function AdminSubscriptions() {
       // });
       // if (!response.ok) throw new Error('Failed to update subscription');
 
-      toast.success('Assinatura atualizada com sucesso!');
+      toast.success("Assinatura atualizada com sucesso!");
       setShowEditDialog(false);
       setSelectedSub(null);
       fetchData();
     } catch (error) {
-      console.error('Error updating subscription:', error);
-      toast.error('Erro ao atualizar assinatura');
+      console.error("Error updating subscription:", error);
+      toast.error("Erro ao atualizar assinatura");
     } finally {
       setUpdating(null);
     }
@@ -153,7 +166,7 @@ export default function AdminSubscriptions() {
   const openEditDialog = (sub: Subscription) => {
     setSelectedSub(sub);
     setEditForm({
-      plan: sub.plan as 'free' | 'pro' | 'custom',
+      plan: sub.plan as "free" | "pro" | "custom",
       status: sub.status,
       credits: sub.credits,
     });
@@ -173,12 +186,27 @@ export default function AdminSubscriptions() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'active':
-        return <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">Ativo</Badge>;
-      case 'canceled':
-        return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">Cancelado</Badge>;
-      case 'pending':
-        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30">Pendente</Badge>;
+      case "active":
+        return (
+          <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+            Ativo
+          </Badge>
+        );
+      case "canceled":
+        return (
+          <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30">
+            Cancelado
+          </Badge>
+        );
+      case "pending":
+        return (
+          <Badge
+            variant="outline"
+            className="bg-yellow-500/10 text-yellow-600 border-yellow-500/30"
+          >
+            Pendente
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -193,7 +221,8 @@ export default function AdminSubscriptions() {
               <div>
                 <CardTitle>Gerenciar Assinaturas</CardTitle>
                 <CardDescription>
-                  Visualize e gerencie as assinaturas dos usuários ({subscriptions.length} assinaturas)
+                  Visualize e gerencie as assinaturas dos usuários ({subscriptions.length}{" "}
+                  assinaturas)
                 </CardDescription>
               </div>
               <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -219,7 +248,9 @@ export default function AdminSubscriptions() {
                       <Label>Usuário *</Label>
                       <Select
                         value={createForm.user_id}
-                        onValueChange={(value) => setCreateForm(prev => ({ ...prev, user_id: value }))}
+                        onValueChange={(value) =>
+                          setCreateForm((prev) => ({ ...prev, user_id: value }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Selecione um usuário" />
@@ -247,7 +278,12 @@ export default function AdminSubscriptions() {
                       <Label>Plano</Label>
                       <Select
                         value={createForm.plan}
-                        onValueChange={(value) => setCreateForm(prev => ({ ...prev, plan: value as 'free' | 'pro' | 'custom' }))}
+                        onValueChange={(value) =>
+                          setCreateForm((prev) => ({
+                            ...prev,
+                            plan: value as "free" | "pro" | "custom",
+                          }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -265,7 +301,9 @@ export default function AdminSubscriptions() {
                       <Label>Status</Label>
                       <Select
                         value={createForm.status}
-                        onValueChange={(value) => setCreateForm(prev => ({ ...prev, status: value }))}
+                        onValueChange={(value) =>
+                          setCreateForm((prev) => ({ ...prev, status: value }))
+                        }
                       >
                         <SelectTrigger>
                           <SelectValue />
@@ -285,12 +323,21 @@ export default function AdminSubscriptions() {
                         type="number"
                         min="0"
                         value={createForm.credits}
-                        onChange={(e) => setCreateForm(prev => ({ ...prev, credits: parseInt(e.target.value) || 0 }))}
+                        onChange={(e) =>
+                          setCreateForm((prev) => ({
+                            ...prev,
+                            credits: parseInt(e.target.value) || 0,
+                          }))
+                        }
                       />
                     </div>
 
                     <div className="flex gap-3 justify-end pt-2">
-                      <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowCreateDialog(false)}
+                      >
                         Cancelar
                       </Button>
                       <Button type="submit" disabled={creating}>
@@ -300,7 +347,7 @@ export default function AdminSubscriptions() {
                             Criando...
                           </>
                         ) : (
-                          'Criar Assinatura'
+                          "Criar Assinatura"
                         )}
                       </Button>
                     </div>
@@ -340,8 +387,12 @@ export default function AdminSubscriptions() {
                               <div className="flex items-center gap-2">
                                 <User className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                                 <div className="min-w-0">
-                                  <p className="font-medium truncate">{sub.owner_name || 'Sem nome'}</p>
-                                  <p className="text-xs text-muted-foreground truncate">{sub.owner_email || 'Sem email'}</p>
+                                  <p className="font-medium truncate">
+                                    {sub.owner_name || "Sem nome"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground truncate">
+                                    {sub.owner_email || "Sem email"}
+                                  </p>
                                 </div>
                               </div>
                             </TableCell>
@@ -350,11 +401,13 @@ export default function AdminSubscriptions() {
                             <TableCell>
                               <div className="flex items-center gap-1.5">
                                 <Coins className="w-4 h-4 text-amber-500" />
-                                <span className="font-medium">{sub.credits?.toLocaleString() || 0}</span>
+                                <span className="font-medium">
+                                  {sub.credits?.toLocaleString() || 0}
+                                </span>
                               </div>
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
-                              {new Date(sub.created_at).toLocaleDateString('pt-BR')}
+                              {new Date(sub.created_at).toLocaleDateString("pt-BR")}
                             </TableCell>
                             <TableCell>
                               <Button
@@ -389,7 +442,7 @@ export default function AdminSubscriptions() {
                   Editar Assinatura
                 </DialogTitle>
                 <DialogDescription>
-                  Ajuste o plano, status e créditos de {selectedSub?.owner_name || 'usuário'}
+                  Ajuste o plano, status e créditos de {selectedSub?.owner_name || "usuário"}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={updateSubscription} className="space-y-4 mt-4">
@@ -398,7 +451,9 @@ export default function AdminSubscriptions() {
                   <Label>Plano</Label>
                   <Select
                     value={editForm.plan}
-                    onValueChange={(value) => setEditForm(prev => ({ ...prev, plan: value as 'free' | 'pro' | 'custom' }))}
+                    onValueChange={(value) =>
+                      setEditForm((prev) => ({ ...prev, plan: value as "free" | "pro" | "custom" }))
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -416,7 +471,7 @@ export default function AdminSubscriptions() {
                   <Label>Status</Label>
                   <Select
                     value={editForm.status}
-                    onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}
+                    onValueChange={(value) => setEditForm((prev) => ({ ...prev, status: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -436,7 +491,9 @@ export default function AdminSubscriptions() {
                     type="number"
                     min="0"
                     value={editForm.credits}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, credits: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setEditForm((prev) => ({ ...prev, credits: parseInt(e.target.value) || 0 }))
+                    }
                   />
                 </div>
 
@@ -451,7 +508,7 @@ export default function AdminSubscriptions() {
                         Salvando...
                       </>
                     ) : (
-                      'Salvar Alterações'
+                      "Salvar Alterações"
                     )}
                   </Button>
                 </div>

@@ -1,8 +1,19 @@
-import { useLocation, Link } from 'react-router-dom';
-import { ChevronRight, Home, PanelLeftClose, PanelLeft, Plus, Bell, MessageSquare, Crown, Sparkles, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLocation, Link } from "react-router-dom";
+import {
+  ChevronRight,
+  Home,
+  PanelLeftClose,
+  PanelLeft,
+  Plus,
+  Bell,
+  MessageSquare,
+  Crown,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,39 +21,35 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { useSubscription } from '@/hooks/useSubscription';
+} from "@/components/ui/breadcrumb";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const planConfig: Record<string, { name: string; icon: React.ElementType }> = {
-  free: { name: 'Free', icon: Sparkles },
-  pro: { name: 'Pro', icon: Zap },
-  custom: { name: 'Enterprise', icon: Crown },
+  free: { name: "Free", icon: Sparkles },
+  pro: { name: "Pro", icon: Zap },
+  custom: { name: "Enterprise", icon: Crown },
 };
 
 const routeNames: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/chat/new': 'Novo Chat',
-  '/chat': 'Chat',
-  '/agents': 'Agentes',
-  '/agents/create': 'Criar Agente',
-  '/profile': 'Perfil',
-  '/pricing': 'Preços',
-  '/change-plan': 'Mudar Plano',
-  '/buy-credits': 'Comprar Créditos',
+  "/dashboard": "Dashboard",
+  "/chat/new": "Novo Chat",
+  "/chat": "Chat",
+  "/agents": "Agentes",
+  "/agents/create": "Criar Agente",
+  "/profile": "Perfil",
+  "/pricing": "Preços",
+  "/change-plan": "Mudar Plano",
+  "/buy-credits": "Comprar Créditos",
 };
 
 // Ações contextuais por rota
 const routeActions: Record<string, { label: string; href: string; icon: React.ElementType }[]> = {
-  '/dashboard': [
-    { label: 'Novo Chat', href: '/chat/new', icon: MessageSquare },
-  ],
-  '/agents': [
-    { label: 'Criar Agente', href: '/agents/create', icon: Plus },
-  ],
-  '/chat/new': [],
-  '/profile': [],
-  '/change-plan': [],
-  '/buy-credits': [],
+  "/dashboard": [{ label: "Novo Chat", href: "/chat/new", icon: MessageSquare }],
+  "/agents": [{ label: "Criar Agente", href: "/agents/create", icon: Plus }],
+  "/chat/new": [],
+  "/profile": [],
+  "/change-plan": [],
+  "/buy-credits": [],
 };
 
 interface ContentHeaderProps {
@@ -53,25 +60,26 @@ interface ContentHeaderProps {
 export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderProps) {
   const location = useLocation();
   const { subscription } = useSubscription();
-  
-  const currentPlan = planConfig[subscription?.plan || 'free'];
+
+  const currentPlan = planConfig[subscription?.plan || "free"];
   const PlanIcon = currentPlan.icon;
-  const pathSegments = location.pathname.split('/').filter(Boolean);
-  
+  const pathSegments = location.pathname.split("/").filter(Boolean);
+
   // Build breadcrumb items
   const breadcrumbs = pathSegments.map((segment, index) => {
-    const path = '/' + pathSegments.slice(0, index + 1).join('/');
+    const path = "/" + pathSegments.slice(0, index + 1).join("/");
     const name = routeNames[path] || segment.charAt(0).toUpperCase() + segment.slice(1);
     const isLast = index === pathSegments.length - 1;
-    
+
     return { path, name, isLast };
   });
 
   // Get current page name
-  const currentPageName = routeNames[location.pathname] || 
-    pathSegments[pathSegments.length - 1]?.charAt(0).toUpperCase() + 
-    pathSegments[pathSegments.length - 1]?.slice(1) || 
-    'Dashboard';
+  const currentPageName =
+    routeNames[location.pathname] ||
+    pathSegments[pathSegments.length - 1]?.charAt(0).toUpperCase() +
+      pathSegments[pathSegments.length - 1]?.slice(1) ||
+    "Dashboard";
 
   // Get actions for current route
   const actions = routeActions[location.pathname] || [];
@@ -93,12 +101,14 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
                   onClick={() => onCollapsedChange(!collapsed)}
                   className="hidden lg:flex h-8 w-8 text-muted-foreground hover:text-foreground"
                 >
-                  {collapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+                  {collapsed ? (
+                    <PanelLeft className="w-5 h-5" />
+                  ) : (
+                    <PanelLeftClose className="w-5 h-5" />
+                  )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                {collapsed ? 'Expandir menu' : 'Recolher menu'}
-              </TooltipContent>
+              <TooltipContent>{collapsed ? "Expandir menu" : "Recolher menu"}</TooltipContent>
             </Tooltip>
 
             {/* Breadcrumbs */}
@@ -106,13 +116,16 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/dashboard" className="flex items-center gap-1 text-muted-foreground hover:text-foreground">
+                    <Link
+                      to="/dashboard"
+                      className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+                    >
                       <Home className="w-4 h-4" />
                       <span className="hidden sm:inline">Início</span>
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                
+
                 {breadcrumbs.map((item) => (
                   <BreadcrumbItem key={item.path}>
                     <BreadcrumbSeparator>
@@ -136,7 +149,10 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to="/change-plan">
-                    <Badge variant="secondary" className="gap-1 cursor-pointer hover:bg-secondary/80">
+                    <Badge
+                      variant="secondary"
+                      className="gap-1 cursor-pointer hover:bg-secondary/80"
+                    >
                       <PlanIcon className="w-3 h-3" />
                       <span className="hidden sm:inline">{currentPlan.name}</span>
                     </Badge>
@@ -166,7 +182,7 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
                     <Bell className="w-5 h-5" />
                     {notificationCount > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] font-medium flex items-center justify-center">
-                        {notificationCount > 9 ? '9+' : notificationCount}
+                        {notificationCount > 9 ? "9+" : notificationCount}
                       </span>
                     )}
                   </Button>
@@ -177,9 +193,7 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
           </div>
 
           {/* Page Title */}
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">
-            {currentPageName}
-          </h1>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">{currentPageName}</h1>
         </div>
       </div>
     </TooltipProvider>

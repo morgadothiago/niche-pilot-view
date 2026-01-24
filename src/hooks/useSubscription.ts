@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Subscription {
   id: string;
   user_id: string;
-  plan: 'free' | 'pro' | 'custom';
+  plan: "free" | "pro" | "custom";
   status: string;
   credits: number;
   created_at: string;
@@ -16,7 +16,7 @@ export function useSubscription() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSubscription = async () => {
+  const fetchSubscription = useCallback(async () => {
     if (!user) {
       setSubscription(null);
       setLoading(false);
@@ -31,24 +31,24 @@ export function useSubscription() {
 
       // Default subscription for now
       setSubscription({
-        id: 'default',
+        id: "default",
         user_id: user.id,
-        plan: 'free',
-        status: 'active',
+        plan: "free",
+        status: "active",
         credits: 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });
     } catch (error) {
-      console.error('Error fetching subscription:', error);
+      console.error("Error fetching subscription:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchSubscription();
-  }, [user]);
+  }, [fetchSubscription]);
 
   const refetch = () => {
     setLoading(true);

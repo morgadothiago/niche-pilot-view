@@ -1,18 +1,18 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { CreditCard, Lock, CheckCircle2, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { CreditCard, Lock, CheckCircle2, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PaymentModalProps {
   open: boolean;
@@ -25,7 +25,7 @@ interface PaymentModalProps {
   isRecurring?: boolean;
 }
 
-type PaymentStep = 'form' | 'processing' | 'success';
+type PaymentStep = "form" | "processing" | "success";
 
 export function PaymentModal({
   open,
@@ -37,39 +37,39 @@ export function PaymentModal({
   onSuccess,
   isRecurring = false,
 }: PaymentModalProps) {
-  const [step, setStep] = useState<PaymentStep>('form');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [name, setName] = useState('');
+  const [step, setStep] = useState<PaymentStep>("form");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvc, setCvc] = useState("");
+  const [name, setName] = useState("");
 
   const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || '';
+    const match = (matches && matches[0]) || "";
     const parts = [];
     for (let i = 0, len = match.length; i < len; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
-    return parts.length ? parts.join(' ') : v;
+    return parts.length ? parts.join(" ") : v;
   };
 
   const formatExpiry = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     if (v.length >= 2) {
-      return v.substring(0, 2) + '/' + v.substring(2, 4);
+      return v.substring(0, 2) + "/" + v.substring(2, 4);
     }
     return v;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('processing');
+    setStep("processing");
 
     // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    setStep('success');
+    setStep("success");
 
     // Wait for success animation then close
     setTimeout(() => {
@@ -79,21 +79,22 @@ export function PaymentModal({
   };
 
   const handleClose = () => {
-    setStep('form');
-    setCardNumber('');
-    setExpiry('');
-    setCvc('');
-    setName('');
+    setStep("form");
+    setCardNumber("");
+    setExpiry("");
+    setCvc("");
+    setName("");
     onOpenChange(false);
   };
 
-  const isFormValid = cardNumber.length >= 19 && expiry.length === 5 && cvc.length >= 3 && name.length > 0;
+  const isFormValid =
+    cardNumber.length >= 19 && expiry.length === 5 && cvc.length >= 3 && name.length > 0;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md overflow-hidden">
         <AnimatePresence mode="wait">
-          {step === 'form' && (
+          {step === "form" && (
             <motion.div
               key="form"
               initial={{ opacity: 0, x: -20 }}
@@ -169,7 +170,7 @@ export function PaymentModal({
                         id="cvc"
                         placeholder="123"
                         value={cvc}
-                        onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
                         maxLength={4}
                         className="bg-background"
                       />
@@ -190,7 +191,7 @@ export function PaymentModal({
             </motion.div>
           )}
 
-          {step === 'processing' && (
+          {step === "processing" && (
             <motion.div
               key="processing"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -200,7 +201,7 @@ export function PaymentModal({
             >
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               >
                 <Loader2 className="w-12 h-12 text-primary" />
               </motion.div>
@@ -209,7 +210,7 @@ export function PaymentModal({
             </motion.div>
           )}
 
-          {step === 'success' && (
+          {step === "success" && (
             <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -219,7 +220,7 @@ export function PaymentModal({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
               >
                 <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                   <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
@@ -239,7 +240,7 @@ export function PaymentModal({
                 transition={{ delay: 0.3 }}
                 className="text-sm text-muted-foreground"
               >
-                {isRecurring ? 'Sua assinatura foi ativada' : 'Seus créditos foram adicionados'}
+                {isRecurring ? "Sua assinatura foi ativada" : "Seus créditos foram adicionados"}
               </motion.p>
             </motion.div>
           )}

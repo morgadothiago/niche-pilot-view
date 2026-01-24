@@ -1,11 +1,11 @@
-import { AdminLayout } from '@/components/layout/AdminLayout';
-import { AdminGuard } from '@/components/admin/AdminGuard';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { PageTransition } from '@/components/PageTransition';
-import { Shield, Mail, Bell, Database } from 'lucide-react';
+import { AdminLayout } from "@/components/layout/AdminLayout";
+import { AdminGuard } from "@/components/admin/AdminGuard";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { PageTransition } from "@/components/PageTransition";
+import { Shield, Mail, Bell, Database } from "lucide-react";
 
 export default function AdminSettings() {
   return (
@@ -20,17 +20,13 @@ export default function AdminSettings() {
                   <Shield className="w-5 h-5" />
                   Segurança
                 </CardTitle>
-                <CardDescription>
-                  Configurações de segurança do sistema
-                </CardDescription>
+                <CardDescription>Configurações de segurança do sistema</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label>Autenticação de dois fatores</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Exigir 2FA para administradores
-                    </p>
+                    <p className="text-sm text-muted-foreground">Exigir 2FA para administradores</p>
                   </div>
                   <Switch />
                 </div>
@@ -53,9 +49,7 @@ export default function AdminSettings() {
                   <Mail className="w-5 h-5" />
                   E-mail
                 </CardTitle>
-                <CardDescription>
-                  Configurações de e-mail e notificações
-                </CardDescription>
+                <CardDescription>Configurações de e-mail e notificações</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -86,9 +80,7 @@ export default function AdminSettings() {
                   <Bell className="w-5 h-5" />
                   Notificações Admin
                 </CardTitle>
-                <CardDescription>
-                  Receba alertas sobre eventos importantes
-                </CardDescription>
+                <CardDescription>Receba alertas sobre eventos importantes</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -119,9 +111,7 @@ export default function AdminSettings() {
                   <Database className="w-5 h-5" />
                   Banco de Dados
                 </CardTitle>
-                <CardDescription>
-                  Operações de manutenção do banco de dados
-                </CardDescription>
+                <CardDescription>Operações de manutenção do banco de dados</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">

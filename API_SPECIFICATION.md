@@ -11,6 +11,7 @@ VITE_PUBLIC_API_URL=https://sua-api.com/api
 ## Autenticação
 
 Todos os endpoints autenticados requerem o header:
+
 ```
 Authorization: Bearer {token}
 ```
@@ -26,6 +27,7 @@ POST /auth/register
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "usuario@email.com",
@@ -35,6 +37,7 @@ POST /auth/register
 ```
 
 **Response (201):**
+
 ```json
 {
   "user": {
@@ -49,6 +52,7 @@ POST /auth/register
 ```
 
 **Erros:**
+
 - `400` - Email já cadastrado
 - `400` - Senha deve ter no mínimo 6 caracteres
 
@@ -61,6 +65,7 @@ POST /auth/login
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "usuario@email.com",
@@ -69,6 +74,7 @@ POST /auth/login
 ```
 
 **Response (200):**
+
 ```json
 {
   "user": {
@@ -84,6 +90,7 @@ POST /auth/login
 ```
 
 **Erros:**
+
 - `401` - Email ou senha incorretos
 
 ---
@@ -95,6 +102,7 @@ POST /auth/google
 ```
 
 **Request Body:**
+
 ```json
 {
   "google_token": "token_do_google"
@@ -102,6 +110,7 @@ POST /auth/google
 ```
 
 **Response (200):**
+
 ```json
 {
   "user": { ... },
@@ -120,6 +129,7 @@ GET /auth/me
 **Headers:** `Authorization: Bearer {token}`
 
 **Response (200):**
+
 ```json
 {
   "user": {
@@ -131,6 +141,7 @@ GET /auth/me
 ```
 
 **Erros:**
+
 - `401` - Token inválido ou expirado
 
 ---
@@ -144,6 +155,7 @@ POST /auth/logout
 **Headers:** `Authorization: Bearer {token}`
 
 **Response (200):**
+
 ```json
 {
   "success": true
@@ -161,6 +173,7 @@ GET /profiles/:user_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "id": "uuid",
@@ -182,6 +195,7 @@ PUT /profiles/:user_id
 ```
 
 **Request Body:**
+
 ```json
 {
   "full_name": "Novo Nome",
@@ -190,6 +204,7 @@ PUT /profiles/:user_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -208,9 +223,11 @@ POST /profiles/:user_id/avatar
 **Content-Type:** `multipart/form-data`
 
 **Form Data:**
+
 - `avatar`: File (imagem)
 
 **Response (200):**
+
 ```json
 {
   "url": "https://storage.../avatar.jpg"
@@ -228,6 +245,7 @@ GET /users/:user_id/role
 ```
 
 **Response (200):**
+
 ```json
 {
   "role": "user" | "moderator" | "admin" | null
@@ -245,6 +263,7 @@ GET /subscriptions/:user_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "id": "uuid",
@@ -266,6 +285,7 @@ POST /subscriptions/upgrade
 ```
 
 **Request Body:**
+
 ```json
 {
   "plan": "pro"
@@ -273,6 +293,7 @@ POST /subscriptions/upgrade
 ```
 
 **Response (200):**
+
 ```json
 {
   "subscription": { ... },
@@ -289,6 +310,7 @@ POST /subscriptions/downgrade
 ```
 
 **Response (200):**
+
 ```json
 {
   "subscription": { ... },
@@ -305,6 +327,7 @@ POST /credits/purchase
 ```
 
 **Request Body:**
+
 ```json
 {
   "package_id": "popular",
@@ -313,6 +336,7 @@ POST /credits/purchase
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -331,6 +355,7 @@ GET /agents?user_id=:user_id
 ```
 
 **Response (200):**
+
 ```json
 [
   {
@@ -354,6 +379,7 @@ POST /agents
 ```
 
 **Request Body:**
+
 ```json
 {
   "user_id": "uuid",
@@ -364,6 +390,7 @@ POST /agents
 ```
 
 **Response (201):**
+
 ```json
 {
   "id": "uuid",
@@ -384,6 +411,7 @@ PUT /agents/:agent_id
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Novo Nome",
@@ -393,6 +421,7 @@ PUT /agents/:agent_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "agent": { ... },
@@ -409,6 +438,7 @@ DELETE /agents/:agent_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true
@@ -426,6 +456,7 @@ GET /chats?user_id=:user_id
 ```
 
 **Response (200):**
+
 ```json
 [
   {
@@ -449,6 +480,7 @@ POST /chats/:chat_id/messages
 ```
 
 **Request Body:**
+
 ```json
 {
   "content": "Olá, como posso ajudar?"
@@ -456,6 +488,7 @@ POST /chats/:chat_id/messages
 ```
 
 **Response (200):**
+
 ```json
 {
   "id": "uuid",
@@ -483,6 +516,7 @@ POST /contact
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Nome",
@@ -494,12 +528,14 @@ POST /contact
 ```
 
 **Validações:**
+
 - `name`: 2-100 caracteres
 - `email`: email válido
 - `subject`: 5-200 caracteres
 - `message`: 10-2000 caracteres
 
 **Response (200):**
+
 ```json
 {
   "success": true,
@@ -520,6 +556,7 @@ GET /admin/stats
 **Requer:** Role `admin`
 
 **Response (200):**
+
 ```json
 {
   "total_users": 150,
@@ -542,6 +579,7 @@ GET /admin/users
 **Requer:** Role `admin`
 
 **Response (200):**
+
 ```json
 [
   {
@@ -569,6 +607,7 @@ PUT /admin/users/:user_id/role
 **Requer:** Role `admin`
 
 **Request Body:**
+
 ```json
 {
   "role": "admin" | "moderator" | "user" | "none"
@@ -576,6 +615,7 @@ PUT /admin/users/:user_id/role
 ```
 
 **Response (200):**
+
 ```json
 {
   "success": true
@@ -595,6 +635,7 @@ GET /admin/subscriptions
 **Requer:** Role `admin`
 
 **Response (200):**
+
 ```json
 {
   "subscriptions": [
@@ -629,6 +670,7 @@ POST /admin/subscriptions
 **Requer:** Role `admin`
 
 **Request Body:**
+
 ```json
 {
   "user_id": "uuid",
@@ -639,6 +681,7 @@ POST /admin/subscriptions
 ```
 
 **Response (201):**
+
 ```json
 {
   "subscription": { ... },
@@ -657,6 +700,7 @@ PUT /admin/subscriptions/:subscription_id
 **Requer:** Role `admin`
 
 **Request Body:**
+
 ```json
 {
   "plan": "pro",
@@ -666,6 +710,7 @@ PUT /admin/subscriptions/:subscription_id
 ```
 
 **Response (200):**
+
 ```json
 {
   "subscription": { ... },
@@ -686,6 +731,7 @@ GET /admin/agents
 **Requer:** Role `admin`
 
 **Response (200):**
+
 ```json
 {
   "agents": [
@@ -719,6 +765,7 @@ POST /admin/agents
 **Requer:** Role `admin`
 
 **Request Body:**
+
 ```json
 {
   "user_id": "uuid",
@@ -729,6 +776,7 @@ POST /admin/agents
 ```
 
 **Response (201):**
+
 ```json
 {
   "agent": { ... },
@@ -747,6 +795,7 @@ DELETE /admin/agents/:agent_id
 **Requer:** Role `admin`
 
 **Response (200):**
+
 ```json
 {
   "success": true
@@ -758,6 +807,7 @@ DELETE /admin/agents/:agent_id
 ## Modelos de Dados
 
 ### User
+
 ```typescript
 interface User {
   id: string;
@@ -770,6 +820,7 @@ interface User {
 ```
 
 ### Profile
+
 ```typescript
 interface Profile {
   id: string;
@@ -783,12 +834,13 @@ interface Profile {
 ```
 
 ### Subscription
+
 ```typescript
 interface Subscription {
   id: string;
   user_id: string;
-  plan: 'free' | 'pro' | 'custom';
-  status: 'active' | 'canceled' | 'pending';
+  plan: "free" | "pro" | "custom";
+  status: "active" | "canceled" | "pending";
   credits: number;
   created_at: string;
   updated_at: string;
@@ -796,6 +848,7 @@ interface Subscription {
 ```
 
 ### Agent
+
 ```typescript
 interface Agent {
   id: string;
@@ -809,8 +862,9 @@ interface Agent {
 ```
 
 ### UserRole
+
 ```typescript
-type AppRole = 'admin' | 'moderator' | 'user';
+type AppRole = "admin" | "moderator" | "user";
 ```
 
 ---
@@ -818,12 +872,14 @@ type AppRole = 'admin' | 'moderator' | 'user';
 ## Planos e Limites
 
 ### Plano Free (R$ 0/mês)
+
 - 3 agentes ativos
 - 100 mensagens/mês
 - Histórico de 7 dias
 - 50 créditos iniciais
 
 ### Plano Pro (R$ 49/mês)
+
 - Agentes ilimitados
 - Mensagens ilimitadas
 - Histórico completo
@@ -831,6 +887,7 @@ type AppRole = 'admin' | 'moderator' | 'user';
 - Suporte prioritário
 
 ### Plano Enterprise (Sob consulta)
+
 - Tudo do Pro
 - SSO e segurança avançada
 - SLA 99.9%
@@ -838,12 +895,13 @@ type AppRole = 'admin' | 'moderator' | 'user';
 - 1000 créditos/mês
 
 ### Pacotes de Créditos
-| Pacote | Créditos | Bônus | Preço |
-|--------|----------|-------|-------|
-| Starter | 100 | - | R$ 9,90 |
-| Popular | 500 | +50 | R$ 39,90 |
-| Pro | 1000 | +150 | R$ 69,90 |
-| Enterprise | 5000 | +1000 | R$ 299,90 |
+
+| Pacote     | Créditos | Bônus | Preço     |
+| ---------- | -------- | ----- | --------- |
+| Starter    | 100      | -     | R$ 9,90   |
+| Popular    | 500      | +50   | R$ 39,90  |
+| Pro        | 1000     | +150  | R$ 69,90  |
+| Enterprise | 5000     | +1000 | R$ 299,90 |
 
 ---
 
@@ -860,16 +918,17 @@ Todas as respostas de erro seguem o formato:
 ```
 
 ### Códigos de Erro Comuns
-| Código | HTTP | Descrição |
-|--------|------|-----------|
-| INVALID_CREDENTIALS | 401 | Email ou senha incorretos |
-| EMAIL_ALREADY_EXISTS | 400 | Email já cadastrado |
-| UNAUTHORIZED | 401 | Token inválido ou ausente |
-| FORBIDDEN | 403 | Sem permissão para o recurso |
-| NOT_FOUND | 404 | Recurso não encontrado |
-| VALIDATION_ERROR | 400 | Dados inválidos |
-| INSUFFICIENT_CREDITS | 402 | Créditos insuficientes |
-| PLAN_LIMIT_EXCEEDED | 403 | Limite do plano excedido |
+
+| Código               | HTTP | Descrição                    |
+| -------------------- | ---- | ---------------------------- |
+| INVALID_CREDENTIALS  | 401  | Email ou senha incorretos    |
+| EMAIL_ALREADY_EXISTS | 400  | Email já cadastrado          |
+| UNAUTHORIZED         | 401  | Token inválido ou ausente    |
+| FORBIDDEN            | 403  | Sem permissão para o recurso |
+| NOT_FOUND            | 404  | Recurso não encontrado       |
+| VALIDATION_ERROR     | 400  | Dados inválidos              |
+| INSUFFICIENT_CREDITS | 402  | Créditos insuficientes       |
+| PLAN_LIMIT_EXCEEDED  | 403  | Limite do plano excedido     |
 
 ---
 
@@ -879,18 +938,18 @@ O frontend usa a seguinte configuração:
 
 ```typescript
 // src/service/api.ts
-import Axios from "axios"
+import Axios from "axios";
 
 export const axios = Axios.create({
   baseURL: import.meta.env.VITE_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
-})
+});
 
 // Interceptor para adicionar token
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem("auth_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

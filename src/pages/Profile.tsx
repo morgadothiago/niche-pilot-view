@@ -1,22 +1,22 @@
-import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, Bell, Shield, CreditCard, LogOut, Trash2, Camera, Loader2 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
-import { PageTransition } from '@/components/PageTransition';
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User, Bell, Shield, CreditCard, LogOut, Trash2, Camera, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import { PageTransition } from "@/components/PageTransition";
 
 export default function Profile() {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [notifications, setNotifications] = useState({
     email: true,
     product: true,
@@ -24,10 +24,10 @@ export default function Profile() {
   });
 
   const [profile, setProfile] = useState({
-    full_name: '',
-    avatar_url: '',
+    full_name: "",
+    avatar_url: "",
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -44,11 +44,11 @@ export default function Profile() {
 
         // Default profile for now
         setProfile({
-          full_name: user.user_metadata?.full_name || '',
-          avatar_url: user.user_metadata?.avatar_url || '',
+          full_name: user.user_metadata?.full_name || "",
+          avatar_url: user.user_metadata?.avatar_url || "",
         });
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
@@ -61,14 +61,14 @@ export default function Profile() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, authLoading, navigate]);
 
   const handleSignOut = async () => {
     await signOut();
-    toast.success('Logout realizado com sucesso');
-    navigate('/login');
+    toast.success("Logout realizado com sucesso");
+    navigate("/login");
   };
 
   const handleSaveProfile = async () => {
@@ -84,10 +84,10 @@ export default function Profile() {
       // });
       // if (!response.ok) throw new Error('Failed to update profile');
 
-      toast.success('Perfil atualizado com sucesso!');
+      toast.success("Perfil atualizado com sucesso!");
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error('Erro ao atualizar perfil');
+      console.error("Error updating profile:", error);
+      toast.error("Erro ao atualizar perfil");
     } finally {
       setSaving(false);
     }
@@ -110,10 +110,10 @@ export default function Profile() {
       // const data = await response.json();
       // setProfile(prev => ({ ...prev, avatar_url: data.url }));
 
-      toast.info('Upload de avatar não configurado. Implemente com sua API.');
+      toast.info("Upload de avatar não configurado. Implemente com sua API.");
     } catch (error) {
-      console.error('Error uploading avatar:', error);
-      toast.error('Erro ao fazer upload do avatar');
+      console.error("Error uploading avatar:", error);
+      toast.error("Erro ao fazer upload do avatar");
     } finally {
       setUploading(false);
     }
@@ -130,8 +130,13 @@ export default function Profile() {
   }
 
   const initials = profile.full_name
-    ? profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-    : user?.email?.charAt(0).toUpperCase() || 'U';
+    ? profile.full_name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : user?.email?.charAt(0).toUpperCase() || "U";
 
   return (
     <DashboardLayout>
@@ -149,12 +154,13 @@ export default function Profile() {
                 <Camera className="w-5 h-5" />
                 Foto de Perfil
               </CardTitle>
-              <CardDescription>
-                Clique na imagem para alterar seu avatar
-              </CardDescription>
+              <CardDescription>Clique na imagem para alterar seu avatar</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center gap-6">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <div
+                className="relative group cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
                 <Avatar className="w-24 h-24">
                   <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
                   <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
@@ -178,7 +184,7 @@ export default function Profile() {
                 />
               </div>
               <div>
-                <p className="font-medium">{profile.full_name || 'Seu Nome'}</p>
+                <p className="font-medium">{profile.full_name || "Seu Nome"}</p>
                 <p className="text-sm text-muted-foreground">{user?.email}</p>
               </div>
             </CardContent>
@@ -191,24 +197,22 @@ export default function Profile() {
                 <User className="w-5 h-5" />
                 Informações Pessoais
               </CardTitle>
-              <CardDescription>
-                Atualize suas informações de perfil
-              </CardDescription>
+              <CardDescription>Atualize suas informações de perfil</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Nome completo</Label>
-                  <Input 
-                    id="name" 
+                  <Input
+                    id="name"
                     value={profile.full_name}
-                    onChange={(e) => setProfile(prev => ({ ...prev, full_name: e.target.value }))}
+                    onChange={(e) => setProfile((prev) => ({ ...prev, full_name: e.target.value }))}
                     placeholder="Seu nome completo"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue={user?.email || ''} disabled />
+                  <Input id="email" type="email" defaultValue={user?.email || ""} disabled />
                 </div>
               </div>
               <Button onClick={handleSaveProfile} disabled={saving}>
@@ -218,7 +222,7 @@ export default function Profile() {
                     Salvando...
                   </>
                 ) : (
-                  'Salvar alterações'
+                  "Salvar alterações"
                 )}
               </Button>
             </CardContent>
@@ -231,9 +235,7 @@ export default function Profile() {
                 <Bell className="w-5 h-5" />
                 Notificações
               </CardTitle>
-              <CardDescription>
-                Configure suas preferências de notificação
-              </CardDescription>
+              <CardDescription>Configure suas preferências de notificação</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
@@ -241,29 +243,39 @@ export default function Profile() {
                   <p className="font-medium">Atualizações por email</p>
                   <p className="text-sm text-muted-foreground">Receba novidades sobre sua conta</p>
                 </div>
-                <Switch 
+                <Switch
                   checked={notifications.email}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, email: checked }))}
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({ ...prev, email: checked }))
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Novidades do produto</p>
-                  <p className="text-sm text-muted-foreground">Seja o primeiro a saber sobre novos recursos</p>
+                  <p className="text-sm text-muted-foreground">
+                    Seja o primeiro a saber sobre novos recursos
+                  </p>
                 </div>
-                <Switch 
+                <Switch
                   checked={notifications.product}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, product: checked }))}
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({ ...prev, product: checked }))
+                  }
                 />
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Dicas e tutoriais</p>
-                  <p className="text-sm text-muted-foreground">Aprenda a usar melhor a plataforma</p>
+                  <p className="text-sm text-muted-foreground">
+                    Aprenda a usar melhor a plataforma
+                  </p>
                 </div>
-                <Switch 
+                <Switch
                   checked={notifications.tips}
-                  onCheckedChange={(checked) => setNotifications(prev => ({ ...prev, tips: checked }))}
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({ ...prev, tips: checked }))
+                  }
                 />
               </div>
             </CardContent>
@@ -276,9 +288,7 @@ export default function Profile() {
                 <CreditCard className="w-5 h-5" />
                 Plano Atual
               </CardTitle>
-              <CardDescription>
-                Gerencie sua assinatura
-              </CardDescription>
+              <CardDescription>Gerencie sua assinatura</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-muted rounded-lg">
@@ -287,8 +297,12 @@ export default function Profile() {
                   <p className="text-sm text-muted-foreground">R$ 97/mês • Renova em 15/02/2024</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">Mudar plano</Button>
-                  <Button variant="ghost" size="sm">Ver histórico</Button>
+                  <Button variant="outline" size="sm">
+                    Mudar plano
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    Ver histórico
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -307,7 +321,7 @@ export default function Profile() {
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair da conta
               </Button>
-              
+
               <div className="pt-4 border-t border-border">
                 <div className="p-4 bg-destructive/10 rounded-lg">
                   <p className="font-medium text-destructive">Zona de Perigo</p>
