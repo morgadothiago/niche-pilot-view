@@ -20,16 +20,16 @@ describe("useUserRole", () => {
     vi.clearAllMocks();
   });
 
-  it("should return default user role", async () => {
+  it("should return default free role", async () => {
     const { result } = renderHook(() => useUserRole());
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(result.current.role).toBe("user");
+    expect(result.current.role).toBe("free");
     expect(result.current.isAdmin).toBe(false);
-    expect(result.current.isModerator).toBe(false);
+    expect(result.current.isFree).toBe(true);
   });
 
   it("should return null role when user is not logged in", async () => {
@@ -52,6 +52,6 @@ describe("useUserRole", () => {
 
     expect(result.current.role).toBeNull();
     expect(result.current.isAdmin).toBe(false);
-    expect(result.current.isModerator).toBe(false);
+    expect(result.current.isFree).toBe(false);
   });
 });

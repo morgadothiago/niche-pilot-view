@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 export const api = Axios.create({
-  baseURL: import.meta.env.VITE_PUBLIC_API_URL,
+  baseURL: "https://api-saas-1.onrender.com/",
   headers: {
     "Content-Type": "application/json",
   },

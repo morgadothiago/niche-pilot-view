@@ -36,6 +36,9 @@ describe("useSubscription", () => {
       signIn: vi.fn(),
       signUp: vi.fn(),
       signOut: vi.fn(),
+      refreshProfile: function (): Promise<void> {
+        throw new Error("Function not implemented.");
+      },
     });
 
     const { result } = renderHook(() => useSubscription());

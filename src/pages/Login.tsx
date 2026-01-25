@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,16 +21,16 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
-  const { signIn, user, loading: authLoading } = useAuth();
+  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Check if user is already logged in and redirect
+  // Check if user is already logged in and redirect based on role
   useEffect(() => {
     if (authLoading) return;
 
     if (user) {
-      // TODO: Check user role via your API and redirect accordingly
-      navigate("/dashboard", { replace: true });
+      const redirectPath = user.role === "admin" ? "/admin" : "/dashboard";
+      navigate(redirectPath, { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -74,16 +75,29 @@ export default function Login() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      // TODO: Implement Google OAuth with your API
-      toast.error("Google login not configured. Implement OAuth with your API.");
-    } catch {
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const { error } = await signInWithGoogle(tokenResponse.access_token);
+        if (error) {
+          toast.error(error.message || "Erro ao fazer login com Google");
+        } else {
+          toast.success("Login realizado com sucesso!");
+        }
+      } catch {
+        toast.error("Erro ao conectar com Google");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => {
       toast.error("Erro ao conectar com Google");
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleGoogleSignIn = () => {
+    googleLogin();
   };
 
   return (

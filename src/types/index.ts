@@ -1,10 +1,10 @@
 export interface User {
   id: string;
   email: string;
-  role?: "user" | "admin";
+  role?: "free" | "admin";
   user_metadata?: {
     full_name?: string;
-    avatar_url?: string;
+    avatar_url?: string | null;
   };
   created_at?: string;
 }
