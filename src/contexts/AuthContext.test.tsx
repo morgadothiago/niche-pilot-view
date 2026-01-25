@@ -1,6 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { AuthProvider, useAuth } from "./AuthContext";
+import { authService } from "../services/authService";
+
+vi.mock("../services/authService", () => ({
+  authService: {
+    getProfile: vi.fn(),
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signInWithGoogle: vi.fn(),
+    signOut: vi.fn().mockResolvedValue(undefined),
+  },
+}));
 
 describe("AuthContext", () => {
   beforeEach(() => {

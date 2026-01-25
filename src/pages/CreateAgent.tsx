@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Bot, ArrowLeft, Loader2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { agentService } from "@/services/agentService";
 
 const emojiAvatars = ["🤖", "🧠", "💡", "🎯", "🚀", "💬", "⚡", "🔮", "🎨", "📊", "💼", "🛠️"];
 
@@ -39,18 +39,12 @@ export default function CreateAgent() {
 
     setLoading(true);
     try {
-      // TODO: Replace with your API call
-      // const response = await fetch('/api/agents', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     user_id: user.id,
-      //     name: formData.name.trim(),
-      //     avatar: formData.avatar,
-      //     description: formData.description.trim() || null,
-      //   }),
-      // });
-      // if (!response.ok) throw new Error('Failed to create agent');
+      await agentService.createAgent({
+        user_id: user.id,
+        name: formData.name.trim(),
+        avatar: formData.avatar,
+        description: formData.description.trim() || undefined,
+      });
 
       toast.success("Agente criado com sucesso!");
       navigate("/agents");

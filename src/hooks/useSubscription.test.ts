@@ -7,6 +7,14 @@ const mockUser = { id: "test-user-id", email: "test@example.com" };
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: vi.fn(() => ({
     user: mockUser,
+    session: null,
+    loading: false,
+    isLoggingOut: false,
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signInWithGoogle: vi.fn(),
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
   })),
 }));
 
@@ -35,7 +43,9 @@ describe("useSubscription", () => {
       loading: false,
       signIn: vi.fn(),
       signUp: vi.fn(),
+      signInWithGoogle: vi.fn(),
       signOut: vi.fn(),
+      isLoggingOut: false,
       refreshProfile: function (): Promise<void> {
         throw new Error("Function not implemented.");
       },

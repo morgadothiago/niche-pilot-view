@@ -20,7 +20,7 @@ import { useState } from "react";
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function Profile() {
-  const { user, loading: authLoading, signOut, refreshProfile } = useAuth();
+  const { user, loading: authLoading, signOut, refreshProfile, isLoggingOut } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -57,9 +57,13 @@ export default function Profile() {
   });
 
   const handleSignOut = async () => {
-    await signOut();
-    toast.success("Logout realizado com sucesso");
-    navigate("/login");
+    try {
+      await signOut();
+      toast.success("Logout realizado com sucesso");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error("Erro ao sair");
+    }
   };
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,8 +284,17 @@ export default function Profile() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="outline" onClick={handleSignOut} className="w-full sm:w-auto">
-                <LogOut className="w-4 h-4 mr-2" />
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="w-full sm:w-auto"
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <LogOut className="w-4 h-4 mr-2" />
+                )}
                 Sair da conta
               </Button>
 

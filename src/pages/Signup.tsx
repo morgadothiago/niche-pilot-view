@@ -26,7 +26,7 @@ export default function Signup() {
   const { signUp, signInWithGoogle, user } = useAuth();
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { form, isSubmitting, handleSubmit } = useFormValidation<SignupFormValues>({
+  const { form, isSubmitting, handleSubmit, submitError } = useFormValidation<SignupFormValues>({
     schema: signupSchema,
     onSubmit: async (data) => {
       const { error } = await signUp(data.email, data.password, data.fullName);
@@ -39,9 +39,15 @@ export default function Signup() {
       }
 
       toast.success("Conta criada com sucesso! Você já está logado.");
-      // Redirect will be handled by the useEffect below based on user role
     },
   });
+
+  // Show error toast if submission fails
+  useEffect(() => {
+    if (submitError) {
+      toast.error(submitError);
+    }
+  }, [submitError]);
 
   // Redirect based on user role after signup
   useEffect(() => {

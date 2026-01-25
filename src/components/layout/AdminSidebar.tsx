@@ -1,8 +1,18 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Users, Bot, CreditCard, Settings, LogOut, Shield } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  Bot,
+  CreditCard,
+  Settings,
+  LogOut,
+  Shield,
+  Loader2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -20,15 +30,20 @@ interface AdminSidebarProps {
 export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut, isLoggingOut } = useAuth();
 
   const handleNavClick = () => {
     onNavigate?.();
   };
 
   const handleSignOut = async () => {
-    navigate("/login", { replace: true });
-    await signOut();
+    try {
+      await signOut();
+      toast.success("Logout realizado com sucesso");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error("Erro ao sair");
+    }
   };
 
   const NavItem = ({ item }: { item: (typeof navItems)[0] }) => {
@@ -101,9 +116,14 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
               <TooltipTrigger asChild>
                 <button
                   onClick={handleSignOut}
+                  disabled={isLoggingOut}
                   className="w-full flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
                 >
-                  <LogOut className="w-5 h-5 flex-shrink-0" />
+                  {isLoggingOut ? (
+                    <Loader2 className="w-5 h-5 flex-shrink-0 animate-spin" />
+                  ) : (
+                    <LogOut className="w-5 h-5 flex-shrink-0" />
+                  )}
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right">Sair</TooltipContent>
@@ -111,9 +131,14 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
           ) : (
             <button
               onClick={handleSignOut}
+              disabled={isLoggingOut}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
             >
-              <LogOut className="w-5 h-5 flex-shrink-0" />
+              {isLoggingOut ? (
+                <Loader2 className="w-5 h-5 flex-shrink-0 animate-spin" />
+              ) : (
+                <LogOut className="w-5 h-5 flex-shrink-0" />
+              )}
               <span className="font-medium">Sair</span>
             </button>
           )}

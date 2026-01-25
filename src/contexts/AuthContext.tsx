@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isLoggingOut: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: (googleToken: string) => Promise<{ error: Error | null }>;
@@ -19,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const refreshProfile = async () => {
     try {
@@ -94,20 +96,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    setIsLoggingOut(true);
     try {
+      // Clear state immediately to avoid redirects back to dashboard
+      localStorage.removeItem("auth_token");
+      setUser(null);
+      setSession(null);
+
       await authService.signOut();
     } catch (error: unknown) {
       console.error("Error signing out", error);
     } finally {
-      localStorage.removeItem("auth_token");
-      setUser(null);
-      setSession(null);
+      setIsLoggingOut(false);
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, session, loading, signIn, signUp, signInWithGoogle, signOut, refreshProfile }}
+      value={{
+        user,
+        session,
+        loading,
+        isLoggingOut,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signOut,
+        refreshProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>

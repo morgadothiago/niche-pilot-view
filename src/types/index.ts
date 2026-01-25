@@ -18,11 +18,13 @@ export interface Session {
 
 export interface Agent {
   id: string;
+  user_id: string;
   name: string;
+  avatar: string;
   description?: string;
-  status: "active" | "inactive" | "training";
-  created_at: string;
-  updated_at: string;
+  status?: "active" | "inactive" | "training";
+  created_at?: string;
+  updated_at?: string;
   config?: Record<string, unknown>;
 }
 
