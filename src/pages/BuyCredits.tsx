@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Coins, Zap, Star, Gem } from "lucide-react";
+import { motion } from "framer-motion";
+import { Loader2, Coins, Zap, Star, Gem, Check, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PaymentModal } from "@/components/payment/PaymentModal";
 
@@ -19,7 +20,7 @@ const creditPackages = [
     credits: 100,
     price: 9.9,
     icon: Coins,
-    color: "bg-blue-500",
+    color: "bg-blue-500/20 text-blue-500",
   },
   {
     id: "popular",
@@ -28,7 +29,7 @@ const creditPackages = [
     price: 39.9,
     icon: Zap,
     popular: true,
-    color: "bg-primary",
+    color: "bg-primary text-primary-foreground",
     bonus: 50,
   },
   {
@@ -37,16 +38,16 @@ const creditPackages = [
     credits: 1000,
     price: 69.9,
     icon: Star,
-    color: "bg-amber-500",
+    color: "bg-indigo-500/20 text-indigo-500",
     bonus: 150,
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
+    id: "elite",
+    name: "Elite",
     credits: 5000,
     price: 299.9,
     icon: Gem,
-    color: "bg-purple-500",
+    color: "bg-purple-500/20 text-purple-500",
     bonus: 1000,
   },
 ];
@@ -133,70 +134,79 @@ export default function BuyCredits() {
             Créditos são usados para interações com os agentes de IA
           </p>
 
-          {/* Payment Disabled Notice */}
-          <Card className="mb-6 border-amber-500/50 bg-amber-500/10">
-            <CardContent className="py-4">
-              <p className="text-sm text-amber-600 dark:text-amber-400 text-center font-medium">
-                🚧 Sistema de pagamento em manutenção. Em breve você poderá comprar créditos!
-              </p>
-            </CardContent>
-          </Card>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {creditPackages.map((pkg) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {creditPackages.map((pkg, index) => {
               const Icon = pkg.icon;
 
               return (
-                <Card
+                <motion.div
                   key={pkg.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   className={cn(
-                    "relative transition-all duration-200 opacity-60",
-                    pkg.popular && "border-primary shadow-md"
+                    "relative bg-card rounded-2xl p-6 transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl border-2 cursor-pointer",
+                    pkg.popular
+                      ? "border-primary/50 shadow-soft ring-2 ring-primary/10"
+                      : "border-border/30 hover:border-primary/50"
                   )}
+                  onClick={() => handleSelectPackage(pkg)}
                 >
-                  {pkg.popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary">
-                      Mais vendido
-                    </Badge>
-                  )}
-
-                  <CardHeader className="pb-3">
-                    <div
-                      className={cn(
-                        "w-12 h-12 rounded-lg flex items-center justify-center text-white mb-3",
-                        pkg.color
-                      )}
-                    >
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                    <CardDescription>
-                      {pkg.credits.toLocaleString()} créditos
-                      {pkg.bonus && (
-                        <span className="text-primary font-medium"> +{pkg.bonus} bônus</span>
-                      )}
-                    </CardDescription>
-                  </CardHeader>
-
-                  <CardContent>
-                    <div className="mb-4">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold">R$ {pkg.price.toFixed(2)}</span>
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div
+                        className={cn(
+                          "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
+                          pkg.color
+                        )}
+                      >
+                        <Icon className="w-6 h-6" />
                       </div>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <div>
+                        <h3 className="text-xl font-bold">{pkg.name}</h3>
+                      </div>
+                    </div>
+
+                    <div className="mb-6">
+                      <p className="text-sm text-muted-foreground mb-1 line-clamp-1">
+                        {pkg.credits.toLocaleString()} créditos
+                      </p>
+                      {pkg.bonus && (
+                        <p className="text-xs text-primary font-bold uppercase tracking-wider mb-3">
+                          +{pkg.bonus.toLocaleString()} bônus
+                        </p>
+                      )}
+
+                      <div className="flex items-baseline gap-1 mt-auto">
+                        <span className="text-3xl font-black">R$ {pkg.price.toFixed(2)}</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1 opacity-70">
                         R$ {(pkg.price / (pkg.credits + (pkg.bonus || 0))).toFixed(3)} por crédito
                       </p>
                     </div>
 
+                    <ul className="space-y-3 mb-8 flex-1">
+                      <li className="flex items-center gap-2 text-sm">
+                        <Check className="w-4 h-4 text-emerald-500" />
+                        <span>Créditos vitalícios</span>
+                      </li>
+                      <li className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Check className="w-4 h-4 text-emerald-500/50" />
+                        <span>Acesso total aos agentes</span>
+                      </li>
+                    </ul>
+
                     <Button
-                      className="w-full"
+                      className={cn(
+                        "w-full transition-all duration-300",
+                        pkg.popular ? "bg-primary hover:bg-primary/90" : "variant-outline"
+                      )}
                       variant={pkg.popular ? "default" : "outline"}
-                      disabled
                     >
-                      Em breve
+                      Selecionar pack
                     </Button>
-                  </CardContent>
-                </Card>
+                  </div>
+                </motion.div>
               );
             })}
           </div>
