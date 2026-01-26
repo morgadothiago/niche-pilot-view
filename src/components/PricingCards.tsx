@@ -29,48 +29,47 @@ const plans: Plan[] = [
     annualPrice: 0,
     icon: Sparkles,
     features: [
-      { text: "3 agentes ativos", included: true },
-      { text: "100 mensagens/mês", included: true },
-      { text: "Histórico de 7 dias", included: true },
-      { text: "Suporte por email", included: true },
-      { text: "Agentes personalizados", included: false },
-      { text: "API de integração", included: false },
+      { text: "LLM: Gemini Free", included: true },
+      { text: "1 ou 2 agentes genéricos", included: true },
+      { text: "50 créditos totais (não mensal)", included: true },
+      { text: "Memória curta", included: true },
+      { text: "RAG limitado", included: true },
+      { text: "Sem multi-agente", included: false },
     ],
     cta: "Começar grátis",
   },
   {
     name: "Pro",
     description: "Para profissionais",
-    monthlyPrice: 49,
-    annualPrice: 39,
+    monthlyPrice: 197,
+    annualPrice: 157,
     icon: Zap,
     popular: true,
     features: [
-      { text: "Agentes ilimitados", included: true },
-      { text: "Mensagens ilimitadas", included: true },
-      { text: "Histórico completo", included: true },
+      { text: "1.500 créditos/mês", included: true },
+      { text: "Agentes especializados", included: true },
+      { text: "LLM equilibrado", included: true },
+      { text: "RAG completo", included: true },
+      { text: "Memória de conversa", included: true },
       { text: "Suporte prioritário", included: true },
-      { text: "Agentes personalizados", included: true },
-      { text: "API de integração", included: true },
     ],
     cta: "Assinar Pro",
   },
   {
-    name: "Enterprise",
+    name: "Elite",
     description: "Para grandes empresas",
-    monthlyPrice: 0,
-    annualPrice: 0,
-    isCustom: true,
+    monthlyPrice: 497,
+    annualPrice: 397,
     icon: Building2,
     features: [
-      { text: "Tudo do Pro", included: true },
-      { text: "SSO e segurança", included: true },
-      { text: "SLA garantido 99.9%", included: true },
-      { text: "Gerente dedicado", included: true },
-      { text: "Deploy on-premise", included: true },
+      { text: "5.000 créditos/mês", included: true },
+      { text: "Arquétipos avançados", included: true },
+      { text: "LLM premium", included: true },
+      { text: "Multi-agente real", included: true },
+      { text: "Prioridade e fallback", included: true },
       { text: "Suporte 24/7", included: true },
     ],
-    cta: "Falar com vendas",
+    cta: "Assinar Elite",
   },
 ];
 
@@ -108,10 +107,10 @@ export function PricingCards({ isAnnual, compact = false }: PricingCardsProps) {
             transition={{ duration: 0.5, delay: index * 0.1 }}
             viewport={{ once: true }}
             className={cn(
-              "relative bg-card rounded-2xl border transition-all duration-300 hover:shadow-medium",
+              "relative bg-card rounded-2xl border-2 transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl hover:border-primary",
               plan.popular
-                ? "border-primary shadow-soft ring-2 ring-primary/20"
-                : "border-border shadow-soft"
+                ? "border-primary/50 shadow-soft ring-2 ring-primary/20"
+                : "border-transparent shadow-soft"
             )}
           >
             {plan.popular && (

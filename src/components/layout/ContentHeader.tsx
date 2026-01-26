@@ -1,4 +1,8 @@
+import * as React from "react";
 import { useLocation, Link } from "react-router-dom";
+import { toast } from "sonner";
+import { CreditIndicator } from "@/components/CreditIndicator";
+import { planLimits } from "@/constants/plans";
 import {
   ChevronRight,
   Home,
@@ -23,10 +27,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useSubscription } from "@/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 const planConfig: Record<string, { name: string; icon: React.ElementType }> = {
   free: { name: "Free", icon: Sparkles },
   pro: { name: "Pro", icon: Zap },
+  elite: { name: "Elite", icon: Crown },
   custom: { name: "Enterprise", icon: Crown },
 };
 
@@ -61,8 +67,29 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
   const location = useLocation();
   const { subscription } = useSubscription();
 
-  const currentPlan = planConfig[subscription?.plan || "free"];
+  const currentPlanKey = subscription?.plan || "free";
+  const currentPlan = planConfig[currentPlanKey] || planConfig.free;
   const PlanIcon = currentPlan.icon;
+
+  // Credit progress calculation
+  const credits = subscription?.credits || 0;
+  const limit = planLimits[currentPlanKey] || 50;
+  const progressPercentage = Math.min((credits / limit) * 100, 100);
+
+  // SVG parameters for the circular progress
+  const radius = 10;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
+
+  // Color logic based on credits
+  const getProgressColor = () => {
+    if (credits === 0) return "text-red-500";
+    if (credits <= limit * 0.2) return "text-yellow-500";
+    return "text-green-500";
+  };
+
+  const progressColorClass = getProgressColor();
+
   const pathSegments = location.pathname.split("/").filter(Boolean);
 
   // Build breadcrumb items
@@ -127,31 +154,40 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
                 </BreadcrumbItem>
 
                 {breadcrumbs.map((item) => (
-                  <BreadcrumbItem key={item.path}>
+                  <React.Fragment key={item.path}>
                     <BreadcrumbSeparator>
                       <ChevronRight className="w-4 h-4" />
                     </BreadcrumbSeparator>
-                    {item.isLast ? (
-                      <BreadcrumbPage>{item.name}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink asChild>
-                        <Link to={item.path}>{item.name}</Link>
-                      </BreadcrumbLink>
-                    )}
-                  </BreadcrumbItem>
+                    <BreadcrumbItem>
+                      {item.isLast ? (
+                        <BreadcrumbPage>{item.name}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink asChild>
+                          <Link to={item.path}>{item.name}</Link>
+                        </BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </React.Fragment>
                 ))}
               </BreadcrumbList>
             </Breadcrumb>
 
             {/* Right side actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              {/* Credits Circle Indicator */}
+              <CreditIndicator
+                credits={subscription?.credits || 0}
+                plan={currentPlanKey}
+                className="hover:bg-secondary/80"
+              />
+
               {/* User Plan Badge */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link to="/change-plan">
                     <Badge
                       variant="secondary"
-                      className="gap-1 cursor-pointer hover:bg-secondary/80"
+                      className="gap-1 cursor-pointer hover:bg-secondary/80 h-7"
                     >
                       <PlanIcon className="w-3 h-3" />
                       <span className="hidden sm:inline">{currentPlan.name}</span>

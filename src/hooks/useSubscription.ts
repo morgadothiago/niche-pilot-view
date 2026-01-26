@@ -24,18 +24,17 @@ export function useSubscription() {
     }
 
     try {
-      // TODO: Replace with your API call
-      // const response = await fetch(`/api/subscriptions/${user.id}`);
-      // const data = await response.json();
-      // setSubscription(data);
+      // Variáveis de ambiente para teste rápido da UI
+      const testPlan = import.meta.env.VITE_TEST_PLAN as Subscription["plan"];
+      const testCredits = Number(import.meta.env.VITE_TEST_CREDITS);
 
       // Default subscription for now
       setSubscription({
         id: "default",
         user_id: user.id,
-        plan: "free",
+        plan: testPlan || "free",
         status: "active",
-        credits: 0,
+        credits: !isNaN(testCredits) ? testCredits : 0,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       });

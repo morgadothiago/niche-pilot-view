@@ -15,6 +15,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
+import { CreditIndicator } from "@/components/CreditIndicator";
+import { planLimits } from "@/constants/plans";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -39,10 +41,12 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   const planConfig = {
     free: { name: "Free", color: "bg-muted text-muted-foreground" },
     pro: { name: "Pro", color: "bg-primary text-primary-foreground" },
+    elite: { name: "Elite", color: "bg-red-500 text-white" },
     custom: { name: "Enterprise", color: "bg-amber-500 text-white" },
   };
 
-  const currentPlan = planConfig[subscription?.plan || "free"];
+  const currentPlanKey = subscription?.plan || "free";
+  const currentPlan = planConfig[currentPlanKey] || planConfig.free;
 
   const handleNavClick = () => {
     onNavigate?.();
@@ -126,44 +130,60 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
         {/* User Plan & Credits Display */}
         <div className={cn("p-3 border-t border-sidebar-border", collapsed && "p-2")}>
           {collapsed ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  to="/change-plan"
-                  className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent"
-                >
-                  <Sparkles className="w-5 h-5 flex-shrink-0" />
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                Plano {currentPlan.name} • {subscription?.credits || 0} créditos
-              </TooltipContent>
-            </Tooltip>
+            <div className="flex flex-col gap-1 items-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center justify-center px-2 py-2.5 rounded-lg text-sidebar-foreground/70">
+                    <Sparkles className="w-5 h-5 flex-shrink-0" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right">Plano {currentPlan.name}</TooltipContent>
+              </Tooltip>
+              <CreditIndicator
+                credits={subscription?.credits || 0}
+                plan={currentPlanKey}
+                size="sm"
+                tooltipSide="right"
+              />
+            </div>
           ) : (
-            <Link
-              to="/change-plan"
-              className="flex flex-col gap-2 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 flex-shrink-0" />
-                <span className="font-medium">Plano</span>
+            <div className="bg-sidebar-accent/30 rounded-xl p-1.5 border border-sidebar-border/50">
+              {/* Plan - Informative only */}
+              <div className="flex items-center gap-3 px-3 py-2 text-sidebar-foreground/70">
+                <Sparkles className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs font-medium">Plano</span>
                 <span
                   className={cn(
-                    "ml-auto px-2 py-0.5 rounded text-xs font-medium",
+                    "ml-auto px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
                     currentPlan.color
                   )}
                 >
                   {currentPlan.name}
                 </span>
               </div>
-              <div className="flex items-center gap-3">
-                <Coins className="w-5 h-5 flex-shrink-0" />
-                <span className="font-medium">Créditos</span>
-                <span className="ml-auto text-sm font-semibold text-foreground">
-                  {subscription?.credits?.toLocaleString() || 0}
+              {/* Credits - Clickable to buy */}
+              <Link // Added Link component
+                to="/buy-credits"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent transition-all duration-200 group"
+              >
+                <Coins className="w-4 h-4 flex-shrink-0 group-hover:text-primary transition-colors" />
+                <span className="text-xs font-medium group-hover:text-sidebar-foreground transition-colors">
+                  Créditos
                 </span>
-              </div>
-            </Link>
+                <div className="ml-auto flex items-center gap-2">
+                  {subscription?.credits === 0 ? (
+                    <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-500 text-[10px] font-bold border border-red-500/30 animate-pulse">
+                      Sem crédito
+                    </span>
+                  ) : (
+                    <span className="text-sm font-bold text-foreground">
+                      {subscription?.credits?.toLocaleString() || 0}
+                    </span>
+                  )}
+                </div>
+              </Link>{" "}
+              {/* Closed Link component */}
+            </div>
           )}
         </div>
 

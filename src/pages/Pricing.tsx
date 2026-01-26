@@ -8,6 +8,7 @@ import { PageTransition } from "@/components/PageTransition";
 import { HeroOrbs } from "@/components/HeroOrbs";
 import { PricingToggle } from "@/components/PricingToggle";
 import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface PlanFeature {
   text: string;
@@ -34,54 +35,51 @@ const plans: Plan[] = [
     annualPrice: 0,
     icon: Sparkles,
     features: [
-      { text: "3 agentes ativos", included: true },
-      { text: "100 mensagens/mês", included: true },
-      { text: "Histórico de 7 dias", included: true },
-      { text: "Suporte por email", included: true },
-      { text: "Agentes personalizados", included: false },
-      { text: "API de integração", included: false },
-      { text: "Suporte prioritário", included: false },
-      { text: "SSO e segurança avançada", included: false },
+      { text: "LLM: Gemini Free", included: true },
+      { text: "1 ou 2 agentes genéricos", included: true },
+      { text: "50 créditos totais (não mensal)", included: true },
+      { text: "Memória curta", included: true },
+      { text: "RAG limitado", included: true },
+      { text: "Sem arquétipos", included: false },
+      { text: "Sem multi-agente", included: false },
     ],
     cta: "Começar grátis",
   },
   {
     name: "Pro",
     description: "Para profissionais e equipes em crescimento",
-    monthlyPrice: 49,
-    annualPrice: 39,
+    monthlyPrice: 197,
+    annualPrice: 157,
     icon: Zap,
     popular: true,
     features: [
-      { text: "Agentes ilimitados", included: true },
-      { text: "Mensagens ilimitadas", included: true },
-      { text: "Histórico completo", included: true },
+      { text: "1.500 créditos/mês", included: true },
+      { text: "Agentes especializados", included: true },
+      { text: "LLM equilibrado", included: true },
+      { text: "RAG completo", included: true },
+      { text: "Memória de conversa", included: true },
       { text: "Suporte prioritário", included: true },
-      { text: "Agentes personalizados", included: true },
       { text: "API de integração", included: true },
-      { text: "Exportação de dados", included: true },
-      { text: "SSO e segurança avançada", included: false },
     ],
     cta: "Assinar Pro",
   },
   {
-    name: "Enterprise",
-    description: "Para grandes empresas com necessidades específicas",
-    monthlyPrice: 0,
-    annualPrice: 0,
-    isCustom: true,
+    name: "Elite",
+    description: "Para escala empresarial com performance máxima",
+    monthlyPrice: 497,
+    annualPrice: 397,
     icon: Building2,
     features: [
-      { text: "Tudo do Pro", included: true },
-      { text: "SSO e segurança avançada", included: true },
-      { text: "SLA garantido 99.9%", included: true },
-      { text: "Gerente de conta dedicado", included: true },
-      { text: "Treinamento personalizado", included: true },
-      { text: "Integrações customizadas", included: true },
+      { text: "5.000 créditos/mês", included: true },
+      { text: "Arquétipos avançados", included: true },
+      { text: "LLM premium", included: true },
+      { text: "Multi-agente real", included: true },
+      { text: "Prioridade e fallback", included: true },
       { text: "Deploy on-premise", included: true },
+      { text: "Gerente de conta dedicado", included: true },
       { text: "Suporte 24/7", included: true },
     ],
-    cta: "Falar com vendas",
+    cta: "Assinar Elite",
   },
 ];
 
@@ -165,9 +163,12 @@ export default function Pricing() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className={`relative bg-card rounded-2xl p-8 shadow-soft border transition-all duration-300 hover:shadow-medium hover:-translate-y-1 ${
-                      plan.popular ? "border-primary ring-2 ring-primary/20" : "border-border"
-                    }`}
+                    className={cn(
+                      "relative bg-card rounded-2xl p-8 transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl border-2 hover:border-primary",
+                      plan.popular
+                        ? "border-primary/50 shadow-soft ring-2 ring-primary/20"
+                        : "border-transparent shadow-soft"
+                    )}
                   >
                     {plan.popular && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-sm font-medium rounded-full">

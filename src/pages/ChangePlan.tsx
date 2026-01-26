@@ -20,38 +20,45 @@ const plans = [
     description: "Para começar a explorar",
     price: 0,
     icon: Sparkles,
-    features: ["5 conversas por dia", "1 agente personalizado", "Suporte por email"],
+    features: [
+      "LLM: Gemini Free",
+      "1 ou 2 agentes genéricos",
+      "RAG limitado",
+      "50 créditos totais (não mensal)",
+      "Memória curta",
+    ],
     color: "bg-muted",
   },
   {
     id: "pro",
     name: "Pro",
     description: "Para uso profissional",
-    price: 49.9,
+    price: 197.0,
     icon: Zap,
     features: [
-      "Conversas ilimitadas",
-      "10 agentes personalizados",
-      "Suporte prioritário",
-      "API access",
+      "1.500 créditos/mês",
+      "Agentes especializados",
+      "LLM equilibrado",
+      "RAG completo",
+      "Memória de conversa",
     ],
     popular: true,
     color: "bg-primary",
   },
   {
-    id: "custom",
-    name: "Enterprise",
-    description: "Soluções sob medida",
-    price: null,
+    id: "elite",
+    name: "Elite",
+    description: "Para escala e performance",
+    price: 497.0,
     icon: Crown,
     features: [
-      "Tudo do Pro",
-      "Agentes ilimitados",
-      "Suporte dedicado",
-      "SLA garantido",
-      "Customizações",
+      "5.000 créditos/mês",
+      "Arquétipos avançados",
+      "LLM premium",
+      "Multi-agente real",
+      "Prioridade e fallback",
     ],
-    color: "bg-amber-500",
+    color: "bg-red-500",
   },
 ];
 
@@ -181,15 +188,6 @@ export default function ChangePlan() {
 
           <h2 className="text-2xl font-bold mb-2">Escolha seu plano</h2>
 
-          {/* Payment Disabled Notice */}
-          <Card className="mb-6 border-amber-500/50 bg-amber-500/10">
-            <CardContent className="py-4">
-              <p className="text-sm text-amber-600 dark:text-amber-400 text-center font-medium">
-                🚧 Sistema de pagamento em manutenção. Em breve você poderá alterar seu plano!
-              </p>
-            </CardContent>
-          </Card>
-
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => {
               const isCurrentPlan = subscription?.plan === plan.id;
@@ -199,10 +197,13 @@ export default function ChangePlan() {
                 <Card
                   key={plan.id}
                   className={cn(
-                    "relative transition-all duration-200",
-                    plan.popular && "border-primary shadow-md",
-                    isCurrentPlan && "ring-2 ring-primary",
-                    !isCurrentPlan && "opacity-60"
+                    "relative transition-all duration-300 ease-in-out cursor-pointer border-2",
+                    "hover:scale-[1.02] hover:shadow-xl hover:border-primary",
+                    isCurrentPlan
+                      ? "border-primary ring-2 ring-primary"
+                      : "border-transparent bg-card/50",
+                    plan.popular && !isCurrentPlan && "border-primary/20",
+                    !isCurrentPlan && "opacity-80 hover:opacity-100"
                   )}
                 >
                   {plan.popular && (
@@ -248,7 +249,8 @@ export default function ChangePlan() {
                     <Button
                       className="w-full"
                       variant={isCurrentPlan ? "secondary" : plan.popular ? "default" : "outline"}
-                      disabled
+                      onClick={() => handleSelectPlan(plan)}
+                      disabled={isCurrentPlan}
                     >
                       {isCurrentPlan ? (
                         <>
@@ -256,7 +258,7 @@ export default function ChangePlan() {
                           Plano atual
                         </>
                       ) : (
-                        "Em breve"
+                        "Selecionar Plano"
                       )}
                     </Button>
                   </CardContent>
