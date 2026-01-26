@@ -66,19 +66,33 @@ export default function Signup() {
     onSuccess: async (tokenResponse) => {
       setGoogleLoading(true);
       try {
+        // Validar o token obtendo informações do usuário
+        const userInfoResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.access_token}`,
+          },
+        });
+
+        if (!userInfoResponse.ok) {
+          throw new Error("Falha ao obter informações do usuário");
+        }
+
+        // Enviar o access_token para o backend
         const { error } = await signInWithGoogle(tokenResponse.access_token);
         if (error) {
           toast.error(error.message || "Erro ao cadastrar com Google");
         } else {
           toast.success("Conta criada com sucesso!");
         }
-      } catch {
+      } catch (err) {
+        console.error("Google signup error:", err);
         toast.error("Erro ao conectar com Google");
       } finally {
         setGoogleLoading(false);
       }
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Google OAuth error:", error);
       toast.error("Erro ao conectar com Google");
     },
   });
