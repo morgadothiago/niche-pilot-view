@@ -51,9 +51,10 @@ export function UsageLimits({ className }: UsageLimitsProps) {
   };
 
   const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return "bg-destructive";
-    if (percentage >= 70) return "bg-amber-500";
-    return "bg-primary";
+    if (percentage >= 100) return "bg-red-500";
+    if (percentage >= 70) return "bg-orange-500";
+    if (percentage >= 50) return "bg-yellow-500";
+    return "bg-green-500";
   };
 
   return (
@@ -87,6 +88,9 @@ export function UsageLimits({ className }: UsageLimitsProps) {
             <Progress
               value={getPercentage(usage.messages, currentLimits.messages)}
               className="h-2"
+              indicatorClassName={getProgressColor(
+                getPercentage(usage.messages, currentLimits.messages)
+              )}
             />
           )}
         </div>
@@ -107,7 +111,13 @@ export function UsageLimits({ className }: UsageLimitsProps) {
             </span>
           </div>
           {currentLimits.agents !== -1 && (
-            <Progress value={getPercentage(usage.agents, currentLimits.agents)} className="h-2" />
+            <Progress
+              value={getPercentage(usage.agents, currentLimits.agents)}
+              className="h-2"
+              indicatorClassName={getProgressColor(
+                getPercentage(usage.agents, currentLimits.agents)
+              )}
+            />
           )}
         </div>
 
@@ -116,11 +126,19 @@ export function UsageLimits({ className }: UsageLimitsProps) {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Créditos disponíveis</span>
+              <span className="text-sm">Créditos de uso</span>
             </div>
-            <span className="text-sm font-medium text-accent">{credits}</span>
+            <span className="text-sm font-medium text-accent">
+              {credits}/{currentLimits.credits}
+            </span>
           </div>
-          <Progress value={getPercentage(credits, currentLimits.credits)} className="h-2" />
+          <Progress
+            value={getPercentage(currentLimits.credits - credits, currentLimits.credits)}
+            className="h-2"
+            indicatorClassName={getProgressColor(
+              getPercentage(currentLimits.credits - credits, currentLimits.credits)
+            )}
+          />
         </div>
       </div>
     </div>

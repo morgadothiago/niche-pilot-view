@@ -22,6 +22,14 @@ export interface Agent {
   name: string;
   avatar: string;
   description?: string;
+  prompt?: string;
+  category?: string;
+  type?: string;
+  tone?: string;
+  style?: string;
+  focus?: string;
+  rules?: string;
+  visibility?: "PRIVATE" | "PUBLIC";
   status?: "active" | "inactive" | "training";
   created_at?: string;
   updated_at?: string;

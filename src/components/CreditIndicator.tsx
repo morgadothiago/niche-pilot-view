@@ -24,21 +24,28 @@ export function CreditIndicator({
 }: CreditIndicatorProps) {
   const testLimit = Number(import.meta.env.VITE_TEST_LIMIT);
   const limit = !isNaN(testLimit) && testLimit > 0 ? testLimit : planLimits[plan] || 50;
-  const percentage = Math.max(0, Math.min(100, (credits / limit) * 100));
+  const percentage = Math.max(0, Math.min(100, ((limit - credits) / limit) * 100));
 
   const radius = size === "md" ? 12 : 10;
   const circumference = 2 * Math.PI * radius;
   const isCritical = percentage <= 20 || credits === 0;
 
   const getColors = () => {
-    if (credits === 0 || percentage <= 20)
+    if (percentage >= 100)
       return {
         stroke: "rgb(239, 68, 68)", // Red-500
         glow: "rgba(239, 68, 68, 0.4)",
         bg: "rgba(239, 68, 68, 0.1)",
         text: "text-red-500",
       };
-    if (percentage <= 50)
+    if (percentage >= 70)
+      return {
+        stroke: "rgb(249, 115, 22)", // Orange-500
+        glow: "rgba(249, 115, 22, 0.4)",
+        bg: "rgba(249, 115, 22, 0.1)",
+        text: "text-orange-500",
+      };
+    if (percentage >= 50)
       return {
         stroke: "rgb(234, 179, 8)", // Yellow-500
         glow: "rgba(234, 179, 8, 0.4)",

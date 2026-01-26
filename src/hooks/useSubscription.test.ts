@@ -30,8 +30,9 @@ describe("useSubscription", () => {
       expect(result.current.loading).toBe(false);
     });
 
+    const expectedPlan = import.meta.env.VITE_TEST_PLAN || "free";
     expect(result.current.subscription).toBeDefined();
-    expect(result.current.subscription?.plan).toBe("free");
+    expect(result.current.subscription?.plan).toBe(expectedPlan);
     expect(result.current.subscription?.status).toBe("active");
   });
 
