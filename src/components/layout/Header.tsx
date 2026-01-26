@@ -62,16 +62,16 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Theme & Auth Actions */}
+          <div className="flex items-center gap-1 sm:gap-2">
             <PaletteSelector />
             <ThemeToggle />
-            <Button variant="ghost" asChild>
-              <Link to="/login">Entrar</Link>
-            </Button>
-            <Button variant="hero" asChild>
-              <Link to="/signup">Começar grátis</Link>
-            </Button>
+
+            <div className="hidden md:block ml-2">
+              <Button variant="hero" asChild>
+                <Link to="/signup">Começar grátis</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -99,14 +99,6 @@ export function Header() {
                   {link.label}
                 </a>
               ))}
-              <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                <Button variant="outline" asChild className="w-full">
-                  <Link to="/login">Entrar</Link>
-                </Button>
-                <Button variant="hero" asChild className="w-full">
-                  <Link to="/signup">Começar grátis</Link>
-                </Button>
-              </div>
             </nav>
           </div>
         )}

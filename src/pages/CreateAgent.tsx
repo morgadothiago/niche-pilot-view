@@ -54,7 +54,8 @@ export default function CreateAgent() {
     visibility: "PRIVATE" as "PRIVATE" | "PUBLIC",
   });
 
-  const isFreePlan = subscription?.plan === "free";
+  const currentUserPlan = user?.plan?.toLowerCase() || subscription?.plan?.toLowerCase() || "free";
+  const isFreePlan = currentUserPlan === "free";
 
   const handleNext = () => {
     if (currentTab === "identity" && !formData.name.trim()) {
