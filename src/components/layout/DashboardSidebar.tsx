@@ -17,6 +17,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
 import { planLimits } from "@/constants/plans";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -33,6 +34,7 @@ interface DashboardSidebarProps {
 }
 
 export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSidebarProps) {
+  const getUser = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, isLoggingOut } = useAuth();
@@ -45,7 +47,9 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
     custom: { name: "Enterprise", color: "bg-amber-500 text-white" },
   };
 
-  const currentPlanKey = subscription?.plan || "free";
+  // Get plan from user object and normalize to lowercase
+  const userPlan = getUser.user?.plan?.toLowerCase() as keyof typeof planConfig | undefined;
+  const currentPlanKey = userPlan || subscription?.plan || "free";
   const currentPlan = planConfig[currentPlanKey] || planConfig.free;
 
   const handleNavClick = () => {
@@ -162,27 +166,24 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
                 </span>
               </div>
               {/* Credits - Clickable to buy */}
-              <Link // Added Link component
+              <Link
                 to="/buy-credits"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent transition-all duration-200 group"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-all duration-200 group"
               >
-                <Coins className="w-4 h-4 flex-shrink-0 group-hover:text-primary transition-colors" />
-                <span className="text-xs font-medium group-hover:text-sidebar-foreground transition-colors">
-                  Créditos
-                </span>
+                <Coins className="w-4 h-4 flex-shrink-0 group-hover:text-sidebar-primary transition-colors" />
+                <span className="text-xs font-medium transition-colors">Créditos</span>
                 <div className="ml-auto flex items-center gap-2">
                   {subscription?.credits === 0 ? (
                     <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-red-500 text-[10px] font-bold border border-red-500/30 animate-pulse">
                       Sem crédito
                     </span>
                   ) : (
-                    <span className="text-sm font-bold text-foreground">
+                    <span className="text-sm font-bold text-sidebar-foreground group-hover:text-sidebar-primary transition-colors">
                       {subscription?.credits?.toLocaleString() || 0}
                     </span>
                   )}
                 </div>
-              </Link>{" "}
-              {/* Closed Link component */}
+              </Link>
             </div>
           )}
         </div>

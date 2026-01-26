@@ -43,7 +43,7 @@ export const authService = {
     const role = decodeJwtRole(token);
 
     return {
-      user: { ...user, role },
+      user: { ...user },
       access_token: token,
     };
   },
@@ -58,7 +58,7 @@ export const authService = {
     const role = decodeJwtRole(token);
 
     return {
-      user: { ...user, role },
+      user: { ...user },
       access_token: token,
     };
   },
@@ -71,7 +71,7 @@ export const authService = {
     const role = decodeJwtRole(token);
 
     return {
-      user: { ...user, role },
+      user: { ...user },
       access_token: token,
     };
   },
@@ -87,11 +87,9 @@ export const authService = {
   getProfile: async (): Promise<User> => {
     const token = localStorage.getItem("auth_token");
     const response = await apiClient.get<ProfileResponse>("/api/auth/me");
-    const role = token ? decodeJwtRole(token) : "free";
 
     return {
       ...response.data.user,
-      role,
     };
   },
 };

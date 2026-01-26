@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  plan?: "FREE" | "PRO" | "ELITE";
   role?: "free" | "admin";
   user_metadata?: {
     full_name?: string;

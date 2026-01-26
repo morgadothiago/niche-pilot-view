@@ -50,13 +50,13 @@ export function LandingHero() {
           className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4"
         >
           <Button size="lg" variant="hero" className="w-full sm:w-auto" asChild>
-            <Link to="/auth">
+            <Link to="/signup">
               Começar gratuitamente
               <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="w-full sm:w-auto" asChild>
-            <Link to="/auth">Já tenho uma conta</Link>
+            <Link to="/login">Já tenho uma conta</Link>
           </Button>
         </motion.div>
       </div>

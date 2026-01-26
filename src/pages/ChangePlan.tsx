@@ -78,7 +78,10 @@ export default function ChangePlan() {
   }, [user, authLoading, navigate]);
 
   const handleSelectPlan = (plan: (typeof plans)[0]) => {
-    if (!user || plan.id === subscription?.plan) return;
+    // Get current plan from user object, normalized to lowercase
+    const currentPlan = user?.plan?.toLowerCase() || subscription?.plan || "free";
+
+    if (!user || plan.id === currentPlan) return;
 
     if (plan.id === "custom") {
       toast.info("Entre em contato para planos Enterprise");
@@ -161,23 +164,32 @@ export default function ChangePlan() {
             <CardContent className="py-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center text-white",
-                      plans.find((p) => p.id === subscription?.plan)?.color || "bg-muted"
-                    )}
-                  >
-                    {(() => {
-                      const Icon = plans.find((p) => p.id === subscription?.plan)?.icon || Sparkles;
-                      return <Icon className="w-5 h-5" />;
-                    })()}
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Seu plano atual</p>
-                    <p className="font-semibold text-lg">
-                      {plans.find((p) => p.id === subscription?.plan)?.name || "Free"}
-                    </p>
-                  </div>
+                  {(() => {
+                    // Get current plan from user object, normalized to lowercase
+                    const currentUserPlan =
+                      user?.plan?.toLowerCase() || subscription?.plan || "free";
+                    const currentPlanConfig = plans.find((p) => p.id === currentUserPlan);
+                    const Icon = currentPlanConfig?.icon || Sparkles;
+
+                    return (
+                      <>
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center text-white",
+                            currentPlanConfig?.color || "bg-muted"
+                          )}
+                        >
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Seu plano atual</p>
+                          <p className="font-semibold text-lg">
+                            {currentPlanConfig?.name || "Free"}
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
                 <Badge variant="secondary" className="text-sm">
                   {subscription?.status === "active" ? "Ativo" : subscription?.status}
@@ -190,7 +202,9 @@ export default function ChangePlan() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => {
-              const isCurrentPlan = subscription?.plan === plan.id;
+              // Get current plan from user object, normalized to lowercase
+              const currentUserPlan = user?.plan?.toLowerCase() || subscription?.plan || "free";
+              const isCurrentPlan = currentUserPlan === plan.id;
               const Icon = plan.icon;
 
               return (
