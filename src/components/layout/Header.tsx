@@ -67,7 +67,10 @@ export function Header() {
             <PaletteSelector />
             <ThemeToggle />
 
-            <div className="hidden md:block ml-2">
+            <div className="hidden md:flex items-center gap-2 ml-2">
+              <Button variant="ghost" asChild>
+                <Link to="/login">Entrar</Link>
+              </Button>
               <Button variant="hero" asChild>
                 <Link to="/signup">Começar grátis</Link>
               </Button>

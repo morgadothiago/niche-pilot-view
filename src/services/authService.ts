@@ -68,7 +68,18 @@ export const authService = {
       google_token: googleToken,
     });
     const { user, token } = response.data;
-    const role = decodeJwtRole(token);
+
+    return {
+      user: { ...user },
+      access_token: token,
+    };
+  },
+
+  signInWithGithub: async (githubCode: string): Promise<Session> => {
+    const response = await apiClient.post<LoginResponse>("/api/auth/github", {
+      github_token: githubCode,
+    });
+    const { user, token } = response.data;
 
     return {
       user: { ...user },
