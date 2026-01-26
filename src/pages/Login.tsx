@@ -186,6 +186,8 @@ export default function Login() {
               <div className="flex justify-center w-full bg-transparent overflow-hidden min-h-[40px]">
                 <GitHubLogin
                   clientId={import.meta.env.VITE_GITHUB_CLIENT_ID || ""}
+                  redirectUri="http://localhost:8080/login"
+                  scope="user:email"
                   onSuccess={async (response) => {
                     // O swagger espera { github_token: "string" }
                     const token =
