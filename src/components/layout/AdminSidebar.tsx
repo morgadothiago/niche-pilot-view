@@ -40,7 +40,7 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
     try {
       await signOut();
       toast.success("Logout realizado com sucesso");
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       toast.error("Erro ao sair");
     }

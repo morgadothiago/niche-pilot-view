@@ -420,11 +420,11 @@ export default function Chat() {
                   )}
                   {sending && (
                     <div className="flex justify-start mb-4">
-                      <div className="bg-muted text-foreground rounded-2xl rounded-tl-none px-4 py-3 shadow-sm animate-pulse-glow">
-                        <div className="flex gap-1">
-                          <span className="w-1.5 h-1.5 bg-foreground/30 rounded-full animate-bounce" />
-                          <span className="w-1.5 h-1.5 bg-foreground/30 rounded-full animate-bounce [animation-delay:0.2s]" />
-                          <span className="w-1.5 h-1.5 bg-foreground/30 rounded-full animate-bounce [animation-delay:0.4s]" />
+                      <div className="bg-muted/50 border border-border/50 text-foreground rounded-2xl rounded-tl-none px-4 py-3 shadow-md animate-pulse-glow">
+                        <div className="flex gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+                          <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s] shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
+                          <span className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s] shadow-[0_0_8px_hsl(var(--primary)/0.6)]" />
                         </div>
                       </div>
                     </div>

@@ -56,7 +56,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
     try {
       await signOut();
       toast.success("Logout realizado com sucesso");
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       toast.error("Erro ao sair");
     }

@@ -131,7 +131,8 @@ export default function BuyCredits() {
 
           <h2 className="text-2xl font-bold mb-2">Comprar Créditos</h2>
           <p className="text-muted-foreground mb-6">
-            Créditos são usados para interações com os agentes de IA
+            Desbloqueie todo o potencial dos seus agentes. Escolha o pacote ideal e{" "}
+            <strong>nunca pare de criar</strong>.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -212,10 +213,11 @@ export default function BuyCredits() {
           </div>
 
           <Card className="mt-8 bg-muted/50">
-            <CardContent className="py-4">
-              <p className="text-sm text-muted-foreground text-center">
-                💡 Os créditos não expiram e podem ser usados a qualquer momento. Pacotes maiores
-                incluem bônus exclusivos!
+            <CardContent className="py-5">
+              <p className="text-sm text-muted-foreground text-center leading-relaxed">
+                🚀 <strong>Sua produtividade sem limites.</strong> Os créditos são o combustível dos
+                seus agentes e <strong>nunca expiram</strong>. Garanta o melhor custo-benefício
+                aproveitando os <strong>bônus exclusivos</strong> dos pacotes maiores!
               </p>
             </CardContent>
           </Card>

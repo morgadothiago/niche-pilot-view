@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { PaletteInitializer } from "@/components/PaletteInitializer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminGuard } from "@/components/admin/AdminGuard";
@@ -171,6 +172,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <PaletteInitializer />
           <BrowserRouter>
             <AnimatedRoutes />
           </BrowserRouter>
