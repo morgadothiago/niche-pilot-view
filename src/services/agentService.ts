@@ -20,7 +20,22 @@ export const agentService = {
   },
 
   createAgent: async (data: Partial<Agent>): Promise<Agent> => {
-    const response = await apiClient.post<Agent | ApiResponse<Agent>>("/api/agents", data);
+    // Garantir que todos os campos do Swagger sejam enviados, mesmo que como string vazia
+    const payload = {
+      name: data.name || "",
+      avatar: data.avatar || "🤖",
+      description: data.description || "",
+      prompt: data.prompt || "",
+      category: data.category || "",
+      type: data.type || "Assistente Virtual",
+      tone: data.tone || "Profissional",
+      style: data.style || "Formal",
+      focus: data.focus || "",
+      rules: data.rules || "",
+      visibility: data.visibility || "PRIVATE",
+    };
+
+    const response = await apiClient.post<Agent | ApiResponse<Agent>>("/api/agents", payload);
     console.log("createAgent response:", response.data);
     const responseData = response.data;
     return (responseData as ApiResponse<Agent>).data || (responseData as Agent);

@@ -1,54 +1,127 @@
-import axios from "axios";
+import { apiClient } from "./apiClient";
+import { ApiResponse } from "../types";
+import { toast } from "sonner";
 
-const webhookURL = import.meta.env.VITE_PUBLIC_N8N_WEBHOOK_URL;
+export interface Message {
+  id: string;
+  chat_id: string;
+  content: string;
+  role: "user" | "assistant";
+  created_at: string;
+}
 
-export interface WebhookResponse {
-  output?: string;
-  response?: string;
+export interface Chat {
+  id: string;
+  user_id: string;
+  agent_id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  last_message?: string;
+}
+
+export interface ChatResponse {
+  message: Message; // A API retorna a mensagem do assistente
+}
+
+interface SendMessageResponse {
+  data?: {
+    agent_response?: {
+      content: string;
+    };
+    message?: {
+      content: string;
+    };
+    text?: string;
+  };
+  agent_response?: {
+    content: string;
+  };
+  message?: {
+    content: string;
+  };
   text?: string;
-  error?: string;
-  message?: string;
-  detail?: string;
-  [key: string]: unknown;
 }
 
 export const messageService = {
-  sendMessage: async (agentId: string, userId: string, text: string): Promise<string> => {
+  // Listar todos os chats do usuário
+  getChats: async (): Promise<Chat[]> => {
+    const response = await apiClient.get<Chat[] | ApiResponse<Chat[]>>("/api/chats");
+    if (Array.isArray(response.data)) return response.data;
+    return (response.data as ApiResponse<Chat[]>).data || [];
+  },
+
+  // Criar um novo chat com um agente
+  createChat: async (agentId: string, title: string = "Nova conversa"): Promise<Chat> => {
+    const version = "V4-DEEP-LOG";
     try {
-      const response = await axios.post<WebhookResponse>(webhookURL, {
+      const payload = {
         agent_id: agentId,
-        user_id: userId,
-        message: text,
-      });
+        title: title || "Conversa",
+      };
 
-      console.log("n8n response:", response.data);
+      console.log(`🚀 [${version}] Criando chat:`, payload);
 
-      // Se a API retornar um campo de erro mesmo com status 200/201
-      if (response.data && response.data.error) {
-        throw new Error(response.data.error);
-      }
-
-      // Extract text from common n8n/AI response formats
-      const data = response.data;
-      const aiText = data.output || data.response || data.text || JSON.stringify(data);
-      return aiText;
+      const response = await apiClient.post<Chat | ApiResponse<Chat>>("/api/chats", payload);
+      return (response.data as ApiResponse<Chat>).data || (response.data as Chat);
     } catch (error: unknown) {
-      console.error("Error sending message to n8n:", error);
+      if (error && typeof error === "object" && "response" in error) {
+        const err = error as {
+          response?: {
+            data?: { message?: string | string[]; details?: { message?: string | string[] } };
+          };
+        };
+        if (err.response?.data) {
+          const apiError = err.response.data;
+          console.error(`❌ [${version}] ERRO DETALHADO DA API:`, apiError);
 
-      let errorMessage = "Erro ao conectar com o servidor de IA";
+          // NestJS costuma colocar os erros em apiError.details.message ou apiError.message
+          const msg = apiError.details?.message || apiError.message;
+          const displayMsg = Array.isArray(msg) ? msg.join(", ") : msg || "Erro desconhecido";
 
-      if (axios.isAxiosError(error) && error.response?.data) {
-        const data = error.response.data as WebhookResponse;
-        errorMessage =
-          data.message ||
-          data.error ||
-          data.detail ||
-          (typeof data === "string" ? data : errorMessage);
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
+          toast.error(`Falha no Backend: ${displayMsg}`);
+        }
       }
-
-      throw new Error(errorMessage);
+      throw error;
     }
   },
+
+  // Enviar uma mensagem em um chat existente
+  sendMessage: async (id: string, text: string): Promise<string> => {
+    try {
+      const response = await apiClient.post<SendMessageResponse>(`/api/chats/${id}/messages`, {
+        content: text,
+      });
+
+      const data = response.data;
+      console.log("[V5-RESP-DEBUG] Resposta bruta da API:", data);
+
+      // O JSON do usuário confirma que a resposta vem em agent_response.content
+      const content =
+        data.agent_response?.content ||
+        data.message?.content ||
+        data.text ||
+        data.data?.agent_response?.content ||
+        data.data?.message?.content ||
+        data.data?.text ||
+        "";
+
+      return content;
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; data?: unknown } };
+      const status = err.response?.status;
+      if (status === 502 || status === 503 || status === 504) {
+        throw new Error(
+          "O servidor de IA está com problemas (Bad Gateway/Timeout). Verifique se as chaves da API de IA estão configuradas no backend."
+        );
+      }
+      if (err.response?.data) {
+        console.error("❌ Erro da API ao enviar mensagem:", err.response.data);
+      }
+      throw new Error("Erro de comunicação com o servidor de chat");
+    }
+  },
+
+  // Nota: O endpoint /api/chats/{id}/messages é atualmente suportado apenas como POST pelo backend.
+  // O histórico de mensagens (GET) não está disponível ou usa uma rota diferente.
 };

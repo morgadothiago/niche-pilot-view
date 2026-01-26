@@ -1,9 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const baseURL =
-  import.meta.env.VITE_PUBLIC_API_URL ||
-  import.meta.env.VITE_PUBLIC_WEBHOOK_URL ||
-  "http://localhost:3000/api";
+const baseURL = import.meta.env.VITE_PUBLIC_API_URL || "https://api-saas-1.onrender.com/";
 
 export const apiClient = axios.create({
   baseURL,

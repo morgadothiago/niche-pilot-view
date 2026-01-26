@@ -106,14 +106,14 @@ export default function CreateAgent() {
       await agentService.createAgent({
         name: formData.name.trim(),
         avatar: formData.avatar,
-        description: formData.description.trim() || undefined,
-        prompt: formData.prompt.trim() || undefined,
-        category: formData.category.trim() || undefined,
-        type: formData.type.trim() || undefined,
-        tone: formData.tone.trim() || undefined,
-        style: formData.style.trim() || undefined,
-        focus: formData.focus.trim() || undefined,
-        rules: formData.rules.trim() || undefined,
+        description: formData.description.trim(),
+        prompt: formData.prompt.trim(),
+        category: formData.category.trim(),
+        type: formData.type.trim(),
+        tone: formData.tone.trim(),
+        style: formData.style.trim(),
+        focus: formData.focus.trim(),
+        rules: formData.rules.trim(),
         visibility: formData.visibility,
       });
 
