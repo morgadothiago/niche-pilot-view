@@ -108,7 +108,6 @@ export default function Chat() {
     }
 
     fetchData();
-    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, activeChat, searchParams]); // Adicionadas as dependências faltantes
 
@@ -130,8 +129,8 @@ export default function Chat() {
       // Tentar carregar histórico local primeiro
       const storedMessages = messageService.getStoredMessages(chat.id);
       if (storedMessages && storedMessages.length > 0) {
-        setMessages(storedMessages);
-        toast.info("Histórico da conversa recuperado");
+        setMessages(storedMessages as unknown as Message[]);
+        toast.info("Histórico da conversa recuperado", { id: `restore-${chat.id}` });
       } else {
         // Backend ainda não suporta histórico via GET, mas o serviço está pronto
         // setMessages(historyMapped...);
