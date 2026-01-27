@@ -3,7 +3,16 @@ import { Link, useNavigate, useLocation, useSearchParams } from "react-router-do
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, ChevronDown, Plus, MoreVertical, Bot, Loader2, MessageSquare } from "lucide-react";
+import {
+  Send,
+  ChevronDown,
+  Plus,
+  MoreVertical,
+  Bot,
+  Loader2,
+  MessageSquare,
+  Trash2,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PageTransition } from "@/components/PageTransition";
 import {
@@ -230,6 +239,16 @@ export default function Chat() {
       }
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleClearHistory = () => {
+    if (!activeChat) return;
+
+    if (window.confirm("Deseja realmente limpar o histórico desta conversa?")) {
+      messageService.clearHistory(activeChat.id);
+      setMessages([]);
+      toast.success("Histórico limpo!");
     }
   };
 
@@ -460,6 +479,14 @@ export default function Chat() {
                           Nenhum agente cadastrado
                         </div>
                       )}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={handleClearHistory}
+                        className="gap-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Limpar Histórico
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild className="gap-2">
                         <Link to="/agents/create">

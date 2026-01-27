@@ -159,4 +159,12 @@ export const messageService = {
       return [];
     }
   },
+
+  clearHistory: (chatId: string): void => {
+    try {
+      localStorage.removeItem(`chat_history_${chatId}`);
+    } catch (error) {
+      console.error("Erro ao limpar histórico de chat no localStorage:", error);
+    }
+  },
 };
