@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useLocation, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Plan } from "@/types";
 import { toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
 import { planLimits } from "@/constants/plans";
@@ -65,30 +67,18 @@ interface ContentHeaderProps {
 
 export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderProps) {
   const location = useLocation();
+  const { user } = useAuth();
   const { subscription } = useSubscription();
 
-  const currentPlanKey = subscription?.plan || "free";
+  const userPlan = user?.plan?.toLowerCase();
+  const subPlanName =
+    typeof subscription?.plan === "string"
+      ? subscription.plan.toLowerCase()
+      : (subscription?.plan as Plan | undefined)?.name?.toLowerCase();
+
+  const currentPlanKey = userPlan || subPlanName || "free";
   const currentPlan = planConfig[currentPlanKey] || planConfig.free;
   const PlanIcon = currentPlan.icon;
-
-  // Credit progress calculation
-  const credits = subscription?.credits || 0;
-  const limit = planLimits[currentPlanKey] || 50;
-  const progressPercentage = Math.min((credits / limit) * 100, 100);
-
-  // SVG parameters for the circular progress
-  const radius = 10;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
-
-  // Color logic based on credits
-  const getProgressColor = () => {
-    if (credits === 0) return "text-red-500";
-    if (credits <= limit * 0.2) return "text-yellow-500";
-    return "text-green-500";
-  };
-
-  const progressColorClass = getProgressColor();
 
   const pathSegments = location.pathname.split("/").filter(Boolean);
 

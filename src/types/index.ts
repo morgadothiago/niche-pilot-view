@@ -49,9 +49,12 @@ export interface Subscription {
   id: string;
   user_id: string;
   plan_id: string;
-  status: "active" | "canceled" | "past_due";
-  current_period_end: string;
-  plan?: Plan;
+  status: "active" | "canceled" | "past_due" | "active";
+  credits?: number;
+  current_period_end?: string;
+  created_at?: string;
+  updated_at?: string;
+  plan?: string | Plan;
 }
 
 export interface ApiResponse<T = unknown> {

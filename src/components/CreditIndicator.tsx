@@ -28,17 +28,16 @@ export function CreditIndicator({
 
   const radius = size === "md" ? 12 : 10;
   const circumference = 2 * Math.PI * radius;
-  const isCritical = percentage <= 20 || credits === 0;
 
   const getColors = () => {
-    if (percentage >= 100)
+    if (percentage >= 90 || credits === 0)
       return {
         stroke: "rgb(239, 68, 68)", // Red-500
         glow: "rgba(239, 68, 68, 0.4)",
         bg: "rgba(239, 68, 68, 0.1)",
         text: "text-red-500",
       };
-    if (percentage >= 70)
+    if (percentage >= 75)
       return {
         stroke: "rgb(249, 115, 22)", // Orange-500
         glow: "rgba(249, 115, 22, 0.4)",
@@ -157,7 +156,7 @@ export function CreditIndicator({
 
             <div className="space-y-1">
               <div className="flex items-center justify-between text-[10px]">
-                <span className="text-muted-foreground">Uso do plano</span>
+                <span className="text-muted-foreground">Uso</span>
                 <span className={cn("font-bold", colors.text)}>{percentage.toFixed(0)}%</span>
               </div>
               <div className="h-1 w-full bg-muted rounded-full overflow-hidden">

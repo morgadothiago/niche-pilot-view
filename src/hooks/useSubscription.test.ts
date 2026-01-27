@@ -19,6 +19,21 @@ vi.mock("@/contexts/AuthContext", () => ({
   })),
 }));
 
+// Mock subscriptionService
+vi.mock("@/services/subscriptionService", () => ({
+  subscriptionService: {
+    getSubscription: vi.fn().mockResolvedValue({
+      id: "test-id",
+      user_id: "test-user-id",
+      plan: "free",
+      status: "active",
+      credits: 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    }),
+  },
+}));
+
 describe("useSubscription", () => {
   beforeEach(() => {
     vi.clearAllMocks();

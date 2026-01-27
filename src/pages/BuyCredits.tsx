@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
+import { Plan } from "@/types";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { PageTransition } from "@/components/PageTransition";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -122,8 +123,15 @@ export default function BuyCredits() {
                   </div>
                 </div>
                 <Badge variant="secondary" className="text-sm px-3 py-1">
-                  Plano {subscription?.plan?.charAt(0).toUpperCase()}
-                  {subscription?.plan?.slice(1)}
+                  {(() => {
+                    const planName =
+                      user?.plan ||
+                      (typeof subscription?.plan === "string"
+                        ? subscription?.plan
+                        : (subscription?.plan as Plan | undefined)?.name) ||
+                      "Free";
+                    return `Plano ${planName.charAt(0).toUpperCase()}${planName.slice(1).toLowerCase()}`;
+                  })()}
                 </Badge>
               </div>
             </CardContent>
