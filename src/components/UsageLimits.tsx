@@ -1,13 +1,16 @@
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/contexts/AuthContext";
 import { Progress } from "@/components/ui/progress";
 import { MessageSquare, Bot, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Plan } from "@/types";
 
 interface UsageLimitsProps {
   className?: string;
 }
 
 export function UsageLimits({ className }: UsageLimitsProps) {
+  const { user } = useAuth();
   const { subscription, loading } = useSubscription();
 
   if (loading) {
@@ -27,14 +30,21 @@ export function UsageLimits({ className }: UsageLimitsProps) {
     );
   }
 
-  const plan = subscription?.plan || "free";
+  const userPlan = user?.plan?.toLowerCase();
+  const subPlanName =
+    typeof subscription?.plan === "string"
+      ? subscription.plan.toLowerCase()
+      : (subscription?.plan as Plan | undefined)?.name?.toLowerCase();
+
+  const plan = userPlan || subPlanName || "free";
   const credits = subscription?.credits || 0;
 
   // Define limits based on plan
   const limits = {
     free: { messages: 100, agents: 3, credits: 50 },
-    pro: { messages: -1, agents: -1, credits: 500 }, // -1 = unlimited
-    custom: { messages: -1, agents: -1, credits: 1000 },
+    pro: { messages: -1, agents: -1, credits: 1500 }, // -1 = unlimited
+    elite: { messages: -1, agents: -1, credits: 5000 },
+    custom: { messages: -1, agents: -1, credits: 5000 },
   };
 
   const currentLimits = limits[plan as keyof typeof limits] || limits.free;

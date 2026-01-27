@@ -17,7 +17,16 @@ export function useSubscription() {
 
     try {
       const data = await subscriptionService.getSubscription();
-      setSubscription(data);
+
+      // Permitir overrides via env vars para teste
+      const testPlan = import.meta.env.VITE_TEST_PLAN;
+      const testCredits = Number(import.meta.env.VITE_TEST_CREDITS);
+
+      setSubscription({
+        ...data,
+        plan: testPlan || data.plan,
+        credits: !isNaN(testCredits) ? testCredits : data.credits,
+      } as Subscription);
     } catch (error: unknown) {
       console.error("Error fetching subscription:", error);
     } finally {
