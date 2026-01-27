@@ -13,6 +13,7 @@ vi.mock("@/contexts/AuthContext", () => ({
     signIn: vi.fn(),
     signUp: vi.fn(),
     signInWithGoogle: vi.fn(),
+    signInWithGithub: vi.fn(),
     signOut: vi.fn(),
     refreshProfile: vi.fn(),
   })),
@@ -45,11 +46,10 @@ describe("useSubscription", () => {
       signIn: vi.fn(),
       signUp: vi.fn(),
       signInWithGoogle: vi.fn(),
+      signInWithGithub: vi.fn(),
       signOut: vi.fn(),
       isLoggingOut: false,
-      refreshProfile: function (): Promise<void> {
-        throw new Error("Function not implemented.");
-      },
+      refreshProfile: vi.fn().mockResolvedValue(undefined),
     });
 
     const { result } = renderHook(() => useSubscription());

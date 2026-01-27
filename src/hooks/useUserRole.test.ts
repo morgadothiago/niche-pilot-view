@@ -12,6 +12,7 @@ vi.mock("@/contexts/AuthContext", () => ({
     signIn: vi.fn(),
     signUp: vi.fn(),
     signInWithGoogle: vi.fn(),
+    signInWithGithub: vi.fn(),
     signOut: vi.fn(),
     refreshProfile: vi.fn(),
   })),
@@ -44,6 +45,7 @@ describe("useUserRole", () => {
       signIn: vi.fn(),
       signUp: vi.fn(),
       signInWithGoogle: vi.fn(),
+      signInWithGithub: vi.fn(),
       signOut: vi.fn(),
       refreshProfile: vi.fn(),
     });

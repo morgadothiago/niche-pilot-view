@@ -29,7 +29,7 @@ export default function Terms() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">1. Aceitação dos Termos</h2>
               <p>
-                Ao acessar e usar o AgentChat, você concorda em cumprir e estar vinculado a estes
+                Ao acessar e usar o ThinkFlow, você concorda em cumprir e estar vinculado a estes
                 Termos de Serviço. Se você não concordar com qualquer parte destes termos, não
                 poderá acessar o serviço.
               </p>
@@ -38,7 +38,7 @@ export default function Terms() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">2. Descrição do Serviço</h2>
               <p>
-                O AgentChat é uma plataforma de agentes de inteligência artificial que permite aos
+                O ThinkFlow é uma plataforma de agentes de inteligência artificial que permite aos
                 usuários criar, configurar e interagir com assistentes virtuais personalizados para
                 diversos nichos de negócio.
               </p>
@@ -79,7 +79,7 @@ export default function Terms() {
               <h2 className="text-2xl font-semibold mt-8 mb-4">6. Propriedade Intelectual</h2>
               <p>
                 O serviço e seu conteúdo original, recursos e funcionalidades são de propriedade do
-                AgentChat e estão protegidos por leis de direitos autorais, marcas registradas e
+                ThinkFlow e estão protegidos por leis de direitos autorais, marcas registradas e
                 outras leis de propriedade intelectual.
               </p>
             </section>
@@ -96,7 +96,7 @@ export default function Terms() {
             <section>
               <h2 className="text-2xl font-semibold mt-8 mb-4">8. Limitação de Responsabilidade</h2>
               <p>
-                O AgentChat não será responsável por quaisquer danos indiretos, incidentais,
+                O ThinkFlow não será responsável por quaisquer danos indiretos, incidentais,
                 especiais, consequenciais ou punitivos resultantes do uso ou incapacidade de usar o
                 serviço.
               </p>

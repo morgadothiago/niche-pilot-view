@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import GitHubLogin from "react-github-login";
+import GitHubLogin, { GitHubSuccessResponse, GitHubErrorResponse } from "react-github-login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot, CheckCircle, Loader2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAppConfig } from "@/contexts/AppConfigContext";
 import { toast } from "sonner";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import { signupSchema } from "@/schemas";
@@ -25,6 +26,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 export default function Signup() {
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, signInWithGithub, user } = useAuth();
+  const { appName } = useAppConfig();
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const { form, isSubmitting, handleSubmit, submitError } = useFormValidation<SignupFormValues>({
@@ -74,7 +76,7 @@ export default function Signup() {
                 Comece sua jornada com IA
               </h2>
               <p className="text-sidebar-foreground/70 text-lg">
-                Milhares de empresas já usam o AgentChat para automatizar tarefas e aumentar a
+                Milhares de empresas já usam o {appName} para automatizar tarefas e aumentar a
                 produtividade.
               </p>
             </div>
@@ -98,7 +100,7 @@ export default function Signup() {
                 </div>
                 <div>
                   <p className="text-sidebar-foreground italic">
-                    "O AgentChat transformou a forma como nossa equipe trabalha. Economia de 10+
+                    "O {appName} transformou a forma como nossa equipe trabalha. Economia de 10+
                     horas por semana!"
                   </p>
                   <p className="text-sidebar-foreground/60 text-sm mt-2">
@@ -119,7 +121,7 @@ export default function Signup() {
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
                   <Bot className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-2xl">AgentChat</span>
+                <span className="font-bold text-2xl">{appName}</span>
               </Link>
               <h1 className="text-3xl font-bold">Criar sua conta</h1>
               <p className="text-muted-foreground mt-2">
@@ -235,14 +237,8 @@ export default function Signup() {
 
               <GitHubLogin
                 clientId={import.meta.env.VITE_GITHUB_CLIENT_ID || ""}
-                onSuccess={async (response) => {
-                  // O swagger espera { github_token: "string" }
-                  const token =
-                    "code" in response
-                      ? response.code
-                      : "access_token" in response
-                        ? (response as { access_token: string }).access_token
-                        : null;
+                onSuccess={async (response: GitHubSuccessResponse) => {
+                  const token = response.code;
 
                   if (token) {
                     setGoogleLoading(true);
@@ -261,7 +257,7 @@ export default function Signup() {
                     }
                   }
                 }}
-                onFailure={(error) => {
+                onFailure={(error: GitHubErrorResponse) => {
                   console.error("GitHub Signup Failure:", error);
                   toast.error("Erro ao conectar com GitHub");
                 }}

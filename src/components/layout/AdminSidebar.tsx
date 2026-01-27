@@ -96,7 +96,7 @@ export function AdminSidebar({ onNavigate, collapsed = false }: AdminSidebarProp
             {!collapsed && (
               <div className="flex flex-col">
                 <span className="font-bold text-lg">Admin</span>
-                <span className="text-xs text-sidebar-foreground/60">AgentChat</span>
+                <span className="text-xs text-sidebar-foreground/60">ThinkFlow</span>
               </div>
             )}
           </Link>

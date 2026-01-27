@@ -64,7 +64,7 @@ export default function Auth() {
                 <div className="w-14 h-14 rounded-xl gradient-primary flex items-center justify-center mx-auto mb-4">
                   <Bot className="w-8 h-8 text-primary-foreground" />
                 </div>
-                <h1 className="text-2xl font-bold">Bem-vindo ao AgentChat</h1>
+                <h1 className="text-2xl font-bold">Bem-vindo ao ThinkFlow</h1>
                 <p className="text-muted-foreground mt-1">
                   Entre com sua conta Google para continuar
                 </p>

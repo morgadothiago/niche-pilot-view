@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
 
-export function PaletteInitializer() {
+export function PaletteInitializer(): null {
   const { theme } = useTheme();
 
   useEffect(() => {

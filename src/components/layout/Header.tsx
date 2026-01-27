@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PaletteSelector } from "@/components/PaletteSelector";
 import { useActiveSection } from "@/hooks/useActiveSection";
+import { useAppConfig } from "@/contexts/AppConfigContext";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -18,6 +19,7 @@ export function Header() {
   const location = useLocation();
   const isLandingPage = location.pathname === "/" || location.pathname === "/landing";
   const activeSection = useActiveSection(["features", "how-it-works", "pricing"]);
+  const { appName } = useAppConfig();
 
   const isActive = (href: string) => {
     const sectionId = href.replace("#", "");
@@ -33,7 +35,7 @@ export function Header() {
             <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center">
               <Bot className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="font-bold text-xl">AgentChat</span>
+            <span className="font-bold text-xl text-gradient">{appName}</span>
           </Link>
 
           {/* Desktop Navigation */}

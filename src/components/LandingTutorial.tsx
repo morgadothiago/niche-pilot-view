@@ -23,7 +23,7 @@ interface TutorialStep {
 const tutorialSteps: TutorialStep[] = [
   {
     id: 1,
-    title: "Bem-vindo ao AgentChat! 👋",
+    title: "Bem-vindo ao ThinkFlow! 👋",
     description:
       "Crie agentes de IA personalizados que entendem seu negócio e atendem seus clientes 24/7.",
     icon: <Sparkles className="w-8 h-8" />,

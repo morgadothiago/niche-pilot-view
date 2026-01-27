@@ -128,7 +128,7 @@ export default function Profile() {
               >
                 <Avatar className="w-24 h-24">
                   <AvatarImage
-                    src={user?.user_metadata?.avatar_url}
+                    src={user?.user_metadata?.avatar_url ?? undefined}
                     alt={user?.user_metadata?.full_name}
                   />
                   <AvatarFallback className="text-2xl bg-primary text-primary-foreground">

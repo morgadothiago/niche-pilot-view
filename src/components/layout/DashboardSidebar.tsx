@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAppConfig } from "@/contexts/AppConfigContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
@@ -39,6 +40,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   const navigate = useNavigate();
   const { signOut, isLoggingOut } = useAuth();
   const { subscription } = useSubscription();
+  const { appName } = useAppConfig();
 
   const planConfig = {
     free: { name: "Free", color: "bg-muted text-muted-foreground" },
@@ -117,7 +119,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
             </div>
             {!collapsed && (
               <div className="flex flex-col">
-                <span className="font-bold text-lg">AgentChat</span>
+                <span className="font-bold text-lg text-gradient">{appName}</span>
                 <span className="text-xs text-sidebar-foreground/60">AI Assistant</span>
               </div>
             )}

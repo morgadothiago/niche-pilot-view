@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
-import GitHubLogin from "react-github-login";
+import GitHubLogin, { GitHubSuccessResponse, GitHubErrorResponse } from "react-github-login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bot, Loader2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAppConfig } from "@/contexts/AppConfigContext";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -23,6 +24,7 @@ export default function Login() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const { signIn, signInWithGoogle, signInWithGithub, user, loading: authLoading } = useAuth();
+  const { appName } = useAppConfig();
   const navigate = useNavigate();
 
   // Check if user is already logged in and redirect based on role
@@ -88,7 +90,7 @@ export default function Login() {
                 <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center">
                   <Bot className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-2xl">AgentChat</span>
+                <span className="font-bold text-2xl text-gradient">{appName}</span>
               </Link>
               <h1 className="text-3xl font-bold">Bem-vindo de volta</h1>
               <p className="text-muted-foreground mt-2">Entre com sua conta para continuar</p>
@@ -188,14 +190,8 @@ export default function Login() {
                   clientId={import.meta.env.VITE_GITHUB_CLIENT_ID || ""}
                   redirectUri="http://localhost:8080/login"
                   scope="user:email"
-                  onSuccess={async (response) => {
-                    // O swagger espera { github_token: "string" }
-                    const token =
-                      "code" in response
-                        ? response.code
-                        : "access_token" in response
-                          ? (response as { access_token: string }).access_token
-                          : null;
+                  onSuccess={async (response: GitHubSuccessResponse) => {
+                    const token = response.code;
 
                     if (token) {
                       setLoading(true);
@@ -214,7 +210,7 @@ export default function Login() {
                       }
                     }
                   }}
-                  onFailure={(error) => {
+                  onFailure={(error: GitHubErrorResponse) => {
                     console.error("GitHub Login Failure:", error);
                     toast.error("Erro ao conectar com GitHub");
                   }}
