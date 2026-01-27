@@ -36,7 +36,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
       ? subscription.plan.toLowerCase()
       : (subscription?.plan as Plan | undefined)?.name?.toLowerCase();
 
-  const plan = userPlan || subPlanName || "free";
+  const plan = subPlanName || userPlan || "free";
   const credits = subscription?.credits || 0;
 
   // Define limits based on plan
@@ -47,7 +47,12 @@ export function UsageLimits({ className }: UsageLimitsProps) {
     custom: { messages: -1, agents: -1, credits: 5000 },
   };
 
-  const currentLimits = limits[plan as keyof typeof limits] || limits.free;
+  const testLimit = Number(import.meta.env.VITE_TEST_LIMIT);
+  const baseLimits = limits[plan as keyof typeof limits] || limits.free;
+  const currentLimits = {
+    ...baseLimits,
+    credits: !isNaN(testLimit) && testLimit > 0 ? testLimit : baseLimits.credits,
+  };
 
   // Mock usage data (in production, this would come from the backend)
   const usage = {
@@ -138,8 +143,8 @@ export function UsageLimits({ className }: UsageLimitsProps) {
               <Zap className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm">Créditos de uso</span>
             </div>
-            <span className="text-sm font-medium text-accent">
-              {credits}/{currentLimits.credits}
+            <span className="text-sm font-medium">
+              {currentLimits.credits - credits}/{currentLimits.credits}
             </span>
           </div>
           <Progress

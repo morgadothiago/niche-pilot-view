@@ -76,7 +76,7 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
       ? subscription.plan.toLowerCase()
       : (subscription?.plan as Plan | undefined)?.name?.toLowerCase();
 
-  const currentPlanKey = userPlan || subPlanName || "free";
+  const currentPlanKey = subPlanName || userPlan || "free";
   const currentPlan = planConfig[currentPlanKey] || planConfig.free;
   const PlanIcon = currentPlan.icon;
 

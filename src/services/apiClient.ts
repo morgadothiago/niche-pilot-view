@@ -1,6 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const baseURL = import.meta.env.VITE_PUBLIC_API_URL || "https://api-saas-1.onrender.com/";
+const baseURL = import.meta.env.VITE_PUBLIC_API_URL || "https://api-saas-1.onrender.com";
 
 export const apiClient = axios.create({
   baseURL,

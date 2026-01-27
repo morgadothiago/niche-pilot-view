@@ -147,9 +147,11 @@ export function CreditIndicator({
                 )}
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold leading-none">{credits} Créditos</span>
+                <span className="text-sm font-bold leading-none">
+                  {limit - credits} / {limit} Usados
+                </span>
                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                  Disponíveis
+                  {credits} Créditos Restantes
                 </span>
               </div>
             </div>

@@ -2,27 +2,32 @@ import { apiClient } from "./apiClient";
 import { Subscription, Plan, ApiResponse } from "../types";
 
 export const subscriptionService = {
-  getSubscription: async (): Promise<Subscription> => {
-    const response = await apiClient.get<ApiResponse<Subscription>>("/subscription/me");
-    return response.data.data;
+  getSubscription: async (userId?: string): Promise<Subscription> => {
+    const endpoint = userId ? `/api/subscriptions/${userId}` : "/api/subscriptions/me";
+    const response = await apiClient.get<Subscription | ApiResponse<Subscription>>(endpoint);
+    // Retorna data.data se for o padrão ApiResponse, senão o objeto direto
+    return (response.data as ApiResponse<Subscription>).data || (response.data as Subscription);
   },
 
   getPlans: async (): Promise<Plan[]> => {
-    const response = await apiClient.get<ApiResponse<Plan[]>>("/plans");
+    const response = await apiClient.get<ApiResponse<Plan[]>>("/api/plans");
     return response.data.data;
   },
 
   changePlan: async (planId: string): Promise<Subscription> => {
-    const response = await apiClient.post<ApiResponse<Subscription>>("/subscription/change-plan", {
-      planId,
-    });
+    const response = await apiClient.post<ApiResponse<Subscription>>(
+      "/api/subscriptions/change-plan",
+      {
+        planId,
+      }
+    );
     return response.data.data;
   },
 
   buyCredits: async (amount: number): Promise<{ credits_added: number; new_balance: number }> => {
     const response = await apiClient.post<
       ApiResponse<{ credits_added: number; new_balance: number }>
-    >("/subscription/buy-credits", { amount });
+    >("/api/subscriptions/buy-credits", { amount });
     return response.data.data;
   },
 };

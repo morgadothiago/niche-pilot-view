@@ -16,17 +16,23 @@ export function useSubscription() {
     }
 
     try {
-      const data = await subscriptionService.getSubscription();
+      const data = await subscriptionService.getSubscription(user.id);
 
-      // Permitir overrides via env vars para teste
-      const testPlan = import.meta.env.VITE_TEST_PLAN;
-      const testCredits = Number(import.meta.env.VITE_TEST_CREDITS);
+      // Log detalhado para diagnóstico
+      const envPlan = import.meta.env.VITE_TEST_PLAN;
+      const envCredits = import.meta.env.VITE_TEST_CREDITS;
+      const envLimit = import.meta.env.VITE_TEST_LIMIT;
 
-      setSubscription({
-        ...data,
-        plan: testPlan || data.plan,
-        credits: !isNaN(testCredits) ? testCredits : data.credits,
-      } as Subscription);
+      const testPlan = envPlan;
+      const testCredits = envCredits !== undefined && envCredits !== "" ? Number(envCredits) : NaN;
+
+      const finalSub = {
+        ...(data || {}),
+        plan: testPlan || data?.plan || "free",
+        credits: !isNaN(testCredits) ? testCredits : (data?.credits ?? 0),
+      } as Subscription;
+
+      setSubscription(finalSub);
     } catch (error: unknown) {
       console.error("Error fetching subscription:", error);
     } finally {
