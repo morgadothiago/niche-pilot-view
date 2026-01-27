@@ -43,6 +43,16 @@ interface SendMessageResponse {
   text?: string;
 }
 
+export interface StoredMessage {
+  id: string;
+  text: string;
+  sender: "user" | "bot";
+  timestamp: Date | string;
+  isTyping?: boolean;
+  isUpgradeCTA?: boolean;
+  isCreditsCTA?: boolean;
+}
+
 export const messageService = {
   // Listar todos os chats do usuário
   getChats: async (): Promise<Chat[]> => {
@@ -124,4 +134,29 @@ export const messageService = {
 
   // Nota: O endpoint /api/chats/{id}/messages é atualmente suportado apenas como POST pelo backend.
   // O histórico de mensagens (GET) não está disponível ou usa uma rota diferente.
+
+  // Funções para persistência local (LocalStorage)
+  saveMessages: (chatId: string, messages: StoredMessage[]): void => {
+    try {
+      localStorage.setItem(`chat_history_${chatId}`, JSON.stringify(messages));
+    } catch (error) {
+      console.error("Erro ao salvar histórico de chat no localStorage:", error);
+    }
+  },
+
+  getStoredMessages: (chatId: string): StoredMessage[] => {
+    try {
+      const stored = localStorage.getItem(`chat_history_${chatId}`);
+      if (!stored) return [];
+      const parsed = JSON.parse(stored);
+      // Converter strings de data de volta para objetos Date se necessário
+      return parsed.map((msg: StoredMessage) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp as string),
+      }));
+    } catch (error) {
+      console.error("Erro ao carregar histórico de chat do localStorage:", error);
+      return [];
+    }
+  },
 };

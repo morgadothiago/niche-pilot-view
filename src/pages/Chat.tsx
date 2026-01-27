@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   Dialog,
   DialogContent,
@@ -58,6 +59,7 @@ export default function Chat() {
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [newChatAgentId, setNewChatAgentId] = useState<string>("");
   const [newChatTitle, setNewChatTitle] = useState("");
+  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
@@ -125,11 +127,19 @@ export default function Chat() {
     setSending(true);
 
     try {
-      // Backend ainda não suporta histórico via GET, mas o serviço está pronto
-      // setMessages(historyMapped...);
-      setMessages([]);
+      // Tentar carregar histórico local primeiro
+      const storedMessages = messageService.getStoredMessages(chat.id);
+      if (storedMessages && storedMessages.length > 0) {
+        setMessages(storedMessages);
+        toast.info("Histórico da conversa recuperado");
+      } else {
+        // Backend ainda não suporta histórico via GET, mas o serviço está pronto
+        // setMessages(historyMapped...);
+        setMessages([]);
+      }
     } catch (err) {
-      console.warn("History 404 handled:", err);
+      console.warn("History loading handled:", err);
+      setMessages([]);
     } finally {
       setSending(false);
     }
@@ -175,7 +185,11 @@ export default function Chat() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => {
+      const newMessages = [...prev, userMessage];
+      if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
+      return newMessages;
+    });
     setMessage("");
     setSending(true);
 
@@ -190,7 +204,11 @@ export default function Chat() {
         isTyping: true,
       };
 
-      setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev, botMessage];
+        if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
+        return newMessages;
+      });
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Erro ao enviar mensagem";
       const isCreditsError = errorMessage.includes("Credits free finish");
@@ -203,7 +221,11 @@ export default function Chat() {
           timestamp: new Date(),
           isCreditsCTA: true,
         };
-        setMessages((prev) => [...prev, creditMessage]);
+        setMessages((prev) => {
+          const newMessages = [...prev, creditMessage];
+          if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
+          return newMessages;
+        });
       } else {
         toast.error(errorMessage);
       }
@@ -213,9 +235,13 @@ export default function Chat() {
   };
 
   const handleTypingComplete = (messageId: string) => {
-    setMessages((prev) =>
-      prev.map((msg) => (msg.id === messageId ? { ...msg, isTyping: false } : msg))
-    );
+    setMessages((prev) => {
+      const newMessages = prev.map((msg) =>
+        msg.id === messageId ? { ...msg, isTyping: false } : msg
+      );
+      if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
+      return newMessages;
+    });
 
     // Adiciona uma mensagem de conversão no chat a cada 5 respostas da IA, evitando duplicatas
     setMessages((currentMessages) => {
@@ -244,7 +270,9 @@ export default function Chat() {
               timestamp: new Date(),
               isUpgradeCTA: true,
             };
-            return [...prev, upgradeMessage];
+            const newMessages = [...prev, upgradeMessage];
+            if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
+            return newMessages;
           });
         }, randomDelay);
       }
@@ -252,66 +280,79 @@ export default function Chat() {
     });
   };
 
+  const ChatList = ({ closeSheet }: { closeSheet?: () => void }) => (
+    <div className="flex-1 flex flex-col overflow-hidden h-full">
+      <div className="p-4 pr-12 lg:pr-4 border-b border-border flex items-center justify-between">
+        <h2 className="font-semibold">Conversas</h2>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => {
+            setIsNewChatModalOpen(true);
+            closeSheet?.();
+          }}
+        >
+          <Plus className="w-4 h-4" />
+        </Button>
+      </div>
+      <div className="flex-1 overflow-auto">
+        {loading && chats.length === 0 ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : chats.length > 0 ? (
+          chats.map((chat) => {
+            const isActive = activeChat?.id === chat.id;
+            const agent = agents.find((a) => a.id === chat.agent_id);
+            return (
+              <button
+                key={chat.id}
+                onClick={() => {
+                  handleChatClick(chat);
+                  closeSheet?.();
+                }}
+                className={cn(
+                  "w-full flex items-center gap-3 p-4 hover:bg-secondary/20 transition-colors border-b border-border text-left group",
+                  isActive && "bg-secondary/40 border-r-2 border-r-primary"
+                )}
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform">
+                  {agent?.avatar || "💬"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span
+                    className={cn(
+                      "text-sm block truncate transition-colors",
+                      isActive ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+                    )}
+                  >
+                    {chat.title || agent?.name || "Sem título"}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground/60 truncate">
+                    {new Date(chat.created_at).toLocaleDateString()} • {agent?.name || "Agente"}
+                  </p>
+                </div>
+              </button>
+            );
+          })
+        ) : (
+          <div className="p-8 text-center text-muted-foreground">
+            <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
+            <p className="text-sm">Nenhuma conversa ativa</p>
+            <p className="text-[11px] mt-1">Clique no + para iniciar</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <PageTransition>
       <DashboardLayout hideContentHeader>
         <div className="h-full flex overflow-hidden">
           {/* Chats Sidebar */}
           <div className="w-80 border-r border-border bg-card hidden lg:flex flex-col">
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <h2 className="font-semibold">Conversas</h2>
-              <Button variant="ghost" size="icon" onClick={() => setIsNewChatModalOpen(true)}>
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-auto">
-              {loading && chats.length === 0 ? (
-                <div className="flex items-center justify-center p-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-                </div>
-              ) : chats.length > 0 ? (
-                chats.map((chat) => {
-                  const isActive = activeChat?.id === chat.id;
-                  const agent = agents.find((a) => a.id === chat.agent_id);
-                  return (
-                    <button
-                      key={chat.id}
-                      onClick={() => handleChatClick(chat)}
-                      className={cn(
-                        "w-full flex items-center gap-3 p-4 hover:bg-secondary/20 transition-colors border-b border-border text-left group",
-                        isActive && "bg-secondary/40 border-r-2 border-r-primary"
-                      )}
-                    >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-105 transition-transform">
-                        {agent?.avatar || "💬"}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span
-                          className={cn(
-                            "text-sm block truncate transition-colors",
-                            isActive
-                              ? "font-bold text-foreground"
-                              : "font-medium text-muted-foreground"
-                          )}
-                        >
-                          {chat.title || agent?.name || "Sem título"}
-                        </span>
-                        <p className="text-[11px] text-muted-foreground/60 truncate">
-                          {new Date(chat.created_at).toLocaleDateString()} •{" "}
-                          {agent?.name || "Agente"}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })
-              ) : (
-                <div className="p-8 text-center text-muted-foreground">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                  <p className="text-sm">Nenhuma conversa ativa</p>
-                  <p className="text-[11px] mt-1">Clique no + para iniciar</p>
-                </div>
-              )}
-            </div>
+            <ChatList />
           </div>
 
           {/* Chat Area */}
@@ -320,11 +361,31 @@ export default function Chat() {
               <>
                 {/* Chat Header */}
                 <div className="h-16 border-b border-border bg-card flex items-center justify-between px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-xl">
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {/* Mobile Chat Selection Button */}
+                    <div className="lg:hidden">
+                      <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
+                        <SheetTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-10 w-10">
+                            <MessageSquare className="h-5 w-5" />
+                          </Button>
+                        </SheetTrigger>
+                        <SheetContent
+                          side="left"
+                          className="p-0 w-80 bg-card border-r border-border"
+                        >
+                          <SheetHeader className="sr-only">
+                            <SheetTitle>Conversas</SheetTitle>
+                          </SheetHeader>
+                          <ChatList closeSheet={() => setIsMobileSheetOpen(false)} />
+                        </SheetContent>
+                      </Sheet>
+                    </div>
+
+                    <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-xl flex-shrink-0">
                       {selectedAgent.avatar || "🤖"}
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <DropdownMenu>
                         <DropdownMenuTrigger className="flex items-center gap-1 font-semibold hover:text-primary transition-colors">
                           {selectedAgent.name}
@@ -552,20 +613,37 @@ export default function Chat() {
                   <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
                     <Bot className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h2 className="text-xl font-semibold mb-2">
-                    {loading ? "Carregando agentes..." : "Selecione um agente"}
-                  </h2>
+                  <h2 className="text-xl font-semibold mb-2">Selecione um agente</h2>
                   <p className="text-muted-foreground mb-6">
-                    {agents.length > 0
-                      ? "Escolha um agente de IA na lista ao lado para iniciar uma conversa"
-                      : "Crie seu primeiro agente de IA para começar a conversar"}
+                    Escolha um agente de IA na lista ao lado para iniciar uma conversa
                   </p>
-                  <Button asChild>
-                    <Link to="/agents/create">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Criar novo agente
-                    </Link>
-                  </Button>
+
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div className="lg:hidden">
+                      <Sheet open={isMobileSheetOpen} onOpenChange={setIsMobileSheetOpen}>
+                        <Button onClick={() => setIsMobileSheetOpen(true)} className="w-full">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Ver Conversas
+                        </Button>
+                        <SheetContent
+                          side="left"
+                          className="p-0 w-80 bg-card border-r border-border"
+                        >
+                          <SheetHeader className="sr-only">
+                            <SheetTitle>Conversas</SheetTitle>
+                          </SheetHeader>
+                          <ChatList closeSheet={() => setIsMobileSheetOpen(false)} />
+                        </SheetContent>
+                      </Sheet>
+                    </div>
+
+                    <Button asChild variant="outline">
+                      <Link to="/agents/create">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Criar novo agente
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}

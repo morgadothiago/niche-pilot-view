@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Menu, Bot } from "lucide-react";
 import { DashboardSidebar } from "./DashboardSidebar";
 import { ContentHeader } from "./ContentHeader";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Bot } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 interface DashboardLayoutProps {
@@ -12,22 +13,27 @@ interface DashboardLayoutProps {
 }
 
 export function DashboardLayout({ children, hideContentHeader = false }: DashboardLayoutProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="flex h-screen w-full overflow-hidden">
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-sidebar border-b border-sidebar-border h-14 flex items-center px-4">
-        {/* Mobile toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="text-sidebar-foreground hover:bg-sidebar-accent"
-        >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </Button>
+        {/* Mobile toggle with Sheet */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-sidebar-foreground hover:bg-sidebar-accent"
+            >
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 bg-sidebar border-sidebar-border w-64">
+            <DashboardSidebar onNavigate={() => {}} collapsed={false} />
+          </SheetContent>
+        </Sheet>
 
         {/* Logo */}
         <Link to="/dashboard" className="flex items-center gap-2 ml-3">
@@ -38,23 +44,9 @@ export function DashboardLayout({ children, hideContentHeader = false }: Dashboa
         </Link>
       </header>
 
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40 pt-14"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Desktop: always visible, Mobile: overlay drawer */}
-      <div
-        className={`
-        fixed lg:static z-50 lg:z-auto h-full pt-14 lg:pt-0
-        transition-transform duration-300 ease-in-out
-        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-      `}
-      >
-        <DashboardSidebar onNavigate={() => setMobileMenuOpen(false)} collapsed={collapsed} />
+      {/* Sidebar - Desktop: always visible */}
+      <div className="hidden lg:block h-full">
+        <DashboardSidebar collapsed={collapsed} />
       </div>
 
       {/* Main Content */}
