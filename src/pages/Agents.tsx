@@ -2,12 +2,23 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, MessageSquare, Loader2, Bot } from "lucide-react";
+import { Plus, MessageSquare, Loader2, Bot, Trash2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
 import { useAuth } from "@/contexts/AuthContext";
 import { agentService } from "@/services/agentService";
 import { Agent } from "@/types";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Agents() {
   const { user } = useAuth();
@@ -34,6 +45,17 @@ export default function Agents() {
 
     fetchAgents();
   }, [user?.id]);
+
+  const handleDeleteAgent = async (id: string) => {
+    try {
+      await agentService.deleteAgent(id);
+      setAgents((prev) => prev.filter((agent) => agent.id !== id));
+      toast.success("Agente excluído com sucesso");
+    } catch (error: unknown) {
+      console.error("Error deleting agent:", error);
+      toast.error("Erro ao excluir agente");
+    }
+  };
 
   return (
     <PageTransition>
@@ -76,7 +98,40 @@ export default function Agents() {
                         {agent.avatar || "🤖"}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base lg:text-lg">{agent.name}</h3>
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="font-semibold text-base lg:text-lg truncate">
+                            {agent.name}
+                          </h3>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Esta ação não pode ser desfeita. Isso excluirá permanentemente o
+                                  agente "{agent.name}".
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteAgent(agent.id)}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                         <span className="inline-block px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full mt-1">
                           Personalizado
                         </span>
