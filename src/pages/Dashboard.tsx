@@ -1,24 +1,52 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Plus, MessageSquare, Bot, Clock, Loader2 } from "lucide-react";
-import { chats, agents } from "@/data/mockData";
 import { PageTransition } from "@/components/PageTransition";
 import { UsageLimits } from "@/components/UsageLimits";
+import { agentService } from "@/services/agentService";
+import { messageService, Chat } from "@/services/messageService";
+import { Agent } from "@/types";
 
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       navigate("/login");
     }
-  }, [user, loading, navigate]);
+  }, [user, authLoading, navigate]);
 
-  if (loading) {
+  useEffect(() => {
+    async function fetchData() {
+      if (!user?.id) return;
+
+      try {
+        const [agentsData, chatsData] = await Promise.all([
+          agentService.getAgents(user.id),
+          messageService.getChats(),
+        ]);
+        setAgents(agentsData || []);
+        setChats(chatsData || []);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      } finally {
+        setDataLoading(false);
+      }
+    }
+
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+  if (authLoading || (dataLoading && !agents.length && !chats.length)) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -50,7 +78,7 @@ export default function Dashboard() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border">
+            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border transition-all hover:border-primary/20">
               <div className="flex items-center gap-3 lg:gap-4">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                   <MessageSquare className="w-5 h-5 lg:w-6 lg:h-6 text-primary" />
@@ -61,7 +89,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border">
+            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border transition-all hover:border-accent/20">
               <div className="flex items-center gap-3 lg:gap-4">
                 <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-accent/10 flex items-center justify-center">
                   <Bot className="w-5 h-5 lg:w-6 lg:h-6 text-accent" />
@@ -72,10 +100,10 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft border border-border sm:col-span-2 lg:col-span-1">
+            <div className="bg-card rounded-xl p-4 lg:p-6 shadow-soft sm:col-span-2 lg:col-span-1 border border-emerald-500/10 transition-all hover:border-emerald-500/20">
               <div className="flex items-center gap-3 lg:gap-4">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-green-500" />
+                <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                  <Clock className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-500" />
                 </div>
                 <div>
                   <p className="text-xl lg:text-2xl font-bold">24h</p>
@@ -89,66 +117,79 @@ export default function Dashboard() {
           <UsageLimits className="mb-6 lg:mb-8" />
 
           {/* Recent Chats */}
-          <div className="bg-card rounded-xl shadow-soft border border-border">
-            <div className="p-4 lg:p-6 border-b border-border">
-              <h2 className="text-lg lg:text-xl font-semibold">Conversas recentes</h2>
-            </div>
-            <div className="divide-y divide-border">
-              {chats.map((chat) => {
-                const agent = agents.find((a) => a.id === chat.agentId);
-                return (
-                  <Link
-                    key={chat.id}
-                    to={`/chat/${chat.id}`}
-                    className="flex items-center gap-3 lg:gap-4 p-3 lg:p-4 hover:bg-secondary/50 transition-colors"
-                  >
-                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl lg:text-2xl flex-shrink-0">
-                      {agent?.avatar || "🤖"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium truncate text-sm lg:text-base">
-                          {chat.title}
-                        </span>
-                        {chat.unread && (
-                          <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
-                        )}
+          {chats.length > 0 && (
+            <div className="bg-card rounded-xl shadow-soft border border-border">
+              <div className="p-4 lg:p-6 border-b border-border">
+                <h2 className="text-lg lg:text-xl font-semibold">Conversas recentes</h2>
+              </div>
+              <div className="divide-y divide-border">
+                {chats.slice(0, 5).map((chat) => {
+                  const agent = agents.find((a) => a.id === chat.agent_id);
+                  return (
+                    <Link
+                      key={chat.id}
+                      to={`/chat/${chat.id}`}
+                      className="flex items-center gap-3 lg:gap-4 p-3 lg:p-4 hover:bg-secondary/50 transition-colors"
+                    >
+                      <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-primary/10 flex items-center justify-center text-xl lg:text-2xl flex-shrink-0">
+                        {agent?.avatar || "🤖"}
                       </div>
-                      <p className="text-xs lg:text-sm text-muted-foreground truncate">
-                        {chat.agentName}: {chat.lastMessage}
-                      </p>
-                    </div>
-                    <span className="text-xs lg:text-sm text-muted-foreground hidden sm:block">
-                      {chat.timestamp}
-                    </span>
-                  </Link>
-                );
-              })}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate text-sm lg:text-base">
+                            {chat.title}
+                          </span>
+                        </div>
+                        <p className="text-xs lg:text-sm text-muted-foreground truncate">
+                          {agent?.name || "Agente"}: {chat.last_message || "Sem mensagens"}
+                        </p>
+                      </div>
+                      <span className="text-xs lg:text-sm text-muted-foreground hidden sm:block">
+                        {new Date(chat.updated_at).toLocaleDateString()}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="p-3 lg:p-4 border-t border-border text-center">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/chats">Ver todas as conversas</Link>
+                </Button>
+              </div>
             </div>
-            <div className="p-3 lg:p-4 border-t border-border text-center">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/chats">Ver todas as conversas</Link>
-              </Button>
-            </div>
-          </div>
+          )}
 
           {/* Quick Access Agents */}
           <div className="mt-6 lg:mt-8">
             <h2 className="text-lg lg:text-xl font-semibold mb-4">Acesso rápido</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
-              {agents.slice(0, 4).map((agent) => (
-                <Link
-                  key={agent.id}
-                  to={`/chat/new?agent=${agent.id}`}
-                  className="bg-card rounded-xl p-3 lg:p-4 shadow-soft border border-border hover:shadow-medium hover:-translate-y-1 transition-all duration-300 text-center"
-                >
-                  <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-primary/10 flex items-center justify-center text-xl lg:text-3xl mx-auto mb-2 lg:mb-3">
-                    {agent.avatar}
-                  </div>
-                  <h3 className="font-medium truncate text-sm lg:text-base">{agent.name}</h3>
-                  <p className="text-xs text-muted-foreground truncate">{agent.niche}</p>
-                </Link>
-              ))}
+              {agents.length > 0 ? (
+                agents.slice(0, 8).map((agent) => (
+                  <Link
+                    key={agent.id}
+                    to={`/chat/new?agent=${agent.id}`}
+                    className="bg-card rounded-xl p-3 lg:p-4 shadow-soft border border-border hover:shadow-medium hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[140px]"
+                  >
+                    <div className="w-10 h-10 lg:w-14 lg:h-14 rounded-full bg-primary/10 flex items-center justify-center text-xl lg:text-3xl mx-auto mb-2 lg:mb-3">
+                      {agent.avatar || "🤖"}
+                    </div>
+                    <h3 className="font-medium truncate w-full text-sm lg:text-base">
+                      {agent.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground truncate w-full">
+                      {agent.category || "AI Assistant"}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <div className="col-span-full py-12 text-center bg-card rounded-xl border border-dashed border-border">
+                  <Bot className="w-10 h-10 text-muted-foreground mx-auto mb-3 opacity-20" />
+                  <p className="text-muted-foreground">Crie seu primeiro agente para começar</p>
+                  <Button variant="link" asChild className="mt-2">
+                    <Link to="/agents/create">Criar agente</Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>
