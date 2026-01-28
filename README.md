@@ -71,3 +71,38 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Deploy em Produção & Telemetria (Sentry)
+
+Seguem passos claros para garantir que o projeto faça build e envie erros para o Sentry em produção.
+
+- Instalar dependências e gerar lockfile (use um único gerenciador — recomendado: `yarn`):
+
+```bash
+yarn install
+# commit do lockfile gerado
+git add yarn.lock package.json
+git commit -m "chore: lockfile and add @sentry/react"
+git push
+```
+
+- Variáveis de ambiente necessárias no provedor de deploy (Vercel, Netlify, etc.):
+  - `VITE_SENTRY_DSN` — DSN do seu projeto no Sentry (obrigatório para ativar captura).
+  - `VITE_COMMIT_SHA` — SHA do commit/build (opcional, recomendado para correlação de releases).
+  - `SENTRY_TRACES_SAMPLE_RATE` — (opcional) taxa de amostragem para tracing.
+
+- Build e verificação local antes do deploy:
+
+```bash
+yarn build
+```
+
+- Estratégias disponíveis no repositório:
+  - Sentry opcional (seguro): o código usa import totalmente dinâmico para que o build funcione mesmo se `@sentry/react` não estiver instalado. Use essa opção se quiser que o deploy sempre passe sem Sentry.
+  - Sentry ativo (recomendado em produção): instale `@sentry/react` nas dependências e configure `VITE_SENTRY_DSN` no ambiente. Com isso o bundler resolverá o pacote normalmente e o app enviará erros.
+
+- CI/Deploy notes:
+  - Sempre comite o lockfile (`yarn.lock` ou `package-lock.json`) no repositório para garantir reproduzibilidade no CI.
+  - No GitHub Actions / Vercel, configure as variáveis de ambiente acima. Opcionalmente exporte `VITE_COMMIT_SHA=$(git rev-parse --short HEAD)` durante o pipeline.
+
+Se quiser, eu atualizo o `README` com um exemplo de GitHub Action que injeta `VITE_COMMIT_SHA` e executa o build — quer que eu adicione esse exemplo?

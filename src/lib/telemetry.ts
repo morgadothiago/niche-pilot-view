@@ -3,7 +3,13 @@ export async function initTelemetry(): Promise<void> {
     const env = import.meta.env as Record<string, string | undefined>;
     const dsn = env?.VITE_SENTRY_DSN;
     if (!dsn) return;
-    const mod = await import("@sentry/react");
+    // Load the package at runtime using a dynamic import constructed
+    // via `new Function` so bundlers (Vite/Rollup) won't try to
+    // resolve the module at build time. This keeps Sentry optional
+    // for environments that don't install the package.
+    const mod = await (new Function('return import("@sentry/react")')() as Promise<
+      typeof import("@sentry/react")
+    >);
     try {
       mod.init({
         dsn,
@@ -22,7 +28,9 @@ export async function captureException(e: unknown): Promise<void> {
   try {
     const env = import.meta.env as Record<string, string | undefined>;
     if (!env?.VITE_SENTRY_DSN) return;
-    const mod = await import("@sentry/react");
+    const mod = await (new Function('return import("@sentry/react")')() as Promise<
+      typeof import("@sentry/react")
+    >);
     mod.captureException?.(e);
   } catch {
     // ignore
