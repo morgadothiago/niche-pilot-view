@@ -35,8 +35,8 @@ export default function Agents() {
       try {
         const data = await agentService.getAgents(user.id);
         setAgents(data || []);
-      } catch (error: unknown) {
-        console.error("Error fetching agents:", error);
+      } catch (_error: unknown) {
+        console.error("Error fetching agents:", _error);
         toast.error("Erro ao carregar agentes");
       } finally {
         setLoading(false);
@@ -51,8 +51,8 @@ export default function Agents() {
       await agentService.deleteAgent(id);
       setAgents((prev) => prev.filter((agent) => agent.id !== id));
       toast.success("Agente excluído com sucesso");
-    } catch (error: unknown) {
-      console.error("Error deleting agent:", error);
+    } catch (_error: unknown) {
+      console.error("Error deleting agent:", _error);
       toast.error("Erro ao excluir agente");
     }
   };

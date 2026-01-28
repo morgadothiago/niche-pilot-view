@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -10,8 +11,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { AppConfigProvider } from "@/contexts/AppConfigContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AdminGuard } from "@/components/admin/AdminGuard";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
-import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Auth from "./pages/Auth";
@@ -19,19 +20,33 @@ import Pricing from "./pages/Pricing";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
-import Dashboard from "./pages/Dashboard";
-import Chat from "./pages/Chat";
-import Agents from "./pages/Agents";
-import CreateAgent from "./pages/CreateAgent";
 import Profile from "./pages/Profile";
 import ChangePlan from "./pages/ChangePlan";
 import BuyCredits from "./pages/BuyCredits";
 import NotFound from "./pages/NotFound";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminAgents from "./pages/admin/AdminAgents";
-import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
-import AdminSettings from "./pages/admin/AdminSettings";
+
+// Lazy-loaded heavy pages
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Agents = lazy(() => import("./pages/Agents"));
+const CreateAgent = lazy(() => import("./pages/CreateAgent"));
+
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminAgents = lazy(() => import("./pages/admin/AdminAgents"));
+const AdminSubscriptions = lazy(() => import("./pages/admin/AdminSubscriptions"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
+
+import { Loader2 } from "lucide-react";
+import scheduleIdlePrefetch from "@/lib/idlePreload";
+
+function RouteFallback() {
+  return (
+    <div className="flex items-center justify-center h-48">
+      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+    </div>
+  );
+}
 
 const queryClient = new QueryClient();
 
@@ -55,41 +70,51 @@ function AnimatedRoutes() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}>
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/chat/:chatId"
           element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}>
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/chat/new"
           element={
-            <ProtectedRoute>
-              <Chat />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}>
+              <ProtectedRoute>
+                <Chat />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/agents"
           element={
-            <ProtectedRoute>
-              <Agents />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}>
+              <ProtectedRoute>
+                <Agents />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
           path="/agents/create"
           element={
-            <ProtectedRoute>
-              <CreateAgent />
-            </ProtectedRoute>
+            <Suspense fallback={<RouteFallback />}>
+              <ProtectedRoute>
+                <CreateAgent />
+              </ProtectedRoute>
+            </Suspense>
           }
         />
         <Route
@@ -121,41 +146,51 @@ function AnimatedRoutes() {
         <Route
           path="/admin"
           element={
-            <AdminGuard>
-              <AdminDashboard />
-            </AdminGuard>
+            <Suspense fallback={<RouteFallback />}>
+              <AdminGuard>
+                <AdminDashboard />
+              </AdminGuard>
+            </Suspense>
           }
         />
         <Route
           path="/admin/users"
           element={
-            <AdminGuard>
-              <AdminUsers />
-            </AdminGuard>
+            <Suspense fallback={<RouteFallback />}>
+              <AdminGuard>
+                <AdminUsers />
+              </AdminGuard>
+            </Suspense>
           }
         />
         <Route
           path="/admin/agents"
           element={
-            <AdminGuard>
-              <AdminAgents />
-            </AdminGuard>
+            <Suspense fallback={<RouteFallback />}>
+              <AdminGuard>
+                <AdminAgents />
+              </AdminGuard>
+            </Suspense>
           }
         />
         <Route
           path="/admin/subscriptions"
           element={
-            <AdminGuard>
-              <AdminSubscriptions />
-            </AdminGuard>
+            <Suspense fallback={<RouteFallback />}>
+              <AdminGuard>
+                <AdminSubscriptions />
+              </AdminGuard>
+            </Suspense>
           }
         />
         <Route
           path="/admin/settings"
           element={
-            <AdminGuard>
-              <AdminSettings />
-            </AdminGuard>
+            <Suspense fallback={<RouteFallback />}>
+              <AdminGuard>
+                <AdminSettings />
+              </AdminGuard>
+            </Suspense>
           }
         />
 
@@ -175,9 +210,19 @@ const App = () => (
             <Toaster />
             <Sonner />
             <PaletteInitializer />
-            <BrowserRouter>
-              <AnimatedRoutes />
-            </BrowserRouter>
+            <ErrorBoundary>
+              <BrowserRouter>
+                <AnimatedRoutes />
+              </BrowserRouter>
+            </ErrorBoundary>
+            {/* schedule idle prefetch once app loads */}
+            {typeof window !== "undefined" ? (
+              <script
+                suppressHydrationWarning
+                dangerouslySetInnerHTML={{ __html: "" }}
+                onLoad={() => scheduleIdlePrefetch()}
+              />
+            ) : null}
           </TooltipProvider>
         </AuthProvider>
       </AppConfigProvider>

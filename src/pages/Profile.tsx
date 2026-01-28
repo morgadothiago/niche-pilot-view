@@ -61,7 +61,7 @@ export default function Profile() {
       await signOut();
       toast.success("Logout realizado com sucesso");
       navigate("/", { replace: true });
-    } catch (error) {
+    } catch (_error) {
       toast.error("Erro ao sair");
     }
   };
@@ -76,8 +76,8 @@ export default function Profile() {
       await userService.uploadAvatar(file);
       await refreshProfile();
       toast.success("Avatar atualizado com sucesso!");
-    } catch (error: unknown) {
-      console.error("Error uploading avatar:", error);
+    } catch (_error: unknown) {
+      console.error("Error uploading avatar:", _error);
       toast.error("Erro ao fazer upload do avatar");
     } finally {
       setUploading(false);

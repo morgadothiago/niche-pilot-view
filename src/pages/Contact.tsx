@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Send, Building2, Mail, Phone, MessageSquare, Loader2 } from "lucide-react";
 import { PageTransition } from "@/components/PageTransition";
@@ -50,53 +50,57 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState<Partial<ContactForm>>({});
 
-  const handleChange = (field: keyof ContactForm, value: string) => {
+  const handleChange = useCallback((field: keyof ContactForm, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
-    }
-  };
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (loading) return;
 
-    try {
-      contactSchema.parse(form);
-      setErrors({});
-      setLoading(true);
+      try {
+        contactSchema.parse(form);
+        setErrors({});
+        setLoading(true);
 
-      // TODO: Replace with your API call
-      // const response = await fetch('/api/contact', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     name: form.name,
-      //     email: form.email,
-      //     company: form.company || undefined,
-      //     subject: form.subject,
-      //     message: form.message,
-      //   }),
-      // });
-      // if (!response.ok) throw new Error('Failed to send message');
+        // TODO: Replace with your API call
+        // const response = await fetch('/api/contact', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({
+        //     name: form.name,
+        //     email: form.email,
+        //     company: form.company || undefined,
+        //     subject: form.subject,
+        //     message: form.message,
+        //   }),
+        // });
+        // if (!response.ok) throw new Error('Failed to send message');
 
-      toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.");
-      setForm({ name: "", email: "", company: "", subject: "", message: "" });
-    } catch (error: unknown) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Partial<ContactForm> = {};
-        error.errors.forEach((err) => {
-          const field = err.path[0] as keyof ContactForm;
-          fieldErrors[field] = err.message;
-        });
-        setErrors(fieldErrors);
-      } else {
-        console.error("Unexpected error:", error);
-        toast.error("Erro inesperado. Tente novamente.");
+        toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.");
+        setForm({ name: "", email: "", company: "", subject: "", message: "" });
+      } catch (error: unknown) {
+        if (error instanceof z.ZodError) {
+          const fieldErrors: Partial<ContactForm> = {};
+          error.errors.forEach((err) => {
+            if (err.path && err.path.length > 0) {
+              const field = err.path[0] as keyof ContactForm;
+              fieldErrors[field] = err.message;
+            }
+          });
+          setErrors(fieldErrors);
+        } else {
+          console.error("Unexpected error:", error);
+          toast.error("Erro inesperado. Tente novamente.");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [form, loading]
+  );
 
   return (
     <PageTransition>
@@ -143,11 +147,11 @@ export default function Contact() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="grid md:grid-cols-3 gap-6 mb-12"
             >
-              {contactOptions.map((option, index) => {
+              {contactOptions.map((option) => {
                 const Icon = option.icon;
                 return (
                   <Card
-                    key={index}
+                    key={option.title}
                     className="bg-card border-border hover:shadow-medium transition-all duration-300"
                   >
                     <CardContent className="p-6 text-center">
@@ -185,7 +189,11 @@ export default function Contact() {
                             onChange={(e) => handleChange("name", e.target.value)}
                             disabled={loading}
                           />
-                          {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                          {errors.name && (
+                            <p className="text-sm text-destructive" aria-live="polite">
+                              {errors.name}
+                            </p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="email">Email *</Label>
@@ -198,7 +206,9 @@ export default function Contact() {
                             disabled={loading}
                           />
                           {errors.email && (
-                            <p className="text-sm text-destructive">{errors.email}</p>
+                            <p className="text-sm text-destructive" aria-live="polite">
+                              {errors.email}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -224,7 +234,9 @@ export default function Contact() {
                           disabled={loading}
                         />
                         {errors.subject && (
-                          <p className="text-sm text-destructive">{errors.subject}</p>
+                          <p className="text-sm text-destructive" aria-live="polite">
+                            {errors.subject}
+                          </p>
                         )}
                       </div>
 
@@ -239,7 +251,9 @@ export default function Contact() {
                           disabled={loading}
                         />
                         {errors.message && (
-                          <p className="text-sm text-destructive">{errors.message}</p>
+                          <p className="text-sm text-destructive" aria-live="polite">
+                            {errors.message}
+                          </p>
                         )}
                       </div>
 

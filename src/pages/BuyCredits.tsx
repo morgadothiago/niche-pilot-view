@@ -87,8 +87,8 @@ export default function BuyCredits() {
 
       toast.success(`${totalCredits} créditos adicionados com sucesso!`);
       refetch();
-    } catch (error: unknown) {
-      console.error("Error buying credits:", error);
+    } catch (_error: unknown) {
+      console.error("Error buying credits:", _error);
       toast.error("Erro ao comprar créditos");
     }
   };

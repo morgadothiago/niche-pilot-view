@@ -16,8 +16,10 @@
     "strict": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
-    "allowJs": true,
+    "allowJs": false,
     "noUnusedLocals": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   }
 }

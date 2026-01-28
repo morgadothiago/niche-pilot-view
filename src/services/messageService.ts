@@ -74,9 +74,9 @@ export const messageService = {
 
       const response = await apiClient.post<Chat | ApiResponse<Chat>>("/api/chats", payload);
       return (response.data as ApiResponse<Chat>).data || (response.data as Chat);
-    } catch (error: unknown) {
-      if (error && typeof error === "object" && "response" in error) {
-        const err = error as {
+    } catch (_error: unknown) {
+      if (_error && typeof _error === "object" && "response" in _error) {
+        const err = _error as {
           response?: {
             data?: { message?: string | string[]; details?: { message?: string | string[] } };
           };
@@ -117,8 +117,8 @@ export const messageService = {
         "";
 
       return content;
-    } catch (error: unknown) {
-      const err = error as { response?: { status?: number; data?: unknown } };
+    } catch (_error: unknown) {
+      const err = _error as { response?: { status?: number; data?: unknown } };
       const status = err.response?.status;
       if (status === 502 || status === 503 || status === 504) {
         throw new Error(

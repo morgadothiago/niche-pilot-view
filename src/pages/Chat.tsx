@@ -108,8 +108,8 @@ export default function Chat() {
         else if (chatsData && chatsData.length > 0 && !activeChat) {
           handleChatClick(chatsData[0]);
         }
-      } catch (error: unknown) {
-        console.error("Error fetching chat data:", error);
+      } catch (_error: unknown) {
+        console.error("Error fetching chat data:", _error);
         toast.error("Erro ao carregar dados do chat");
       } finally {
         setLoading(false);
