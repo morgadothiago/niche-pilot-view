@@ -3609,11 +3609,6 @@ react-dom@^18.2.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.2"
 
-react-github-login@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmjs.org/react-github-login/-/react-github-login-1.0.3.tgz"
-  integrity sha512-SkXwkjUdTgXEISaQkC9+zR1Cm/AcDQSVon956SvPeBWL888A6e1M9eP8WfBxKyV1B5Fc8lLcC0OULr7OYWBqlw==
-
 react-hook-form@^7.61.1:
   version "7.61.1"
   resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.61.1.tgz"
