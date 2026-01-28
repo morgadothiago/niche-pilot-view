@@ -159,7 +159,7 @@ export function LandingTutorial() {
     setIsOpen(true);
   };
 
-  const toggleAutoplay = () => {
+  const _toggleAutoplay = () => {
     if (isAutoPlaying) {
       clearTimers();
       setIsAutoPlaying(false);

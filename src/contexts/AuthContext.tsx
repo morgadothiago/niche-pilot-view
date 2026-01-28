@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // For now assuming existing token is valid access_token.
           setSession({ user: userData, access_token: token });
         }
-      } catch (error: unknown) {
+      } catch (_error: unknown) {
         // If 401, remove token
         localStorage.removeItem("auth_token");
         setUser(null);

@@ -48,7 +48,9 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   };
 
   // Get plan from user object and normalize to lowercase
-  const userPlan = (typeof getUser.user?.plan === "string" ? getUser.user.plan.toLowerCase() : "") as keyof typeof planConfig;
+  const userPlan = (
+    typeof getUser.user?.plan === "string" ? getUser.user.plan.toLowerCase() : ""
+  ) as keyof typeof planConfig;
   const subPlan = typeof subscription?.plan === "string" ? subscription.plan.toLowerCase() : "";
   const currentPlanKey = (userPlan || subPlan || "free") as keyof typeof planConfig;
   const currentPlan = planConfig[currentPlanKey] || planConfig.free;
@@ -62,7 +64,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
       await signOut();
       toast.success("Logout realizado com sucesso");
       navigate("/", { replace: true });
-    } catch (error) {
+    } catch (_error) {
       toast.error("Erro ao sair");
     }
   };

@@ -63,7 +63,7 @@ interface UserProfile {
 const emojiAvatars = ["🤖", "🧠", "💡", "🎯", "🚀", "💬", "⚡", "🔮", "🎨", "📊", "💼", "🛠️"];
 
 export default function AdminAgents() {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);

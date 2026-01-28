@@ -199,7 +199,7 @@ export default function BuyCredits() {
               {packages.map((pkg, index) => {
                 const Icon = getIcon(pkg);
                 const color = getColor(pkg);
-                const totalCredits = getTotalCredits(pkg);
+                const _totalCredits = getTotalCredits(pkg);
                 const pricePerCredit = getPricePerCredit(pkg);
 
                 return (

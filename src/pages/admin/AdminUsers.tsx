@@ -67,7 +67,7 @@ export default function AdminUsers() {
     }
   }
 
-  async function updateUserRole(userId: string, newRole: string) {
+  async function updateUserRole(userId: string, _newRole: string) {
     setUpdating(userId);
     try {
       // TODO: Replace with your API call

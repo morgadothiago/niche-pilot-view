@@ -2,7 +2,7 @@ import * as React from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Plan } from "@/types";
-import { toast } from "sonner";
+import { toast as _toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
 import {
   ChevronRight,
@@ -28,7 +28,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useSubscription } from "@/hooks/useSubscription";
-import { cn } from "@/lib/utils";
+import { cn as _cn } from "@/lib/utils";
 
 const planConfig: Record<string, { name: string; icon: React.ElementType }> = {
   free: { name: "Free", icon: Sparkles },

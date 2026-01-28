@@ -26,7 +26,7 @@ export default function Signup() {
   const navigate = useNavigate();
   const { signUp, signInWithGoogle, user } = useAuth();
   const { appName } = useAppConfig();
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [_googleLoading, setGoogleLoading] = useState(false);
 
   const { form, isSubmitting, handleSubmit, submitError } = useFormValidation<SignupFormValues>({
     schema: signupSchema,

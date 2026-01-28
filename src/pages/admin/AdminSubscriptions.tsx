@@ -60,7 +60,7 @@ const planConfig: Record<string, { name: string; icon: React.ElementType; color:
 
 export default function AdminSubscriptions() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [_users, setUsers] = useState<UserProfile[]>([]);
   const [usersWithoutSub, setUsersWithoutSub] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);

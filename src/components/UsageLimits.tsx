@@ -73,7 +73,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
   };
 
   // Color based on credits remaining (for when there's no limit)
-  const getCreditsColor = () => {
+  const _getCreditsColor = () => {
     if (credits === 0) return "bg-red-500";
     if (credits <= 10) return "bg-orange-500";
     if (credits <= 25) return "bg-yellow-500";

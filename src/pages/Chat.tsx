@@ -50,12 +50,12 @@ interface Message {
   isCreditsCTA?: boolean;
 }
 
-import { Chat as ApiChat, Message as ApiMessage } from "@/services/messageService";
+import { Chat as ApiChat, Message as _ApiMessage } from "@/services/messageService";
 
 export default function Chat() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const _location = useLocation();
   const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -120,7 +120,7 @@ export default function Chat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, activeChat, searchParams]); // Adicionadas as dependências faltantes
 
-  const handleOptionClick = (action: string) => {
+  const _handleOptionClick = (action: string) => {
     toast.success(`Ação "${action}" executada`);
   };
 

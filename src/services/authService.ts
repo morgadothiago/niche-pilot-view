@@ -40,7 +40,7 @@ export const authService = {
   signIn: async (email: string, password: string): Promise<Session> => {
     const response = await apiClient.post<LoginResponse>("/api/auth/login", { email, password });
     const { user, token } = response.data;
-    const role = decodeJwtRole(token);
+    const _role = decodeJwtRole(token);
 
     return {
       user: { ...user },
@@ -55,7 +55,7 @@ export const authService = {
       full_name: fullName,
     });
     const { user, token } = response.data;
-    const role = decodeJwtRole(token);
+    const _role = decodeJwtRole(token);
 
     return {
       user: { ...user },
