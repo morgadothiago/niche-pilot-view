@@ -48,8 +48,9 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
   };
 
   // Get plan from user object and normalize to lowercase
-  const userPlan = getUser.user?.plan?.toLowerCase() as keyof typeof planConfig | undefined;
-  const currentPlanKey = userPlan || subscription?.plan || "free";
+  const userPlan = (typeof getUser.user?.plan === "string" ? getUser.user.plan.toLowerCase() : "") as keyof typeof planConfig;
+  const subPlan = typeof subscription?.plan === "string" ? subscription.plan.toLowerCase() : "";
+  const currentPlanKey = (userPlan || subPlan || "free") as keyof typeof planConfig;
   const currentPlan = planConfig[currentPlanKey] || planConfig.free;
 
   const handleNavClick = () => {
@@ -145,7 +146,7 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
               </Tooltip>
               <CreditIndicator
                 credits={subscription?.credits ?? 0}
-                plan={currentPlanKey}
+                plan={currentPlanKey as string}
                 limit={subscription?.credits_limit ?? 0}
                 size="sm"
                 tooltipSide="right"

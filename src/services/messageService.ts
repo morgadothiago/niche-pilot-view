@@ -92,7 +92,7 @@ export const messageService = {
           toast.error(`Falha no Backend: ${displayMsg}`);
         }
       }
-      throw error;
+      throw _error;
     }
   },
 

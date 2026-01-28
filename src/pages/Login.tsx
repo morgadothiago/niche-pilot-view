@@ -10,6 +10,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAppConfig } from "@/contexts/AppConfigContext";
 import { toast } from "sonner";
 import { z } from "zod";
+import { HeroOrbs } from "@/components/HeroOrbs";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -79,10 +81,14 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen flex">
+      <div className="min-h-screen flex relative overflow-hidden">
+        {/* Animated Background */}
+        <AnimatedBackground />
+        <HeroOrbs />
+        
         {/* Form Container */}
-        <div className="flex-1 flex items-center justify-center p-8">
-          <div className="w-full max-w-md space-y-8">
+        <div className="flex-1 flex items-center justify-center p-8 relative z-10">
+          <div className="w-full max-w-md space-y-8 bg-background/80 backdrop-blur-xl p-8 rounded-2xl border border-border/50 shadow-2xl">
             {/* Logo */}
             <div className="text-center">
               <Link to="/" className="inline-flex items-center gap-2 mb-8">
