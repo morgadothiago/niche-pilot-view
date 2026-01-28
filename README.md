@@ -82,7 +82,7 @@ Seguem passos claros para garantir que o projeto faça build e envie erros para 
 yarn install
 # commit do lockfile gerado
 git add yarn.lock package.json
-git commit -m "chore: lockfile and add @sentry/react"
+git commit -m "chore: lockfile"
 git push
 ```
 
@@ -98,8 +98,7 @@ yarn build
 ```
 
 - Estratégias disponíveis no repositório:
-  - Sentry opcional (seguro): o código usa import totalmente dinâmico para que o build funcione mesmo se `@sentry/react` não estiver instalado. Use essa opção se quiser que o deploy sempre passe sem Sentry.
-  - Sentry ativo (recomendado em produção): instale `@sentry/react` nas dependências e configure `VITE_SENTRY_DSN` no ambiente. Com isso o bundler resolverá o pacote normalmente e o app enviará erros.
+  - Telemetria/Sentry removidos do projeto para evitar problemas de build.
 
 - CI/Deploy notes:
   - Sempre comite o lockfile (`yarn.lock` ou `package-lock.json`) no repositório para garantir reproduzibilidade no CI.
