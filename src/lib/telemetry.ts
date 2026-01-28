@@ -20,6 +20,8 @@ export async function initTelemetry(): Promise<void> {
 
 export async function captureException(e: unknown): Promise<void> {
   try {
+    const env = import.meta.env as Record<string, string | undefined>;
+    if (!env?.VITE_SENTRY_DSN) return;
     const mod = await import("@sentry/react");
     mod.captureException?.(e);
   } catch {
