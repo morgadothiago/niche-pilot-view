@@ -106,7 +106,8 @@ export default function ChangePlan() {
       // const response = await fetch('/api/subscriptions/downgrade', { method: 'POST' });
       // if (!response.ok) throw new Error('Failed to downgrade');
 
-      setAnimationPlans({ from: subscription?.plan || "pro", to: "free" });
+      const fromPlan = typeof subscription?.plan === "string" ? subscription.plan : "pro";
+      setAnimationPlans({ from: fromPlan, to: "free" });
       setShowAnimation(true);
 
       setTimeout(() => {
@@ -132,7 +133,8 @@ export default function ChangePlan() {
       // });
       // if (!response.ok) throw new Error('Failed to upgrade');
 
-      setAnimationPlans({ from: subscription?.plan || "free", to: selectedPlan.id });
+      const fromPlan = typeof subscription?.plan === "string" ? subscription.plan : "free";
+      setAnimationPlans({ from: fromPlan, to: selectedPlan.id });
       setShowAnimation(true);
 
       setTimeout(() => {

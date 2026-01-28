@@ -6,11 +6,12 @@ interface State {
   resetKey: number;
 }
 
-export class ErrorBoundary extends React.Component<
-  React.PropsWithChildren<Record<string, never>>,
-  State
-> {
-  constructor(props: React.PropsWithChildren<Record<string, never>>) {
+interface Props {
+  children: React.ReactNode;
+}
+
+export class ErrorBoundary extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false, error: null, resetKey: 0 };
     this.reset = this.reset.bind(this);
