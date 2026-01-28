@@ -75,18 +75,6 @@ export const authService = {
     };
   },
 
-  signInWithGithub: async (githubCode: string): Promise<Session> => {
-    const response = await apiClient.post<LoginResponse>("/api/auth/github", {
-      github_token: githubCode,
-    });
-    const { user, token } = response.data;
-
-    return {
-      user: { ...user },
-      access_token: token,
-    };
-  },
-
   signOut: async (): Promise<void> => {
     try {
       await apiClient.post("/api/auth/logout");
@@ -96,7 +84,6 @@ export const authService = {
   },
 
   getProfile: async (): Promise<User> => {
-    const token = localStorage.getItem("auth_token");
     const response = await apiClient.get<ProfileResponse>("/api/auth/me");
 
     return {

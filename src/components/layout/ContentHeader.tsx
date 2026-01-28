@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Plan } from "@/types";
 import { toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
-import { planLimits } from "@/constants/plans";
 import {
   ChevronRight,
   Home,
@@ -166,8 +165,9 @@ export function ContentHeader({ collapsed, onCollapsedChange }: ContentHeaderPro
             <div className="flex items-center gap-3">
               {/* Credits Circle Indicator */}
               <CreditIndicator
-                credits={subscription?.credits || 0}
+                credits={subscription?.credits ?? 0}
                 plan={currentPlanKey}
+                limit={subscription?.credits_limit ?? 0}
                 className="hover:bg-secondary/80"
               />
 

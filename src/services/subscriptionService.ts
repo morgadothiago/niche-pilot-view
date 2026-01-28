@@ -1,5 +1,5 @@
 import { apiClient } from "./apiClient";
-import { Subscription, Plan, ApiResponse } from "../types";
+import { Subscription, Plan, CreditPackage, ApiResponse } from "../types";
 
 export const subscriptionService = {
   getSubscription: async (userId?: string): Promise<Subscription> => {
@@ -24,10 +24,17 @@ export const subscriptionService = {
     return response.data.data;
   },
 
-  buyCredits: async (amount: number): Promise<{ credits_added: number; new_balance: number }> => {
+  buyCredits: async (
+    packageId: string
+  ): Promise<{ credits_added: number; new_balance: number }> => {
     const response = await apiClient.post<
       ApiResponse<{ credits_added: number; new_balance: number }>
-    >("/api/subscriptions/buy-credits", { amount });
+    >("/api/subscriptions/buy-credits", { package_id: packageId });
+    return response.data.data;
+  },
+
+  getCreditPackages: async (): Promise<CreditPackage[]> => {
+    const response = await apiClient.get<ApiResponse<CreditPackage[]>>("/api/credit-packages");
     return response.data.data;
   },
 };

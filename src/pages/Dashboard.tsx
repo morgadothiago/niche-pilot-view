@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Plus, MessageSquare, Bot, Clock, Loader2 } from "lucide-react";
@@ -12,6 +13,7 @@ import { Agent } from "@/types";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
+  const { subscription } = useSubscription();
   const navigate = useNavigate();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [chats, setChats] = useState<Chat[]>([]);
@@ -29,7 +31,7 @@ export default function Dashboard() {
 
       try {
         const [agentsData, chatsData] = await Promise.all([
-          agentService.getAgents(user.id),
+          agentService.getAgents(),
           messageService.getChats(),
         ]);
         setAgents(agentsData || []);
@@ -95,8 +97,10 @@ export default function Dashboard() {
                   <Bot className="w-5 h-5 lg:w-6 lg:h-6 text-accent" />
                 </div>
                 <div>
-                  <p className="text-xl lg:text-2xl font-bold">{agents.length}</p>
-                  <p className="text-muted-foreground text-xs lg:text-sm">Agentes disponíveis</p>
+                  <p className="text-xl lg:text-2xl font-bold">
+                    {subscription?.agents_used ?? agents.length}
+                  </p>
+                  <p className="text-muted-foreground text-xs lg:text-sm">Agentes ativos</p>
                 </div>
               </div>
             </div>

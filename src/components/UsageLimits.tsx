@@ -25,6 +25,7 @@ export function UsageLimits({ className }: UsageLimitsProps) {
         <div className="space-y-4">
           <div className="h-4 bg-muted rounded w-full" />
           <div className="h-4 bg-muted rounded w-full" />
+          <div className="h-4 bg-muted rounded w-full" />
         </div>
       </div>
     );
@@ -37,32 +38,31 @@ export function UsageLimits({ className }: UsageLimitsProps) {
       : (subscription?.plan as Plan | undefined)?.name?.toLowerCase();
 
   const plan = subPlanName || userPlan || "free";
-  const credits = subscription?.credits || 0;
 
-  // Define limits based on plan
-  const limits = {
-    free: { messages: 100, agents: 3, credits: 50 },
-    pro: { messages: -1, agents: -1, credits: 1500 }, // -1 = unlimited
-    elite: { messages: -1, agents: -1, credits: 5000 },
-    custom: { messages: -1, agents: -1, credits: 5000 },
-  };
-
-  const testLimit = Number(import.meta.env.VITE_TEST_LIMIT);
-  const baseLimits = limits[plan as keyof typeof limits] || limits.free;
-  const currentLimits = {
-    ...baseLimits,
-    credits: !isNaN(testLimit) && testLimit > 0 ? testLimit : baseLimits.credits,
-  };
-
-  // Mock usage data (in production, this would come from the backend)
-  const usage = {
-    messages: 42,
-    agents: 2,
-  };
+  // Get values from API (with fallbacks)
+  const credits = subscription?.credits ?? 0;
+  const creditsLimit = subscription?.credits_limit ?? 0;
+  const messagesUsed = subscription?.messages_used ?? 0;
+  const messagesLimit = subscription?.messages_limit ?? 0; // 0 or -1 = unlimited
+  const agentsUsed = subscription?.agents_used ?? 0;
+  const agentsLimit = subscription?.agents_limit ?? 0; // 0 or -1 = unlimited
 
   const getPercentage = (used: number, limit: number) => {
-    if (limit === -1) return 0;
+    if (limit <= 0) return 0; // unlimited
     return Math.min((used / limit) * 100, 100);
+  };
+
+  // For credits: calculate usage percentage (how much was consumed)
+  const getCreditsUsagePercentage = () => {
+    if (creditsLimit > 0) {
+      // Has limit: show percentage of credits used
+      return Math.min(((creditsLimit - credits) / creditsLimit) * 100, 100);
+    }
+    // No limit: use thresholds based on remaining credits
+    // Assume 100 as a reference for visual display
+    const referenceLimit = 100;
+    const used = Math.max(0, referenceLimit - credits);
+    return Math.min((used / referenceLimit) * 100, 100);
   };
 
   const getProgressColor = (percentage: number) => {
@@ -71,6 +71,16 @@ export function UsageLimits({ className }: UsageLimitsProps) {
     if (percentage >= 50) return "bg-yellow-500";
     return "bg-green-500";
   };
+
+  // Color based on credits remaining (for when there's no limit)
+  const getCreditsColor = () => {
+    if (credits === 0) return "bg-red-500";
+    if (credits <= 10) return "bg-orange-500";
+    if (credits <= 25) return "bg-yellow-500";
+    return "bg-green-500";
+  };
+
+  const isUnlimited = (limit: number) => limit <= 0;
 
   return (
     <div
@@ -92,20 +102,18 @@ export function UsageLimits({ className }: UsageLimitsProps) {
               <span className="text-sm">Mensagens/mês</span>
             </div>
             <span className="text-sm font-medium">
-              {currentLimits.messages === -1 ? (
+              {isUnlimited(messagesLimit) ? (
                 <span className="text-accent">Ilimitado</span>
               ) : (
-                `${usage.messages}/${currentLimits.messages}`
+                `${messagesUsed.toLocaleString()}/${messagesLimit.toLocaleString()}`
               )}
             </span>
           </div>
-          {currentLimits.messages !== -1 && (
+          {!isUnlimited(messagesLimit) && (
             <Progress
-              value={getPercentage(usage.messages, currentLimits.messages)}
+              value={getPercentage(messagesUsed, messagesLimit)}
               className="h-2"
-              indicatorClassName={getProgressColor(
-                getPercentage(usage.messages, currentLimits.messages)
-              )}
+              indicatorClassName={getProgressColor(getPercentage(messagesUsed, messagesLimit))}
             />
           )}
         </div>
@@ -118,20 +126,18 @@ export function UsageLimits({ className }: UsageLimitsProps) {
               <span className="text-sm">Agentes ativos</span>
             </div>
             <span className="text-sm font-medium">
-              {currentLimits.agents === -1 ? (
+              {isUnlimited(agentsLimit) ? (
                 <span className="text-accent">Ilimitado</span>
               ) : (
-                `${usage.agents}/${currentLimits.agents}`
+                `${agentsUsed}/${agentsLimit}`
               )}
             </span>
           </div>
-          {currentLimits.agents !== -1 && (
+          {!isUnlimited(agentsLimit) && (
             <Progress
-              value={getPercentage(usage.agents, currentLimits.agents)}
+              value={getPercentage(agentsUsed, agentsLimit)}
               className="h-2"
-              indicatorClassName={getProgressColor(
-                getPercentage(usage.agents, currentLimits.agents)
-              )}
+              indicatorClassName={getProgressColor(getPercentage(agentsUsed, agentsLimit))}
             />
           )}
         </div>
@@ -141,19 +147,43 @@ export function UsageLimits({ className }: UsageLimitsProps) {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Zap className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm">Créditos de uso</span>
+              <span className="text-sm">Créditos disponíveis</span>
             </div>
             <span className="text-sm font-medium">
-              {currentLimits.credits - credits}/{currentLimits.credits}
+              <span
+                className={cn(
+                  credits === 0
+                    ? "text-red-500"
+                    : getCreditsUsagePercentage() >= 90
+                      ? "text-red-500"
+                      : getCreditsUsagePercentage() >= 75
+                        ? "text-orange-500"
+                        : getCreditsUsagePercentage() >= 50
+                          ? "text-yellow-500"
+                          : "text-green-500"
+                )}
+              >
+                {credits.toLocaleString()}
+              </span>
+              <span className="text-muted-foreground">
+                {" "}
+                / {creditsLimit > 0 ? creditsLimit.toLocaleString() : "100"}
+              </span>
             </span>
           </div>
           <Progress
-            value={getPercentage(currentLimits.credits - credits, currentLimits.credits)}
+            value={getCreditsUsagePercentage()}
             className="h-2"
-            indicatorClassName={getProgressColor(
-              getPercentage(currentLimits.credits - credits, currentLimits.credits)
-            )}
+            indicatorClassName={getProgressColor(getCreditsUsagePercentage())}
           />
+          {credits === 0 && (
+            <p className="text-xs text-red-500 mt-1 font-medium">
+              Sem créditos! Recarregue para continuar usando.
+            </p>
+          )}
+          {credits > 0 && credits <= 10 && (
+            <p className="text-xs text-orange-500 mt-1">Créditos baixos. Considere recarregar.</p>
+          )}
         </div>
       </div>
     </div>

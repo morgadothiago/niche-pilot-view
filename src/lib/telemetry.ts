@@ -1,3 +1,9 @@
+// Sentry types (optional - only used if @sentry/react is installed)
+interface SentryModule {
+  init: (options: { dsn: string; environment?: string; release?: string }) => void;
+  captureException: (e: unknown) => void;
+}
+
 export async function initTelemetry(): Promise<void> {
   try {
     const env = import.meta.env as Record<string, string | undefined>;
@@ -7,9 +13,7 @@ export async function initTelemetry(): Promise<void> {
     // via `new Function` so bundlers (Vite/Rollup) won't try to
     // resolve the module at build time. This keeps Sentry optional
     // for environments that don't install the package.
-    const mod = await (new Function('return import("@sentry/react")')() as Promise<
-      typeof import("@sentry/react")
-    >);
+    const mod = await (new Function('return import("@sentry/react")')() as Promise<SentryModule>);
     try {
       mod.init({
         dsn,
@@ -28,9 +32,7 @@ export async function captureException(e: unknown): Promise<void> {
   try {
     const env = import.meta.env as Record<string, string | undefined>;
     if (!env?.VITE_SENTRY_DSN) return;
-    const mod = await (new Function('return import("@sentry/react")')() as Promise<
-      typeof import("@sentry/react")
-    >);
+    const mod = await (new Function('return import("@sentry/react")')() as Promise<SentryModule>);
     mod.captureException?.(e);
   } catch {
     // ignore

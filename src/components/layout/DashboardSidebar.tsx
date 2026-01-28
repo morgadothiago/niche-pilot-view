@@ -17,8 +17,6 @@ import { useAppConfig } from "@/contexts/AppConfigContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { CreditIndicator } from "@/components/CreditIndicator";
-import { planLimits } from "@/constants/plans";
-import { useUserRole } from "@/hooks/useUserRole";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -146,8 +144,9 @@ export function DashboardSidebar({ onNavigate, collapsed = false }: DashboardSid
                 <TooltipContent side="right">Plano {currentPlan.name}</TooltipContent>
               </Tooltip>
               <CreditIndicator
-                credits={subscription?.credits || 0}
+                credits={subscription?.credits ?? 0}
                 plan={currentPlanKey}
+                limit={subscription?.credits_limit ?? 0}
                 size="sm"
                 tooltipSide="right"
               />

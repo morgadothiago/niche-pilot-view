@@ -10,7 +10,6 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signInWithGoogle: (googleToken: string) => Promise<{ error: Error | null }>;
-  signInWithGithub: (githubCode: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -96,18 +95,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signInWithGithub = async (githubCode: string) => {
-    try {
-      const sessionData = await authService.signInWithGithub(githubCode);
-      localStorage.setItem("auth_token", sessionData.access_token);
-      setSession(sessionData);
-      setUser(sessionData.user);
-      return { error: null };
-    } catch (error: unknown) {
-      return { error: error instanceof Error ? error : new Error(String(error)) };
-    }
-  };
-
   const signOut = async () => {
     setIsLoggingOut(true);
     try {
@@ -134,7 +121,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signInWithGoogle,
-        signInWithGithub,
         signOut,
         refreshProfile,
       }}

@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion } from "framer-motion";
 import { Coins, ShieldAlert } from "lucide-react";
-import { planLimits } from "@/constants/plans";
 
 interface CreditIndicatorProps {
   credits: number;
   plan: string;
+  limit: number;
   size?: "sm" | "md";
   showTooltip?: boolean;
   tooltipSide?: "top" | "bottom" | "left" | "right";
@@ -17,34 +17,48 @@ interface CreditIndicatorProps {
 export function CreditIndicator({
   credits,
   plan,
+  limit,
   size = "md",
   showTooltip = true,
   tooltipSide = "bottom",
   className,
 }: CreditIndicatorProps) {
-  const testLimit = Number(import.meta.env.VITE_TEST_LIMIT);
-  const limit = !isNaN(testLimit) && testLimit > 0 ? testLimit : planLimits[plan] || 50;
-  const percentage = Math.max(0, Math.min(100, ((limit - credits) / limit) * 100));
+  // Calculate remaining credits percentage (shows what's left, not what's used)
+  const hasLimit = limit > 0;
+  // Reference limit for when API doesn't provide one
+  const referenceLimit = hasLimit ? limit : 100;
+  // Percentage of credits remaining (for filling the circle)
+  const remainingPercentage = hasLimit
+    ? Math.min(100, (credits / limit) * 100)
+    : credits > 0
+      ? Math.min(100, (credits / referenceLimit) * 100)
+      : 0;
+  // Percentage of credits used (for progress bar and color calculation)
+  const usedPercentage = Math.min(
+    100,
+    ((referenceLimit - Math.min(credits, referenceLimit)) / referenceLimit) * 100
+  );
 
   const radius = size === "md" ? 12 : 10;
   const circumference = 2 * Math.PI * radius;
 
   const getColors = () => {
-    if (percentage >= 90 || credits === 0)
+    // Use percentage-based colors (based on usage) - works for both cases
+    if (usedPercentage >= 90 || credits === 0)
       return {
         stroke: "rgb(239, 68, 68)", // Red-500
         glow: "rgba(239, 68, 68, 0.4)",
         bg: "rgba(239, 68, 68, 0.1)",
         text: "text-red-500",
       };
-    if (percentage >= 75)
+    if (usedPercentage >= 75)
       return {
         stroke: "rgb(249, 115, 22)", // Orange-500
         glow: "rgba(249, 115, 22, 0.4)",
         bg: "rgba(249, 115, 22, 0.1)",
         text: "text-orange-500",
       };
-    if (percentage >= 50)
+    if (usedPercentage >= 50)
       return {
         stroke: "rgb(234, 179, 8)", // Yellow-500
         glow: "rgba(234, 179, 8, 0.4)",
@@ -95,7 +109,7 @@ export function CreditIndicator({
             className="text-muted-foreground/10"
           />
 
-          {/* Progress Path */}
+          {/* Progress Path - shows remaining credits */}
           <motion.circle
             cx="16"
             cy="16"
@@ -105,7 +119,9 @@ export function CreditIndicator({
             strokeWidth="3"
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: circumference - (percentage / 100) * circumference }}
+            animate={{
+              strokeDashoffset: circumference - (remainingPercentage / 100) * circumference,
+            }}
             transition={{ duration: 1.2, ease: "easeOut" }}
             strokeLinecap="round"
             style={{ filter: `drop-shadow(0 0 2px ${colors.stroke})` }}
@@ -148,25 +164,29 @@ export function CreditIndicator({
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold leading-none">
-                  {limit - credits} / {limit} Usados
+                  <span className={cn(colors.text)}>{credits.toLocaleString()}</span>
+                  <span className="text-muted-foreground font-normal">
+                    {" "}
+                    / {referenceLimit.toLocaleString()}
+                  </span>
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                  {credits} Créditos Restantes
+                  Créditos Disponíveis
                 </span>
               </div>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center justify-between text-[10px]">
-                <span className="text-muted-foreground">Uso</span>
-                <span className={cn("font-bold", colors.text)}>{percentage.toFixed(0)}%</span>
+                <span className="text-muted-foreground">Usado</span>
+                <span className={cn("font-bold", colors.text)}>{usedPercentage.toFixed(0)}%</span>
               </div>
               <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                 <motion.div
                   className="h-full"
                   style={{ backgroundColor: colors.stroke }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${percentage}%` }}
+                  animate={{ width: `${usedPercentage}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
                 />
               </div>
@@ -174,10 +194,13 @@ export function CreditIndicator({
 
             <div className="pt-1 flex items-center justify-between border-t border-border/50 mt-1">
               <span className="text-[9px] text-muted-foreground">Plano {plan.toUpperCase()}</span>
-              {credits < limit * 0.1 && (
-                <span className="text-[9px] font-bold text-primary animate-pulse">
-                  Recarregar agora
+              {credits === 0 && (
+                <span className="text-[9px] font-bold text-red-500 animate-pulse">
+                  Recarregar agora!
                 </span>
+              )}
+              {credits > 0 && usedPercentage >= 75 && (
+                <span className="text-[9px] font-bold text-orange-500">Créditos baixos</span>
               )}
             </div>
           </div>

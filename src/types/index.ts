@@ -45,12 +45,28 @@ export interface Plan {
   credits_monthly: number;
 }
 
+export interface CreditPackage {
+  id: string;
+  name: string;
+  credits: number;
+  price: number;
+  bonus?: number;
+  popular?: boolean;
+  icon?: string;
+  color?: string;
+}
+
 export interface Subscription {
   id: string;
   user_id: string;
   plan_id: string;
-  status: "active" | "canceled" | "past_due" | "active";
+  status: "active" | "canceled" | "past_due";
   credits?: number;
+  credits_limit?: number;
+  messages_used?: number;
+  messages_limit?: number;
+  agents_used?: number;
+  agents_limit?: number;
   current_period_end?: string;
   created_at?: string;
   updated_at?: string;
