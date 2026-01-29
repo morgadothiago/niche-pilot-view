@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,14 +23,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { agentService } from "@/services/agentService";
@@ -56,7 +48,6 @@ export default function Chat() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const _location = useLocation();
-  const [searchParams] = useSearchParams();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
@@ -65,11 +56,11 @@ export default function Chat() {
   const [chats, setChats] = useState<ApiChat[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
   const [newChatAgentId, setNewChatAgentId] = useState<string>("");
   const [newChatTitle, setNewChatTitle] = useState("");
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const initializedRef = useRef(false);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -78,13 +69,17 @@ export default function Chat() {
     }
   }, [messages]);
 
-  // Fetch agents from API
+  // Fetch agents from API (roda apenas uma vez)
   useEffect(() => {
+    if (initializedRef.current) return;
+
     async function fetchData() {
       if (!user?.id) {
         setLoading(false);
         return;
       }
+
+      initializedRef.current = true;
 
       try {
         const [agentsData, chatsData] = await Promise.all([
@@ -92,22 +87,10 @@ export default function Chat() {
           messageService.getChats(),
         ]);
 
+        console.log("📋 Chats carregados:", chatsData);
+        console.log("🤖 Agentes carregados:", agentsData);
         setAgents(agentsData || []);
         setChats(chatsData || []);
-
-        // 1. Verificar se veio um agente via URL (?agent=ID)
-        const agentIdFromUrl = searchParams.get("agent");
-        if (agentIdFromUrl) {
-          const targetedAgent = agentsData.find((a) => a.id === agentIdFromUrl);
-          if (targetedAgent) {
-            setNewChatAgentId(targetedAgent.id);
-            setIsNewChatModalOpen(true);
-          }
-        }
-        // 2. Se não houver agente na URL, seleciona o primeiro chat se existir
-        else if (chatsData && chatsData.length > 0 && !activeChat) {
-          handleChatClick(chatsData[0]);
-        }
       } catch (_error: unknown) {
         console.error("Error fetching chat data:", _error);
         toast.error("Erro ao carregar dados do chat");
@@ -117,61 +100,74 @@ export default function Chat() {
     }
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id, activeChat, searchParams]); // Adicionadas as dependências faltantes
+  }, [user?.id]);
+
+  // Carregar histórico quando activeChat mudar
+  useEffect(() => {
+    if (!activeChat) return;
+
+    const loadHistory = async () => {
+      setMessages([]);
+      setSending(true);
+
+      try {
+        // Buscar mensagens da API
+        const apiMessages = await messageService.getMessages(activeChat.id);
+
+        if (apiMessages && apiMessages.length > 0) {
+          // Converter formato da API para formato local
+          const formattedMessages: Message[] = apiMessages.map((msg) => ({
+            id: msg.id,
+            text: msg.content,
+            sender: msg.role === "user" ? "user" : "bot",
+            timestamp: new Date(msg.created_at),
+            isTyping: false,
+          }));
+          setMessages(formattedMessages);
+        }
+      } catch (err) {
+        console.warn("History loading handled:", err);
+        setMessages([]);
+      } finally {
+        setSending(false);
+      }
+    };
+
+    loadHistory();
+  }, [activeChat?.id]);
 
   const _handleOptionClick = (action: string) => {
     toast.success(`Ação "${action}" executada`);
   };
 
-  const handleChatClick = async (chat: ApiChat) => {
+  const handleChatClick = (chat: ApiChat) => {
     setActiveChat(chat);
 
     // Encontrar o agente associado a este chat
     const agent = agents.find((a) => a.id === chat.agent_id);
     if (agent) setSelectedAgent(agent);
-
-    setMessages([]); // Placeholder loading
-    setSending(true);
-
-    try {
-      // Tentar carregar histórico local primeiro
-      const storedMessages = messageService.getStoredMessages(chat.id);
-      if (storedMessages && storedMessages.length > 0) {
-        setMessages(storedMessages as unknown as Message[]);
-        toast.info("Histórico da conversa recuperado", { id: `restore-${chat.id}` });
-      } else {
-        // Backend ainda não suporta histórico via GET, mas o serviço está pronto
-        // setMessages(historyMapped...);
-        setMessages([]);
-      }
-    } catch (err) {
-      console.warn("History loading handled:", err);
-      setMessages([]);
-    } finally {
-      setSending(false);
-    }
   };
 
-  const createNewChatWithAgent = async () => {
-    if (!newChatAgentId) {
+  const createNewChatWithAgent = async (agentId?: string) => {
+    const targetAgentId = agentId || newChatAgentId;
+
+    if (!targetAgentId) {
       toast.error("Selecione um agente");
       return;
     }
 
-    const agent = agents.find((a) => a.id === newChatAgentId);
+    const agent = agents.find((a) => a.id === targetAgentId);
     const title = newChatTitle.trim() || `Conversa com ${agent?.name || "Agente"}`;
 
-    console.log("🚀 Iniciando criação de chat:", { agent_id: newChatAgentId, title });
+    console.log("🚀 Iniciando criação de chat:", { agent_id: targetAgentId, title });
 
     setLoading(true);
     try {
-      const newChat = await messageService.createChat(newChatAgentId, title);
+      const newChat = await messageService.createChat(targetAgentId, title);
       console.log("✅ Chat criado com sucesso:", newChat);
 
       setChats((prev) => [newChat, ...prev]);
       handleChatClick(newChat);
-      setIsNewChatModalOpen(false);
       setNewChatAgentId("");
       setNewChatTitle("");
       toast.success("Nova conversa iniciada!");
@@ -193,11 +189,7 @@ export default function Chat() {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => {
-      const newMessages = [...prev, userMessage];
-      if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
-      return newMessages;
-    });
+    setMessages((prev) => [...prev, userMessage]);
     setMessage("");
     setSending(true);
 
@@ -212,11 +204,7 @@ export default function Chat() {
         isTyping: true,
       };
 
-      setMessages((prev) => {
-        const newMessages = [...prev, botMessage];
-        if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
-        return newMessages;
-      });
+      setMessages((prev) => [...prev, botMessage]);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : "Erro ao enviar mensagem";
       const isCreditsError = errorMessage.includes("Credits free finish");
@@ -229,11 +217,7 @@ export default function Chat() {
           timestamp: new Date(),
           isCreditsCTA: true,
         };
-        setMessages((prev) => {
-          const newMessages = [...prev, creditMessage];
-          if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
-          return newMessages;
-        });
+        setMessages((prev) => [...prev, creditMessage]);
       } else {
         toast.error(errorMessage);
       }
@@ -242,24 +226,66 @@ export default function Chat() {
     }
   };
 
+  const handleDeleteChat = async (chatId: string) => {
+    try {
+      await messageService.deleteChat(chatId);
+      setChats((prev) => prev.filter((c) => c.id !== chatId));
+
+      // Se o chat deletado era o ativo, limpar a seleção
+      if (activeChat?.id === chatId) {
+        setActiveChat(null);
+        setSelectedAgent(null);
+        setMessages([]);
+      }
+
+      toast.success("Conversa deletada!");
+    } catch (error) {
+      console.error("Erro ao deletar chat:", error);
+      toast.error("Erro ao deletar conversa");
+    }
+  };
+
+  const handleDeleteAllChats = async () => {
+    if (
+      !window.confirm(
+        "Deseja realmente deletar TODAS as conversas? Esta ação não pode ser desfeita."
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Deletar todos os chats
+      await Promise.all(chats.map((chat) => messageService.deleteChat(chat.id)));
+
+      setChats([]);
+      setActiveChat(null);
+      setSelectedAgent(null);
+      setMessages([]);
+
+      toast.success("Todas as conversas foram deletadas!");
+    } catch (error) {
+      console.error("Erro ao deletar chats:", error);
+      toast.error("Erro ao deletar conversas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleClearHistory = () => {
     if (!activeChat) return;
 
     if (window.confirm("Deseja realmente limpar o histórico desta conversa?")) {
-      messageService.clearHistory(activeChat.id);
       setMessages([]);
       toast.success("Histórico limpo!");
     }
   };
 
   const handleTypingComplete = (messageId: string) => {
-    setMessages((prev) => {
-      const newMessages = prev.map((msg) =>
-        msg.id === messageId ? { ...msg, isTyping: false } : msg
-      );
-      if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
-      return newMessages;
-    });
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === messageId ? { ...msg, isTyping: false } : msg))
+    );
 
     // Adiciona uma mensagem de conversão no chat a cada 5 respostas da IA, evitando duplicatas
     setMessages((currentMessages) => {
@@ -288,9 +314,7 @@ export default function Chat() {
               timestamp: new Date(),
               isUpgradeCTA: true,
             };
-            const newMessages = [...prev, upgradeMessage];
-            if (activeChat) messageService.saveMessages(activeChat.id, newMessages);
-            return newMessages;
+            return [...prev, upgradeMessage];
           });
         }, randomDelay);
       }
@@ -302,16 +326,34 @@ export default function Chat() {
     <div className="flex-1 flex flex-col overflow-hidden h-full">
       <div className="p-4 pr-12 lg:pr-4 border-b border-border flex items-center justify-between">
         <h2 className="font-semibold">Conversas</h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            setIsNewChatModalOpen(true);
-            closeSheet?.();
-          }}
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {chats.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDeleteAllChats}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              title="Deletar todas as conversas"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              const agentId = selectedAgent?.id || agents[0]?.id;
+              if (agentId) {
+                createNewChatWithAgent(agentId);
+              } else {
+                toast.error("Nenhum agente disponível");
+              }
+              closeSheet?.();
+            }}
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
       <div className="flex-1 overflow-auto">
         {loading && chats.length === 0 ? (
@@ -413,10 +455,7 @@ export default function Chat() {
                           {agents.map((agent) => (
                             <DropdownMenuItem
                               key={agent.id}
-                              onClick={() => {
-                                setNewChatAgentId(agent.id);
-                                setIsNewChatModalOpen(true);
-                              }}
+                              onClick={() => createNewChatWithAgent(agent.id)}
                               className="flex items-center gap-3 p-3 cursor-pointer"
                             >
                               <span className="text-xl">{agent.avatar || "🤖"}</span>
@@ -454,10 +493,7 @@ export default function Chat() {
                       {agents.map((agent) => (
                         <DropdownMenuItem
                           key={agent.id}
-                          onClick={() => {
-                            setNewChatAgentId(agent.id);
-                            setIsNewChatModalOpen(true);
-                          }}
+                          onClick={() => createNewChatWithAgent(agent.id)}
                           className={cn(
                             "flex items-center gap-3 p-3",
                             selectedAgent?.id === agent.id && "bg-secondary"
@@ -675,105 +711,7 @@ export default function Chat() {
             )}
           </div>
         </div>
-
-        {/* New Chat Modal */}
-        <Dialog open={isNewChatModalOpen} onOpenChange={setIsNewChatModalOpen}>
-          <DialogContent className="sm:max-w-[500px] bg-card border-border shadow-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold">Nova Conversa</DialogTitle>
-              <DialogDescription>
-                Escolha um agente e dê um título para a sua nova conversa.
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid gap-6 py-4">
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Selecione o Agente</Label>
-                <div className="grid grid-cols-2 gap-3 max-h-[240px] overflow-auto pr-2 custom-scrollbar">
-                  {agents.map((agent) => (
-                    <button
-                      key={agent.id}
-                      type="button"
-                      onClick={() => setNewChatAgentId(agent.id)}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-xl border transition-all text-left group",
-                        newChatAgentId === agent.id
-                          ? "bg-primary/10 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.1)]"
-                          : "border-border hover:border-primary/50 hover:bg-muted/50"
-                      )}
-                    >
-                      <span className="text-2xl group-hover:scale-110 transition-transform">
-                        {agent.avatar}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold truncate">{agent.name}</p>
-                        <p className="text-[10px] text-muted-foreground truncate">
-                          {agent.category || "Geral"}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="chat-title" className="text-sm font-medium">
-                  Título da Conversa (Opcional)
-                </Label>
-                <Input
-                  id="chat-title"
-                  placeholder="Ex: Minha dúvida sobre Marketing..."
-                  value={newChatTitle}
-                  onChange={(e) => setNewChatTitle(e.target.value)}
-                  className="bg-muted/30 focus:bg-background h-12 border-border"
-                />
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="ghost"
-                onClick={() => setIsNewChatModalOpen(false)}
-                className="h-12 px-6"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={createNewChatWithAgent}
-                disabled={!newChatAgentId || loading}
-                className="h-12 px-8 gradient-primary shadow-lg"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Criando...
-                  </>
-                ) : (
-                  <>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Iniciar Chat
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </DashboardLayout>
     </PageTransition>
-  );
-}
-
-// Simple Label component since it might be missing or in another file
-function Label({ children, className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label
-      className={cn(
-        "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </label>
   );
 }

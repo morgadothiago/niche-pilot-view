@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
 import { agentService } from "@/services/agentService";
+import { llmService, LLM } from "@/services/llmService";
 
 const emojiAvatars = ["🤖", "🧠", "💡", "🎯", "🚀", "💬", "⚡", "🔮", "🎨", "📊", "💼", "🛠️"];
 
@@ -40,6 +41,8 @@ export default function CreateAgent() {
   const { subscription, loading: loadingSub } = useSubscription();
   const [loading, setLoading] = useState(false);
   const [currentTab, setCurrentTab] = useState("identity");
+  const [llms, setLlms] = useState<LLM[]>([]);
+  const [loadingLlms, setLoadingLlms] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     avatar: "🤖",
@@ -52,7 +55,27 @@ export default function CreateAgent() {
     focus: "",
     rules: "",
     visibility: "PRIVATE" as "PRIVATE" | "PUBLIC",
+    llmId: "",
   });
+
+  // Buscar LLMs disponíveis
+  useEffect(() => {
+    async function fetchLlms() {
+      try {
+        const data = await llmService.getLLMs();
+        setLlms(data);
+        // Selecionar a primeira LLM por padrão se existir
+        if (data.length > 0) {
+          setFormData((prev) => ({ ...prev, llmId: data[0].id }));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar LLMs:", error);
+      } finally {
+        setLoadingLlms(false);
+      }
+    }
+    fetchLlms();
+  }, []);
 
   const userPlanStr = typeof user?.plan === "string" ? user.plan.toLowerCase() : "";
   const subPlanStr = typeof subscription?.plan === "string" ? subscription.plan.toLowerCase() : "";
@@ -103,9 +126,15 @@ export default function CreateAgent() {
       return;
     }
 
+    if (!formData.llmId) {
+      toast.error("Selecione um modelo de IA");
+      return;
+    }
+
     setLoading(true);
     try {
       await agentService.createAgent({
+        llmId: formData.llmId,
         name: formData.name.trim(),
         avatar: formData.avatar,
         description: formData.description.trim(),
@@ -363,6 +392,34 @@ export default function CreateAgent() {
 
                 {/* Configurações */}
                 <TabsContent value="settings" className="space-y-6 mt-0">
+                  <div className="space-y-2">
+                    <Label htmlFor="llm" className="text-base">
+                      Modelo de IA (LLM) *
+                    </Label>
+                    <Select
+                      value={formData.llmId}
+                      onValueChange={(value) => setFormData((prev) => ({ ...prev, llmId: value }))}
+                    >
+                      <SelectTrigger id="llm" className="h-12 bg-muted/30">
+                        {loadingLlms ? (
+                          <span className="text-muted-foreground">Carregando...</span>
+                        ) : (
+                          <SelectValue placeholder="Selecione o modelo de IA" />
+                        )}
+                      </SelectTrigger>
+                      <SelectContent>
+                        {llms.map((llm) => (
+                          <SelectItem key={llm.id} value={llm.id}>
+                            {llm.name} {llm.provider && `(${llm.provider})`}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Escolha qual modelo de IA o agente vai utilizar
+                    </p>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="category" className="text-base">
@@ -437,7 +494,8 @@ export default function CreateAgent() {
                     loading ||
                     !formData.name.trim() ||
                     !formData.category.trim() ||
-                    !formData.type.trim()
+                    !formData.type.trim() ||
+                    !formData.llmId
                   }
                   className="h-12 sm:px-12 shadow-md gradient-primary"
                 >

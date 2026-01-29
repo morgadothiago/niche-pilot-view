@@ -17,47 +17,35 @@ const plans = [
   {
     id: "free",
     name: "Free",
-    description: "Para começar a explorar",
+    headline: "Experimente agentes de IA no seu dia a dia e entenda como eles economizam tempo.",
+    description: "Serve pra testar, aprender e sentir o ganho — não pra operar de verdade.",
+    footer: "Se não virar habito, não é pra ficar aqui.",
     price: 0,
     icon: Sparkles,
-    features: [
-      "LLM: Gemini Free",
-      "1 ou 2 agentes genéricos",
-      "RAG limitado",
-      "50 créditos totais (não mensal)",
-      "Memória curta",
-    ],
     color: "bg-muted",
   },
   {
     id: "pro",
     name: "Pro",
-    description: "Para uso profissional",
+    headline:
+      "Produza conteúdo, responda clientes e analise conversas sem virar refém do trabalho.",
+    description:
+      "Substitui horas semanais de execução manual para quem vive de marketing, vendas ou social media.",
+    footer: "É o plano onde a IA começa a pagar a própria assinatura.",
     price: 197.0,
     icon: Zap,
-    features: [
-      "1.500 créditos/mês",
-      "Agentes especializados",
-      "LLM equilibrado",
-      "RAG completo",
-      "Memória de conversa",
-    ],
     popular: true,
     color: "bg-primary",
   },
   {
     id: "elite",
     name: "Elite",
-    description: "Para escala e performance",
+    headline: "IA rodando como parte da sua operação, não como ferramenta.",
+    description:
+      "Para quem precisa escalar conteúdo, atendimento e análise sem contratar gente nova.",
+    footer: "Aqui você não usa IA — você delega trabalho.",
     price: 497.0,
     icon: Crown,
-    features: [
-      "5.000 créditos/mês",
-      "Arquétipos avançados",
-      "LLM premium",
-      "Multi-agente real",
-      "Prioridade e fallback",
-    ],
     color: "bg-red-500",
   },
 ];
@@ -238,10 +226,26 @@ export default function ChangePlan() {
                       <Icon className="w-6 h-6" />
                     </div>
                     <CardTitle>{plan.name}</CardTitle>
-                    <CardDescription>{plan.description}</CardDescription>
                   </CardHeader>
 
                   <CardContent>
+                    <p
+                      className={cn(
+                        "text-sm mb-3 leading-relaxed",
+                        plan.popular ? "text-primary font-medium" : "text-muted-foreground"
+                      )}
+                    >
+                      {plan.headline}
+                    </p>
+
+                    <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                      {plan.description}
+                    </p>
+
+                    <p className="text-sm text-muted-foreground font-medium mb-6 leading-relaxed">
+                      {plan.footer}
+                    </p>
+
                     <div className="mb-6">
                       {plan.price !== null ? (
                         <div className="flex items-baseline gap-1">
@@ -252,15 +256,6 @@ export default function ChangePlan() {
                         <span className="text-2xl font-bold">Sob consulta</span>
                       )}
                     </div>
-
-                    <ul className="space-y-3 mb-6">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-center gap-2 text-sm">
-                          <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
 
                     <Button
                       className="w-full"

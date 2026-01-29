@@ -8,6 +8,7 @@ import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingFeatures } from "@/components/landing/LandingFeatures";
 import { LandingSteps } from "@/components/landing/LandingSteps";
 import { LandingBenefits } from "@/components/landing/LandingBenefits";
+import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingCTA } from "@/components/landing/LandingCTA";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -42,6 +43,7 @@ export default function Landing() {
         <LandingSteps />
         <Testimonials />
         <LandingBenefits />
+        <LandingPricing />
         <LandingCTA />
 
         <Footer />

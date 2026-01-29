@@ -56,9 +56,18 @@ export interface StoredMessage {
 export const messageService = {
   // Listar todos os chats do usuário
   getChats: async (): Promise<Chat[]> => {
-    const response = await apiClient.get<Chat[] | ApiResponse<Chat[]>>("/api/chats");
-    if (Array.isArray(response.data)) return response.data;
-    return (response.data as ApiResponse<Chat[]>).data || [];
+    const token = localStorage.getItem("auth_token");
+    console.log("🔑 Token para getChats:", token ? "Presente" : "Ausente");
+
+    try {
+      const response = await apiClient.get<Chat[] | ApiResponse<Chat[]>>("/api/chats");
+      console.log("📋 Chats recebidos:", response.data);
+      if (Array.isArray(response.data)) return response.data;
+      return (response.data as ApiResponse<Chat[]>).data || [];
+    } catch (error) {
+      console.error("❌ Erro ao buscar chats:", error);
+      return [];
+    }
   },
 
   // Criar um novo chat com um agente
@@ -132,8 +141,24 @@ export const messageService = {
     }
   },
 
-  // Nota: O endpoint /api/chats/{id}/messages é atualmente suportado apenas como POST pelo backend.
-  // O histórico de mensagens (GET) não está disponível ou usa uma rota diferente.
+  // Buscar histórico de mensagens de um chat
+  getMessages: async (chatId: string): Promise<Message[]> => {
+    try {
+      const response = await apiClient.get<Message[] | ApiResponse<Message[]>>(
+        `/api/chats/${chatId}/messages`
+      );
+      if (Array.isArray(response.data)) return response.data;
+      return (response.data as ApiResponse<Message[]>).data || [];
+    } catch (error) {
+      console.error("Erro ao buscar mensagens:", error);
+      return [];
+    }
+  },
+
+  // Deletar um chat
+  deleteChat: async (chatId: string): Promise<void> => {
+    await apiClient.delete(`/api/chats/${chatId}`);
+  },
 
   // Funções para persistência local (LocalStorage)
   saveMessages: (chatId: string, messages: StoredMessage[]): void => {

@@ -19,9 +19,10 @@ export const agentService = {
     return (data as ApiResponse<Agent>).data || (data as Agent);
   },
 
-  createAgent: async (data: Partial<Agent>): Promise<Agent> => {
+  createAgent: async (data: Partial<Agent> & { llmId?: string }): Promise<Agent> => {
     // Garantir que todos os campos do Swagger sejam enviados, mesmo que como string vazia
     const payload = {
+      llmId: data.llmId || "",
       name: data.name || "",
       avatar: data.avatar || "🤖",
       description: data.description || "",
@@ -35,10 +36,20 @@ export const agentService = {
       visibility: data.visibility || "PRIVATE",
     };
 
-    const response = await apiClient.post<Agent | ApiResponse<Agent>>("/api/agents", payload);
-    console.log("createAgent response:", response.data);
-    const responseData = response.data;
-    return (responseData as ApiResponse<Agent>).data || (responseData as Agent);
+    console.log("🚀 createAgent payload:", JSON.stringify(payload, null, 2));
+
+    try {
+      const response = await apiClient.post<Agent | ApiResponse<Agent>>("/api/agents", payload);
+      console.log("createAgent response:", response.data);
+      const responseData = response.data;
+      return (responseData as ApiResponse<Agent>).data || (responseData as Agent);
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as { response?: { data?: unknown } };
+        console.error("❌ Erro da API:", axiosError.response?.data);
+      }
+      throw error;
+    }
   },
 
   updateAgent: async (id: string, data: Partial<Agent>): Promise<Agent> => {
